@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{%- block add_to_head %}
+    <link href="{{ url_for('static', path='month.css') }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{%- block content %}
+<div class="container_global">
+
+    <div class="container_month">
+
+        <div class="header_month">
+            {%- for long_name, short_name in day_names %}
+                <div class="header_cell">
+                    <span class="label_wide">{{ long_name }}</span>
+                    <span class="label_narrow">{{ short_name }}</span>
+                </div>
+            {% endfor -%}
+        </div>
+
+        {% for week_index in range(5) %}
+            <div class="week">
+                {% for day_index in range(7) %}
+                    {% set index = day_index + week_index * 7 %}
+                    {% set day = month[index] %}
+                    {% set day_records = records[day.target_date] %}
+
+                    {% if day.is_today %}
+                        {% set _today = ' today' %}
+                    {% else %}
+                        {% set _today = '' %}
+                    {% endif %}
+
+                    {% if day.is_weekend %}
+                        {% set _weekend = ' weekend' %}
+                    {% else %}
+                        {% set _weekend = '' %}
+                    {% endif %}
+
+                    <div class="day{{ _today }}{{ _weekend }}" onclick="relocate('{{ url_for('show_day', chosen_date=day.target_date) }}')">
+                        <span class="day_label label_narrow">{{ day.number }}</span>
+                        <span class="day_label label_wide">{{ day.number }} {{ tr(day.month, 'months') }}</span>
+                        {% for record in day_records %}
+                            <span class="day-record">{{ loop.index }}. {{ record.title }}</span>
+                        {% endfor %}
+                    </div>
+
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="footer">
+            <div id="leap_back" class="bottom_button" onclick="relocate('{{ leap_back }}')">{{ tr('$leap_back') }}</div>
+            <div id ="step_back" class="bottom_button" onclick="relocate('{{ step_back }}')">{{ tr('$step_back') }}</div>
+            <div id ="step_on_date" class="bottom_button" onclick="alert('Not yet ready');return false;">{{ tr('$step_on_date') }}</div>
+            <div id="step_forward" class="bottom_button" onclick="relocate('{{ step_forward }}')">{{ tr('$step_forward') }}</div>
+            <div id="leap_forward" class="bottom_button" onclick="relocate('{{ leap_forward }}')">{{ tr('$leap_forward') }}</div>
+        </div>
+
+    </div>
+
+{#    <div class="menu">#}
+{#        <span>Дела на ближайшее время:</span>#}
+{#        <ul>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#            <li>sdjfsjdf</li>#}
+{#        </ul>#}
+{#    </div>#}
+
+</div>
+{% endblock -%}

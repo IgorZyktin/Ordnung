@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{%- block add_to_head %}
+<link href="{{ url_for('static', path='other.css') }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{%- block content %}
+<div class="container">
+
+    <div class="login_div">
+        <div class="container_center">
+            LOGO
+        </div>
+
+        <div>
+            <form method='POST'>
+                <div class="form_group">
+                    <label for='login'>Имя пользователя</label>
+                    <input type="text" name="login" id="login" placeholder="Логин">
+                </div>
+
+                <div class="form_group">
+                    <label for='password'>Пароль</label>
+                    <input type="password" name="password" id="password" placeholder="Пароль">
+                </div>
+
+                <button type="submit" class="login_button">Выполнить вход</button>
+                <button class="login_button">Не помню пароль</button>
+                <button class="login_button">Регистрация</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

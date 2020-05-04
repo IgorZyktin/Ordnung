@@ -1,0 +1,9 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to bottom, #202223 0%, #0e0e0e 100%) no-repeat fixed;
+    font: 16pt Tahoma, sans-serif;
+    color: dimgray;
+}
