@@ -9,6 +9,10 @@ from starlette.authentication import (
     AuthCredentials, AuthenticationError, AuthenticationBackend
 )
 from starlette.authentication import BaseUser as AbstractUser
+from starlette.requests import Request
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from ordnung.storage.access import get_user_by_login
 
 
 class BaseUser(AbstractUser):
@@ -23,6 +27,14 @@ class BaseUser(AbstractUser):
     @property
     def namespace(self):
         raise NotImplementedError()  # pragma: no cover
+
+    @property
+    def password(self):
+        raise NotImplementedError()  # pragma: no cover
+
+    @password.setter
+    def password(self, value):
+        raise RuntimeError()  # pragma: no cover
 
 
 class UnauthenticatedUser(BaseUser):
@@ -75,19 +87,23 @@ class User(BaseUser):
 
 
 class OrdnungAuthBackend(AuthenticationBackend):
-    async def authenticate(self, request):
-        if "Authorization" not in request.headers:
-            return
+    async def authenticate(self, request: Request):
+        auth_cookie = request.cookies.get('Authorization')
 
-        auth = request.headers["Authorization"]
+        if not auth_cookie:
+            return
+        print('пытаемся зайти', request.url, auth_cookie)
         try:
-            scheme, credentials = auth.split()
+            scheme, credentials = auth_cookie.split()
             if scheme.lower() != 'basic':
                 return
+
             decoded = base64.b64decode(credentials).decode("ascii")
         except (ValueError, UnicodeDecodeError, binascii.Error) as exc:
             raise AuthenticationError('Invalid basic auth credentials')
 
         username, _, password = decoded.partition(":")
-        # TODO: You'd want to verify the username and password here.
-        return AuthCredentials(["authenticated"]), User(username)
+        user = get_user_by_login(username)
+        print('у нас пользователь', user)
+        if user and check_password_hash(user.password, password):
+            return AuthCredentials(["authenticated"]), User(username)

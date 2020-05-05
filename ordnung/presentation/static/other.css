@@ -15,7 +15,9 @@
     border: 2px solid #3a423b;
     border-radius: 10px;
     width: auto;
-    max-width: 400px;
+    max-width: 500px;
+    min-width: 400px;
+    padding: 10px;
 }
 
 .form_group {
@@ -30,4 +32,31 @@
 .login_button {
     display: block;
     width: 100%;
+    border: 2px solid #3a423b;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding: 5px;
+    background: #4a5457;
+    color: #d9dec5;
+    font-size: 18px;
+}
+
+.login_button:hover {
+    background: burlywood;
+    border: 2px solid #57925d;
+    color: #1a1a17;
+}
+
+input[type="text"],
+input[type="password"] {
+    background: rgba(255, 255, 255, .1);
+    border: 2px solid #3a423b;
+    font-size: 18px;
+    margin: 0;
+    outline: 0;
+    width: 100%;
+    box-sizing: border-box;
+    color: #d9dec5;
+    padding: 5px;
+    border-radius: 10px;
 }

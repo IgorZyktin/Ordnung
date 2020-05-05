@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{%- block add_to_head %}
+<link href="{{ url_for('static', path='other.css') }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{%- block content %}
+<div class="container">
+
+    <div class="login_div">
+        <div class="container_center">
+            LOGO
+        </div>
+
+        <div id="alerts-container">
+            {% for error in errors.values() %}
+                <button type="button" class="alert" onclick="self_delete(this);">{{ error }}</button>
+            {% endfor %}
+        </div>
+        {% block login_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

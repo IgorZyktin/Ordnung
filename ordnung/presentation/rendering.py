@@ -10,7 +10,7 @@ from starlette.templating import Jinja2Templates
 templates = Jinja2Templates(directory='ordnung/presentation/templates')
 
 
-def render_template(name: str, context: dict):
+def render_template(name: str, context: dict, **kwargs):
     """Render template into HTML.
 
     Just a small wrapper to make it look more like Flask.
@@ -19,7 +19,7 @@ def render_template(name: str, context: dict):
     :param context: dict with required variables (including request itself)
     :return: rendered Jinja2 template.
     """
-    return templates.TemplateResponse(name, context)
+    return templates.TemplateResponse(name, context, **kwargs)
 
 
 def extract_date(request: Request) -> date:
