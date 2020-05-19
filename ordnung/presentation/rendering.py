@@ -7,7 +7,7 @@ from datetime import date, datetime
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 
-templates = Jinja2Templates(directory='ordnung/presentation/templates')
+templates = Jinja2Templates(directory='presentation/templates')
 
 
 def render_template(name: str, context: dict, **kwargs):

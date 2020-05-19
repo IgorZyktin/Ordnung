@@ -29,7 +29,7 @@ def format_errors(errors: dict) -> str:
 
 
 def login_form_is_invalid(form: FormData) -> Dict[str, str]:
-    if not (login := form.get('login')):
+    if not (login := form.get('username')):
         return {'no_login': 'Для входа необходимо указать логин.'}
 
     user = get_user_by_login(login)

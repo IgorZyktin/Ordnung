@@ -87,23 +87,25 @@ class User(BaseUser):
 
 
 class OrdnungAuthBackend(AuthenticationBackend):
+    """Authentication backend, that handles user distinction.
+    """
     async def authenticate(self, request: Request):
-        auth_cookie = request.cookies.get('Authorization')
+        """Runs on every request.
+        """
+        auth = request.headers.get("Authorization", '')
 
-        if not auth_cookie:
-            return
-        print('пытаемся зайти', request.url, auth_cookie)
-        try:
-            scheme, credentials = auth_cookie.split()
-            if scheme.lower() != 'basic':
-                return
+        if auth:
+            try:
+                scheme, credentials = auth.split()
+                if scheme.lower() != 'basic':
+                    return None
 
-            decoded = base64.b64decode(credentials).decode("ascii")
-        except (ValueError, UnicodeDecodeError, binascii.Error) as exc:
-            raise AuthenticationError('Invalid basic auth credentials')
+                decoded = base64.b64decode(credentials).decode("ascii")
+            except (ValueError, UnicodeDecodeError, binascii.Error):
+                raise AuthenticationError('Invalid basic auth credentials')
 
-        username, _, password = decoded.partition(":")
-        user = get_user_by_login(username)
-        print('у нас пользователь', user)
-        if user and check_password_hash(user.password, password):
-            return AuthCredentials(["authenticated"]), User(username)
+            username, _, password = decoded.partition(":")
+            user = get_user_by_login(username)
+
+            if user and check_password_hash(user.password, password):
+                return AuthCredentials(["authenticated"]), User(username)

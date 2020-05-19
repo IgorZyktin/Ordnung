@@ -5,5 +5,5 @@
 LOGGER_FILENAME = 'ordnung.log'
 LOGGER_ROTATION = '1 week'
 
-DB_PATH = 'sqlite:///database.db'
+DB_PATH = 'sqlite:///../database.db'
 VOCABULARY_FILE = 'vocabulary.json'
