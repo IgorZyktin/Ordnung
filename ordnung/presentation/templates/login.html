@@ -2,19 +2,14 @@
 
 {% block add_to_head %}
     {{ super() }}
-    <script>
-        $(document).ready(function () {
-            $('#login').on("click", document.location.reload());
-            $('#restore').on("click", document.location.href = '/restore');
-            $('#register').on("click", document.location.href = '/register');
-        });
-    </script>
+    <script src="{{ url_for('static', path='login.js') }}"></script>
 {% endblock %}
 
 {%- block login_content %}
     <div>
-        <button class="login_button" id="login">Давай ещё раз</button>
-        <button class="login_button" id="restore">Не помню пароль</button>
-        <button class="login_button" id="register">Регистрация</button>
+        <p>{{ header }}</p>
+        <button class="login_button" id="btn_login">{{ retry }}</button>
+        <button class="login_button" id="btn_restore">{{ restore }}</button>
+        <button class="login_button" id="btn_register">{{ register }}</button>
     </div>
 {% endblock %}

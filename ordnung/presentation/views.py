@@ -95,7 +95,16 @@ async def login(request: Request) -> HTMLResponse:
     if request.user.is_authenticated:
         return RedirectResponse(request.url_for('index'))
 
-    response = render_template("login.html", dict(request=request), status_code=HTTP_UNAUTHORIZED)
+    context = {
+        'request': request,
+        'header': translate(request.user.namespace, 'generic', '$login_failed'),
+        'retry': translate(request.user.namespace, 'generic', '$login_retry'),
+        'register': translate(request.user.namespace, 'generic', '$goto_register'),
+        'restore': translate(request.user.namespace, 'generic', '$goto_restore'),
+        'errors': {},
+    }
+
+    response = render_template("login.html", context, status_code=HTTP_UNAUTHORIZED)
     response.headers['WWW-Authenticate'] = 'Basic realm="ordnung"'
     return response
 
@@ -103,7 +112,7 @@ async def login(request: Request) -> HTMLResponse:
 async def register(request: Request):
     """Register page.
     """
-    errors = []
+    errors = {}
     if request.method == 'POST':
         pass
 
@@ -118,7 +127,7 @@ async def register(request: Request):
 async def restore_start(request: Request):
     """Password restore page.
     """
-    errors = []
+    errors = {}
     if request.method == 'POST':
         pass
 
@@ -133,7 +142,7 @@ async def restore_start(request: Request):
 async def restore_form(request: Request):
     """Password restore page (actual form).
     """
-    errors = []
+    errors = {}
     if request.method == 'POST':
         pass
 
@@ -151,7 +160,7 @@ async def unauthorized(request: Request) -> HTMLResponse:
     context = {
         'request': request,
         'header': translate(request.user.namespace, 'generic', '$unauthorized'),
-        'errors': [],
+        'errors': {},
     }
     return render_template("login_basic.html", context, status_code=401)
 
@@ -163,6 +172,6 @@ async def logout(request: Request) -> HTMLResponse:
     context = {
         'request': request,
         'header': translate(request.user.namespace, 'generic', '$logout'),
-        'errors': [],
+        'errors': {},
     }
     return render_template("login_basic.html", context, status_code=401)
