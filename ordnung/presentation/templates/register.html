@@ -1,11 +1,32 @@
 {% extends "login_base.html" %}
 
 {%- block login_content %}
-<div>
-    <p>{{ header }}</p>
+<div class="form_group">
+    <h3>{{ header }}</h3>
     <form method="POST">
-        <input type="text">
-        <input type="submit">
+
+            <label>{{ translate(user.namespace, 'register', '$label_username') }}:
+                <span class="tooltip">{{ translate(user.namespace, 'register', '$hint_username') }}</span>
+                <input type="text" name="username" placeholder="{{ translate(user.namespace, 'register', '$placeholder_username') }}" value="{{ entered_name }}">
+            </label>
+
+            <label>{{ translate(user.namespace, 'register', '$label_login') }}:
+                <span class="tooltip">{{ translate(user.namespace, 'register', '$hint_login') }}</span>
+                <input type="text" name="login" placeholder="{{ translate(user.namespace, 'register', '$placeholder_login') }}" value="{{ entered_login }}">
+            </label>
+
+            <label>{{ translate(user.namespace, 'register', '$label_email') }}:
+                <span class="tooltip">{{ translate(user.namespace, 'register', '$hint_email') }}</span>
+                <input type="email" name="email" placeholder="{{ translate(user.namespace, 'register', '$placeholder_email') }}" value="{{ entered_email }}">
+            </label>
+
+            <label>{{ translate(user.namespace, 'register', '$label_password') }}:
+                <span class="tooltip">{{ translate(user.namespace, 'register', '$hint_password') }}</span>
+                <input type="password" name="password" placeholder="{{ translate(user.namespace, 'register', '$placeholder_password') }}">
+                <input type="password" name="password_repeat" placeholder="{{ translate(user.namespace, 'register', '$placeholder_password_repeat') }}">
+            </label>
+
+        <input type="submit" class="login_button" value="{{ translate(user.namespace, 'register', '$label_button') }}">
     </form>
 </div>
 {% endblock %}

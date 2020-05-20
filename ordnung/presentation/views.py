@@ -10,8 +10,11 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from ordnung.core.date_and_time import today
 from ordnung.core.localisation import translate
 from ordnung.presentation.rendering import render_template, extract_date
+from ordnung.presentation.validation import registration_form_is_invalid
+from ordnung.storage.access import register_new_user, send_verification_email
 
 HTTP_OK = 200
+HTTP_POST_REDIRECT_GET = 303
 HTTP_UNAUTHORIZED = 401
 
 
@@ -112,16 +115,45 @@ async def login(request: Request) -> HTMLResponse:
 async def register(request: Request):
     """Register page.
     """
+    if request.user.is_authenticated:
+        return RedirectResponse(request.url_for('index'))
+
     errors = {}
+    form = await request.form()
+
     if request.method == 'POST':
-        pass
+        if not (errors := registration_form_is_invalid(form)):
+            register_new_user('s')
+            send_verification_email()
+            return RedirectResponse(request.url_for('register_confirm'),
+                                    status_code=HTTP_POST_REDIRECT_GET)
 
     context = {
         'request': request,
         'header': translate(request.user.namespace, 'generic', '$register'),
+        'entered_name': form.get('username', ''),
+        'entered_login': form.get('login', ''),
+        'entered_email': form.get('email', ''),
         'errors': errors,
     }
     return render_template("register.html", context)
+
+
+async def register_confirm(request: Request):
+    """Register page. Message about e-mail confirmation.
+    """
+    if request.user.is_authenticated:
+        return RedirectResponse(request.url_for('index'))
+
+    email = request.user.email
+
+    context = {
+        'request': request,
+        'header': translate(request.user.namespace, 'generic', '$register'),
+        'email': email,
+        'errors': {},
+    }
+    return render_template("register_confirm.html", context)
 
 
 async def restore_start(request: Request):

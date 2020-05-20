@@ -12,8 +12,9 @@ from ordnung.presentation import presentation_settings
 # from layer_presentation.middleware import middleware
 # from model.database import init_db
 from ordnung.presentation.backends import OrdnungAuthBackend
-from ordnung.presentation.middleware import AuthMiddleware
+from ordnung.presentation.middleware import AuthMiddleware, ContextExtensionMiddleware
 from ordnung.presentation.routes import routes
+from ordnung.storage.database import init_db
 
 
 def startup():
@@ -25,7 +26,7 @@ def startup():
 
 middleware = [
     Middleware(AuthMiddleware, backend=OrdnungAuthBackend()),
-    # Middleware(ContextExtensionMiddleware),
+    Middleware(ContextExtensionMiddleware),
 ]
 
 app = Starlette(

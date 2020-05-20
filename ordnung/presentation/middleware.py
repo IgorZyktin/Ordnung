@@ -5,9 +5,11 @@
 
 from starlette.authentication import AuthenticationError, AuthCredentials
 from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import HTTPConnection
 from starlette.types import Scope, Receive, Send
 
+from ordnung.core.localisation import translate
 from ordnung.presentation.backends import UnauthenticatedUser
 
 
@@ -37,23 +39,23 @@ class AuthMiddleware(AuthenticationMiddleware):
         scope["auth"], scope["user"] = auth_result
         await self.app(scope, receive, send)
 
-# class ContextExtensionMiddleware(BaseHTTPMiddleware):
-#     """Inserts additional names to the template.
-#     """
-#
-#     async def dispatch(self, request, call_next):
-#         """Insert additional names into the template.
-#         """
-#         try:
-#             context_extensions = getattr(request.state, 'context_extensions')
-#         except AttributeError:
-#             context_extensions = {}
-#
-#         context_extensions['tr'] = partial(template_translate, request)
-#         context_extensions['confirm_text'] = translate(request.user.namespace,
-#                                                        'generic', '$confirm_text')
-#         request.state.context_extensions = context_extensions
-#
-#         response = await call_next(request)
-#         return response
-#
+
+class ContextExtensionMiddleware(BaseHTTPMiddleware):
+    """Inserts additional names into the template.
+    """
+
+    async def dispatch(self, request, call_next):
+        """Inserts additional names into the template.
+        """
+        try:
+            context_extensions = getattr(request.state, 'context_extensions')
+        except AttributeError:
+            context_extensions = {}
+
+        context_extensions['translate'] = translate
+        context_extensions['request'] = request
+        context_extensions['user'] = request.user
+        request.state.context_extensions = context_extensions
+
+        response = await call_next(request)
+        return response

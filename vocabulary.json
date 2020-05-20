@@ -95,6 +95,23 @@
             "$no_title": "У записи должен быть заголовок.",
             "$record_not_found": "Запись с id %s не найдена.",
             "$no_record_id": "Не указан id требуемой записи."
+        },
+        "register": {
+            "$label_username": "[?] Имя пользователя",
+            "$label_login": "[?] Логин",
+            "$label_email": "[?] Адрес электронной почты",
+            "$label_password": "[?] Пароль",
+            "$label_button": "Отправить",
+            "$hint_username": "Имя пользователя будет отображаться в меню, а также по нему другие пользователи смогут вас узнать.",
+            "$hint_login": "Логин будет использоваться только для входа на сайт.",
+            "$hint_email": "Будет использоваться для восстановления пароля.",
+            "$hint_password": "Не используйте пароль от банковского приложения! Безопасность не входит в число сильных сторон этого приложения.",
+            "$placeholder_username": "Ваше имя",
+            "$placeholder_login": "Ваш логин",
+            "$placeholder_email": "Ваш e-mail",
+            "$placeholder_password": "Ваш пароль",
+            "$placeholder_password_repeat": "Повторите пароль",
+            "$confirm": "Вы сможете войти на сайт после подтверждения. Письмо отправлено на %s."
         }
     },
     "EN": {
@@ -193,6 +210,23 @@
             "$no_title": "Every record must have a title.",
             "$record_not_found": "Record with id %s is not found.",
             "$no_record_id": "Record id is not supplied."
+        },
+        "register": {
+            "$label_username": "[?] Name",
+            "$label_login": "[?] Login",
+            "$label_email": "[?] E-mail",
+            "$label_password": "[?] Password",
+            "$label_button": "Register",
+            "$hint_username": "Name will be displayed in the menu and also will help other users to recognise you.",
+            "$hint_login": "Login will be used only  to enter the site.",
+            "$hint_email": "E-mail is needed only to restore forgotten password.",
+            "$hint_password": "Do not use password from your bank account here! Safety were not of my goals in this app.",
+            "$placeholder_username": "Your name",
+            "$placeholder_login": "Your login",
+            "$placeholder_email": "Your e-mail",
+            "$placeholder_password": "Your password",
+            "$placeholder_password_repeat": "Repeat your password",
+            "$confirm": "You could enter after confirmation. Message has been sent to %s."
         }
     }
 }

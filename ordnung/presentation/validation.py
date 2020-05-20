@@ -2,13 +2,13 @@
 
 """Form checking.
 """
+import re
 from typing import Dict
 
 from starlette.datastructures import FormData, QueryParams
+from werkzeug.security import check_password_hash
 
-from ordnung.presentation.backends import BaseUser
-from ordnung.storage.access import get_existing_logins, get_user_by_login
-from werkzeug.security import generate_password_hash, check_password_hash
+from ordnung.storage.access import get_user_by_login
 
 
 def extract_errors(params: QueryParams) -> dict:
@@ -41,5 +41,36 @@ def login_form_is_invalid(form: FormData) -> Dict[str, str]:
 
     if not check_password_hash(user.password, password):
         return {'wrong_password': 'Пароль указан неправильно.'}
+
+    return {}
+
+
+def registration_form_is_invalid(form: FormData) -> Dict[str, str]:
+    if 'username' not in form:
+        return {'no_name': 'Для регистрации необходимо указать имя.'}
+
+    if 'login' not in form:
+        return {'no_login': 'Для регистрации необходимо указать логин.'}
+
+    if len(form['login']) < 3:
+        return {'short_login': 'Слишком короткий логин.'}
+
+    if 'email' not in form:
+        return {'no_email': 'Для входа необходимо указать e-mail.'}
+
+    if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", form['email']):
+        return {'wrong_email': 'Неправильно указан e-mail.'}
+
+    if 'password' not in form:
+        return {'no_password': 'Для входа необходимо указать пароль.'}
+
+    if 'password_repeat' not in form:
+        return {'no_password_repeat': 'Для входа необходимо повторить пароль.'}
+
+    if len(form['password']) < 5:
+        return {'short_password': 'Слишком короткий пароль.'}
+
+    if form['password'] != form['password_repeat']:
+        return {'passwords_dont_match': 'Введенные пароли не совпадают друг с другом.'}
 
     return {}

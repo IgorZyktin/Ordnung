@@ -19,7 +19,9 @@ def render_template(name: str, context: dict, **kwargs):
     :param context: dict with required variables (including request itself)
     :return: rendered Jinja2 template.
     """
-    return templates.TemplateResponse(name, context, **kwargs)
+    extensions = context['request'].state.context_extensions
+    context = {**context, **extensions, **kwargs}
+    return templates.TemplateResponse(name, context)
 
 
 def extract_date(request: Request) -> date:

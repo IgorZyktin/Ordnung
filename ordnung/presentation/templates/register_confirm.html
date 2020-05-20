@@ -1,0 +1,7 @@
+{% extends "login_base.html" %}
+
+{%- block login_content %}
+<div class="form_group">
+    <h3>{{ translate(user.namespace, 'register', '$confirm')|format(email) }}</h3>
+</div>
+{% endblock %}
