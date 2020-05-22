@@ -2,22 +2,25 @@
 
 {%- block add_to_head %}
     <link href="{{ url_for('static', path='month.css') }}" rel="stylesheet" type="text/css">
+    <script src="{{ url_for('static', path='month.js') }}"></script>
 {% endblock %}
 
 {%- block content %}
-<div class="container_global">
+<div class="global">
 
-    <div class="container_month">
+    <div class="month">
 
-        <div class="header_month">
+        {# Day labels here - Monday, Tuesday, etc. #}
+        <div class="header">
             {%- for long_name, short_name in day_names %}
-                <div class="header_cell">
-                    <span class="label_wide">{{ long_name }}</span>
-                    <span class="label_narrow">{{ short_name }}</span>
+                <div class="labels">
+                    <span class="wide">{{ long_name }}</span>
+                    <span class="narrow">{{ short_name }}</span>
                 </div>
             {% endfor -%}
         </div>
 
+        {# Day contents here, five weeks of seven days #}
         {% for week_index in range(5) %}
             <div class="week">
                 {% for day_index in range(7) %}
@@ -38,48 +41,64 @@
                     {% endif %}
 
                     <div class="day{{ _today }}{{ _weekend }}" onclick="relocate('{{ url_for('show_day', chosen_date=day.target_date) }}')">
-                        <span class="day_label label_narrow">{{ day.number }}</span>
-                        <span class="day_label label_wide">{{ day.number }} {{ tr(day.month, 'months') }}</span>
-                        {% for record in day_records %}
-                            <span class="day-record">{{ loop.index }}. {{ record.title }}</span>
-                        {% endfor %}
+                        <span class="day_label wide">{{ day.number }} {{ day.month }}</span>
+                        <span class="day_label narrow">{{ day.number }}</span>
+{#                        {% for record in day_records %}#}
+{#                            <span class="day-record">{{ loop.index }}. {{ record.title }}</span>#}
+{#                        {% endfor %}#}
                     </div>
 
                 {% endfor %}
             </div>
         {% endfor %}
 
+        {# Navigation buttons here #}
         <div class="footer">
-            <div id="leap_back" class="bottom_button" onclick="relocate('{{ leap_back }}')">{{ tr('$leap_back') }}</div>
-            <div id ="step_back" class="bottom_button" onclick="relocate('{{ step_back }}')">{{ tr('$step_back') }}</div>
-            <div id ="step_on_date" class="bottom_button" onclick="alert('Not yet ready');return false;">{{ tr('$step_on_date') }}</div>
-            <div id="step_forward" class="bottom_button" onclick="relocate('{{ step_forward }}')">{{ tr('$step_forward') }}</div>
-            <div id="leap_forward" class="bottom_button" onclick="relocate('{{ leap_forward }}')">{{ tr('$leap_forward') }}</div>
+
+            <div id="leap_back" onclick="relocate('{{ leap_back }}')">
+                <span class="wide">{{ lexis.leap_back }}</span>
+                <span class="narrow"><--</span>
+            </div>
+
+            <div id ="step_back" onclick="relocate('{{ step_back }}')">
+                <span class="wide">{{ lexis.step_back }}</span>
+                <span class="narrow"><</span>
+            </div>
+
+            <div id ="step_on_date" onclick="">
+                <span class="wide">{{ lexis.step_on_date }}</span>
+                <span class="narrow">>|<</span>
+            </div>
+
+            <div id="step_forward" onclick="relocate('{{ step_forward }}')">
+                <span class="wide">{{ lexis.step_forward }}</span>
+                <span class="narrow">></span>
+            </div>
+
+            <div id="leap_forward" onclick="relocate('{{ leap_forward }}')">
+                <span class="wide">{{ lexis.leap_forward }}</span>
+                <span class="narrow">--></span>
+            </div>
         </div>
 
     </div>
 
-{#    <div class="menu">#}
-{#        <span>Дела на ближайшее время:</span>#}
-{#        <ul>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#            <li>sdjfsjdf</li>#}
-{#        </ul>#}
-{#    </div>#}
-
+    <div id="menu_toggle" class="menu_toggle"></div>
+    <div id="menu" class="menu">
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <hr>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+        <hr>
+        <span class="task">Задача 1</span>
+        <span class="task">Задача 1</span>
+    </div>
 </div>
 {% endblock -%}

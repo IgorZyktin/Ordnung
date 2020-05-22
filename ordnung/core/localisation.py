@@ -4,10 +4,10 @@
 """
 from datetime import date
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, List, Dict, Tuple
 
 from ordnung.core import core_settings
-from ordnung.storage.access import get_vocabulary
+from ordnung.core.vocabulary import get_vocabulary
 
 
 def get_month_header(namespace: str, at_date: date) -> str:
@@ -23,33 +23,54 @@ def get_record_header(namespace: str, title: str) -> str:
 
 
 @lru_cache
-def extract_term(namespace: str, field: str, value: str) -> Optional[str]:
+def extract_term(namespace: str, key: str) -> Optional[str]:
     """Get translation from the vocabulary, or None instead.
 
-    >>> extract_term('RU', 'generic', '$month')
+    >>> extract_term('RU', 'month')
     'Месяц'
-    >>> extract_term('EN', 'generic', '$lol')
+    >>> extract_term('EN', 'lol')
     """
-    space = get_vocabulary().get(namespace, {})
-    mapping = space.get(field, {})
-    term = mapping.get(value)
+    mapping = get_vocabulary().get(namespace, {})
+    term = mapping.get(key)
     return term
 
 
 @lru_cache
-def translate(namespace: str, field: str, value: str) -> str:
+def translate(namespace: str, key: str) -> str:
     """Search for translation in the vocabulary and substitute its value.
 
-    >>> translate('RU', 'generic', '$month')
+    >>> translate('RU', 'month')
     'Месяц'
-    >>> translate('EN', 'generic', '$month')
+    >>> translate('EN', 'month')
     'Month'
-    >>> translate('EN', 'generic', '$lol')
+    >>> translate('EN', 'lol')
     '???'
     """
-    term = extract_term(namespace, field, value)
+    term = extract_term(namespace, key)
 
     if term is None:
-        term = extract_term(core_settings.DEFAULT_NAMESPACE, field, value)
+        term = extract_term(core_settings.DEFAULT_NAMESPACE, key)
 
     return term or core_settings.TERM_PLACEHOLDER
+
+
+def make_lexis(namespace: str, words: List[str]) -> Dict[str, str]:
+    lexis = {}
+    for word in words:
+        lexis[word] = translate(namespace, word)
+    return lexis
+
+
+def get_day_names(namespace: str) -> List[Tuple[str, str]]:
+    """Get list of weekday names in user namespace.
+
+    >>> get_day_names('RU')[:3]
+    [('Понедельник', 'ПН'), ('Вторник', 'ВТ'), ('Среда', 'СР')]
+    >>> get_day_names('EN')[:3]
+    [('Monday', 'MON'), ('Tuesday', 'TUE'), ('Wednesday', 'WED')]
+    """
+    numbers = range(1, 8)
+    long_names = [translate(namespace, f'day_{x}') for x in numbers]
+    short_names = [translate(namespace, f'day_{x}_short') for x in numbers]
+    output = list(zip(long_names, short_names))
+    return output

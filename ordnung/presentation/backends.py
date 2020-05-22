@@ -59,7 +59,7 @@ class UnauthenticatedUser(BaseUser):
 
     @property
     def namespace(self):
-        return "EN"
+        return "RU"
 
 
 class User(BaseUser):
@@ -83,7 +83,7 @@ class User(BaseUser):
 
     @property
     def namespace(self):
-        return "EN"
+        return "RU"
 
 
 class OrdnungAuthBackend(AuthenticationBackend):

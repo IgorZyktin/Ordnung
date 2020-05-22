@@ -1,0 +1,118 @@
+.global {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100vw;
+}
+
+.month, .week, .day, .header, .labels, .footer {
+    display: flex;
+    align-items: stretch;
+    width:  100%;
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+}
+
+.header {
+    flex-direction: row;
+    justify-content: space-around;
+    height: 5vh;
+    background-color: var(--ordnung-bg-color-1);
+}
+
+.labels {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: var(--ordnung-border-1);
+    border-radius: 10px;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.labels:hover {
+    border: var(--ordnung-border-5);
+}
+
+.month {
+    flex-direction: column;
+}
+
+.week {
+    height: 18vh;
+    flex-direction: row;
+}
+
+.day {
+    flex-direction: column;
+    margin: 5px;
+    padding: 5px;
+    background-color: var(--ordnung-bg-color-2);
+    border: var(--ordnung-border-1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.day:hover {
+    border: var(--ordnung-border-2);
+}
+
+.today {
+    border: var(--ordnung-border-3);
+}
+
+.today:hover {
+    border: var(--ordnung-border-3);
+}
+
+.weekend {
+    background-color: var(--ordnung-bg-color-3);
+}
+
+
+.footer {
+    flex-direction: row;
+    height: 5vh;
+}
+
+.footer div {
+    margin: 5px;
+    padding: 5px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ordnung-bg-color-1);
+    border-radius: 10px;
+    border: var(--ordnung-border-1);
+}
+
+.footer div:hover {
+    border: var(--ordnung-border-5);
+}
+
+.menu {
+    display: flex;
+    background-color: var(--ordnung-bg-color-1);
+    min-width: 300px;
+    overflow-x: hidden;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.menu_toggle {
+    background-color: var(--ordnung-bg-color-5);
+    border: var(--ordnung-border-4);
+    width: 20px;
+    min-width: 20px;
+    max-width: 20px;
+}
+
+.task {
+    padding: 3px 10px;
+}
+
+.task:hover {
+    background: linear-gradient(to left, #23ce65 2%, #174742 2%, #174742 98%,#23ce65 98%);
+    color: var(--ordnung-color-1);
+}

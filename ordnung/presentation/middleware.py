@@ -53,7 +53,6 @@ class ContextExtensionMiddleware(BaseHTTPMiddleware):
             context_extensions = {}
 
         context_extensions['translate'] = translate
-        context_extensions['request'] = request
         context_extensions['user'] = request.user
         request.state.context_extensions = context_extensions
 

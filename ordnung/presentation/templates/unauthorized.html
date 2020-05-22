@@ -1,0 +1,8 @@
+{% extends "login_base.html" %}
+
+{%- block login_content %}
+<div>
+    <p>{{ header }}</p>
+    <p>Proceed to the <a href="{{ request.url_for('login') }}">login page.</a></p>
+</div>
+{% endblock %}

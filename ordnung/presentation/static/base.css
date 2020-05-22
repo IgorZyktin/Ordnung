@@ -1,11 +1,45 @@
+:root {
+  --ordnung-bg-color-1: #111111;
+  --ordnung-bg-color-2: #171512;
+  --ordnung-bg-color-3: #24211d;
+  --ordnung-bg-color-4: #1c1c17;
+  --ordnung-bg-color-5: #20262f;
+
+  --ordnung-color-1: #ffffff;
+  --ordnung-color-2: #ababab;
+  --ordnung-color-3: #6e6e6e;
+
+  --ordnung-border-1: 1px solid #35363a;
+  --ordnung-border-2: 1px solid #4cff00;
+  --ordnung-border-3: 1px solid #f85903;
+  --ordnung-border-4: 1px solid #585c6e;
+  --ordnung-border-5: 1px solid #288500;
+}
+
+@media screen and (max-width: 900px) {
+    .wide {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 901px) {
+    .wide {
+        display: inline-block;
+    }
+
+    .narrow {
+        display: none;
+    }
+}
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
-    background: linear-gradient(to bottom, #202223 0%, #0e0e0e 100%) no-repeat fixed;
-    font: 18pt Tahoma, sans-serif;
-    color: dimgray;
+    background-color: var(--ordnung-bg-color-1);
+    font: 16pt Consolas;
+    color: var(--ordnung-color-3);
 }
 
 h1, h2, h3, h4, h5 {
@@ -21,4 +55,8 @@ h1, h2, h3, h4, h5 {
     border-radius: 10px;
     border: 2px solid black;
     padding: 15px;
+}
+
+hr {
+    width: 100%;
 }

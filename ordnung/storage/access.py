@@ -19,22 +19,6 @@ def get_user_by_login(login: str) -> Optional[User]:
     return response
 
 
-@lru_cache
-def get_vocabulary() -> dict:
-    try:
-        path = Path().resolve() / storage_settings.VOCABULARY_FILE
-
-        if not path.exists():
-            path = Path(os.pardir).resolve() / storage_settings.VOCABULARY_FILE
-
-        with open(str(path.resolve()), mode="r", encoding="utf-8") as file:
-            vocabulary = json.load(file)
-
-    except FileNotFoundError:
-        vocabulary = {}
-    return vocabulary
-
-
 def register_new_user(form: dict) -> bool:
     pass
 

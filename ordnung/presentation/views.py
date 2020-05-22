@@ -2,13 +2,16 @@
 
 """Regular views.
 """
-
+from pip._vendor.html5lib.treeadapters.sax import namespace
 from starlette.authentication import requires
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
+from ordnung.core.access import form_month, get_offset_dates
 from ordnung.core.date_and_time import today
-from ordnung.core.localisation import translate
+from ordnung.core.lexis import Lexis
+from ordnung.core.localisation import translate, make_lexis, get_day_names
+from ordnung.core.records import get_records
 from ordnung.presentation.rendering import render_template, extract_date
 from ordnung.presentation.validation import registration_form_is_invalid
 from ordnung.storage.access import register_new_user, send_verification_email
@@ -18,24 +21,23 @@ HTTP_POST_REDIRECT_GET = 303
 HTTP_UNAUTHORIZED = 401
 
 
-@requires('authenticated', redirect='unauthorized')
+# @requires('authenticated', redirect='unauthorized')
 async def show_month(request: Request):
     """Main page, navigation starts from here. Shows single month.
     """
-    at_date = extract_date(request)
-    #     namespace = request.user.namespace
-    #
+    current_date = extract_date(request)
+    lexis = Lexis(request.user.namespace)
+
     context = {
         'request': request,
-        #         'header': translate(namespace, 'generic', '$month') + f' ({chosen_date_str})',
-        #         'month': form_month(chosen_date),
-        #         'records': get_records(chosen_date),
-        'at_date': at_date,
-        #         'day_names': get_day_names(namespace),
-        #         **get_offset_links(chosen_date, request),
-        #         **request.state.context_extensions,
+        'header': lexis[f'month_{current_date.month}'] + f' ({current_date})',
+        'month': form_month(current_date, lexis),
+        'records': get_records(current_date),
+        'current_date': current_date,
+        'lexis': lexis,
+        'day_names': get_day_names(request.user.namespace),
+        **get_offset_dates(current_date),
     }
-    return HTMLResponse(f'month - {at_date}')
     return render_template("month.html", context)
 
 
@@ -96,7 +98,7 @@ async def login(request: Request) -> HTMLResponse:
     """Login page.
     """
     if request.user.is_authenticated:
-        return RedirectResponse(request.url_for('index'))
+        return RedirectResponse(request.url_for('index'), status_code=HTTP_POST_REDIRECT_GET)
 
     context = {
         'request': request,
@@ -107,7 +109,7 @@ async def login(request: Request) -> HTMLResponse:
         'errors': {},
     }
 
-    response = render_template("login.html", context, status_code=HTTP_UNAUTHORIZED)
+    response = render_template("login.html", context, status_code=401)
     response.headers['WWW-Authenticate'] = 'Basic realm="ordnung"'
     return response
 
@@ -194,7 +196,7 @@ async def unauthorized(request: Request) -> HTMLResponse:
         'header': translate(request.user.namespace, 'generic', '$unauthorized'),
         'errors': {},
     }
-    return render_template("login_basic.html", context, status_code=401)
+    return render_template("unauthorized.html", context, status_code=403)
 
 
 @requires('authenticated', redirect='unauthorized')
@@ -206,4 +208,4 @@ async def logout(request: Request) -> HTMLResponse:
         'header': translate(request.user.namespace, 'generic', '$logout'),
         'errors': {},
     }
-    return render_template("login_basic.html", context, status_code=401)
+    return render_template("logout.html", context, status_code=401)
