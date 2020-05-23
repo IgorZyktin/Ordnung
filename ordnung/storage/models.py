@@ -14,6 +14,7 @@ class User(Base):
 
     Please note, that application itself rely not on
     this exact model, but on it's specific user class!
+    This one is only for database manipulations.
     """
     __tablename__ = 'users'
     # ----------------------------------------------------------------------------------------------

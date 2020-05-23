@@ -1,14 +1,16 @@
 :root {
   --ordnung-bg-color-1: #111111;
   --ordnung-bg-color-2: #171512;
+  --ordnung-bg-color-2-: #26231e;
   --ordnung-bg-color-3: #24211d;
+  --ordnung-bg-color-3-: #39352e;
   --ordnung-bg-color-4: #1c1c17;
   --ordnung-bg-color-5: #20262f;
   --ordnung-bg-color-6: #151414;
 
   --ordnung-color-1: #ffffff;
-  --ordnung-color-2: #ababab;
-  --ordnung-color-3: #6e6e6e;
+  --ordnung-color-2: #d2d2d2;
+  --ordnung-color-3: #a3a3a3;
 
   --ordnung-border-1: 1px solid #35363a;
   --ordnung-border-2: 1px solid #4cff00;

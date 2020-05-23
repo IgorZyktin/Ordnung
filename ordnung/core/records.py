@@ -8,6 +8,7 @@ from typing import Optional, Tuple
 
 from sqlalchemy import between
 
+import ordnung.settings
 from ordnung.core import core_settings
 from ordnung.core.localisation import translate
 from ordnung.presentation.backends import User
@@ -19,7 +20,7 @@ from ordnung.storage.models import Record
 # )
 
 
-def get_records(target_date: date, offset: int = core_settings.MONTH_OFFSET) -> dict:
+def get_records(target_date: date, offset: int = ordnung.settings.MONTH_OFFSET) -> dict:
     # FIXME
     start = target_date - timedelta(days=offset)
     stop = target_date + timedelta(days=offset)

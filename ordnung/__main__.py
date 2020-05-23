@@ -4,7 +4,7 @@
 """
 import uvicorn
 
-from ordnung.presentation import presentation_settings
+from ordnung import settings
 
 
 def main():
@@ -12,9 +12,9 @@ def main():
     """
     uvicorn.run(
         "ordnung.presentation.app:app",
-        host=presentation_settings.HOST,
-        port=presentation_settings.PORT,
-        reload=presentation_settings.RELOAD
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.RELOAD
     )
 
 

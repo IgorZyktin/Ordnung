@@ -5,7 +5,7 @@
 from datetime import date, timedelta
 from typing import Tuple, List
 
-from ordnung.core import core_settings
+from ordnung import settings
 
 
 class Day:
@@ -22,7 +22,7 @@ class Day:
         self.month = current_date.month
         self.year = current_date.year
         self.is_today = is_today
-        self.is_weekend = self.weekday in core_settings.WEEKENDS
+        self.is_weekend = self.weekday in settings.WEEKENDS
 
     def __repr__(self) -> str:
         """Textual representation.
@@ -64,10 +64,10 @@ def get_offset_dates(target_date: date) -> Tuple[date, date, date, date]:
     Example output:
         [date(2020, 4, 12), date(2020, 4, 26), date(2020, 5, 10), date(2020, 5, 24)]
     """
-    leap_back = target_date - timedelta(days=core_settings.LEAP_SIZE)
-    step_back = target_date - timedelta(days=core_settings.STEP_SIZE)
-    step_forward = target_date + timedelta(days=core_settings.STEP_SIZE)
-    leap_forward = target_date + timedelta(days=core_settings.LEAP_SIZE)
+    leap_back = target_date - timedelta(days=settings.LEAP_SIZE)
+    step_back = target_date - timedelta(days=settings.STEP_SIZE)
+    step_forward = target_date + timedelta(days=settings.STEP_SIZE)
+    leap_forward = target_date + timedelta(days=settings.LEAP_SIZE)
 
     return leap_back, step_back, step_forward, leap_forward
 
@@ -85,9 +85,9 @@ def form_month(current_date: date) -> List[Day]:
         ]
     """
     weekday = current_date.weekday()
-    index = core_settings.WEEK_LENGTH * 2 + weekday
+    index = settings.WEEK_LENGTH * 2 + weekday
 
-    month: List[Day] = [None] * core_settings.WEEK_LENGTH * core_settings.WEEKS_IN_MONTH
+    month: List[Day] = [None] * settings.WEEK_LENGTH * settings.WEEKS_IN_MONTH
     month[index] = Day(current_date, is_today=True)
 
     for i, day in enumerate(month):

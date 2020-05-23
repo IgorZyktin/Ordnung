@@ -32,6 +32,9 @@
                             {{ day.number }} {{ translate(lang, "month_%s_"|format(day.month)) }}
                         </span>
                         <span class="day_label narrow">{{ day.number }}</span>
+                        {% for record in records[day.date] %}
+                            <span class="record">{{ loop.index }}. {{ record.title }}</span>
+                        {% endfor %}
                     </div>
 
                 {% endfor -%}

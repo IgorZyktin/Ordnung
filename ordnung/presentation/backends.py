@@ -25,6 +25,10 @@ class BaseUser(AbstractUser):
         return 'Anonymous'
 
     @property
+    def group(self) -> int:
+        return 0
+
+    @property
     def namespace(self):
         raise NotImplementedError()  # pragma: no cover
 
@@ -71,7 +75,7 @@ class User(BaseUser):
 
     @property
     def id(self) -> int:
-        return 1
+        return 0
 
     @property
     def is_authenticated(self) -> bool:
@@ -105,7 +109,8 @@ class OrdnungAuthBackend(AuthenticationBackend):
                 raise AuthenticationError('Invalid basic auth credentials')
 
             username, _, password = decoded.partition(":")
-            user = get_user_by_login(username)
+            user_db = get_user_by_login(username)
 
-            if user and check_password_hash(user.password, password):
-                return AuthCredentials(["authenticated"]), User(username)
+            if user_db and check_password_hash(user_db.password, password):
+                user_backend = User(username)
+                return AuthCredentials(["authenticated"]), user_backend

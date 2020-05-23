@@ -4,7 +4,7 @@
 """
 from typing import List, Tuple
 
-from ordnung.core import core_settings
+from ordnung import settings
 from ordnung.core.vocabulary import get_static_vocabulary, get_dynamic_vocabulary
 
 
@@ -17,7 +17,7 @@ def gettext(lang: str, sentence: str) -> str:
     >>> gettext('RU', 'January')
     'Январь'
     """
-    if lang == core_settings.DEFAULT_LANG:
+    if lang == settings.DEFAULT_LANG:
         translation = sentence
 
     elif (vocabulary := get_static_vocabulary().get(lang)) is None:
@@ -40,13 +40,13 @@ def translate(lang: str, key: str) -> str:
     '???'
     """
     if (vocabulary := get_dynamic_vocabulary().get(lang)) is None:
-        vocabulary = get_dynamic_vocabulary().get(core_settings.DEFAULT_LANG)
+        vocabulary = get_dynamic_vocabulary().get(settings.DEFAULT_LANG)
 
     while (translation := vocabulary.get(key)) is None:
         if key.endswith('_'):
             key = key[:-1]
         else:
-            translation = core_settings.DEFAULT_PLACEHOLDER
+            translation = settings.DEFAULT_PLACEHOLDER
             break
 
     return translation

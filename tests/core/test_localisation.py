@@ -4,7 +4,7 @@
 """
 import pytest
 
-from ordnung.core import core_settings
+import ordnung.settings
 from ordnung.core.localisation import get_day_names, translate, gettext
 
 
@@ -38,15 +38,15 @@ def test_get_day_names(lang, ref_day_names):
 
 
 def test_translate():
-    assert translate('RU', 'month_1') == 'январь'
+    assert translate('RU', 'month_1') == 'Январь'
     assert translate('RU', 'month_1_') == 'января'
     assert translate('RU', 'month_1_____') == 'января'
-    assert translate('JP', 'month_1') == 'january'
-    assert translate('JP', 'something') == core_settings.DEFAULT_PLACEHOLDER
+    assert translate('JP', 'month_1') == 'January'
+    assert translate('JP', 'something') == ordnung.settings.DEFAULT_PLACEHOLDER
 
 
 def test_gettext():
-    assert gettext('RU', 'month') == 'месяц'
-    assert gettext('JP', 'month') == 'month'
+    assert gettext('RU', 'Month') == 'месяц'
+    assert gettext('JP', 'Month') == 'Month'
     assert gettext('RU', 'wtf') == 'wtf'
     assert gettext('EN', 'wtf') == 'wtf'

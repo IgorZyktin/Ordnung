@@ -55,6 +55,7 @@
 
 .day:hover {
     border: var(--ordnung-border-2);
+    background-color: var(--ordnung-bg-color-2-);
 }
 
 .today {
@@ -63,13 +64,16 @@
 
 .today:hover {
     border: var(--ordnung-border-3);
-    background-color: var(--ordnung-bg-color-5);
+    background-color: var(--ordnung-bg-color-2-);
 }
 
 .weekend {
     background-color: var(--ordnung-bg-color-3);
 }
 
+.weekend:hover {
+    background-color: var(--ordnung-bg-color-3-);
+}
 
 .footer {
     flex-direction: row;
@@ -116,4 +120,9 @@
 .task:hover {
     background: linear-gradient(to left, #23ce65 2%, #174742 2%, #174742 98%,#23ce65 98%);
     color: var(--ordnung-color-1);
+}
+
+.record {
+    color: var(--ordnung-color-1);
+    white-space: nowrap;
 }

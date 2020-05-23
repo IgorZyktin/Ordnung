@@ -2,16 +2,17 @@
 
 """Database tools.
 """
-from datetime import date
-from typing import Optional, Dict
+from collections import defaultdict
+from datetime import date, timedelta
+from typing import Dict, List
 
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine, MetaData, between
 from sqlalchemy.orm import sessionmaker
 
-from ordnung.storage.models import Record, User
-from ordnung.storage import storage_settings
+from ordnung import settings
+from ordnung.storage.models import Record
 
-engine = create_engine(storage_settings.DB_PATH, echo=False)
+engine = create_engine(settings.DB_PATH, echo=False)
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -23,8 +24,38 @@ def init_db():
     metadata.create_all(bind=engine)
 
 
-def get_records_for_month(current_date: date, user: User) -> Dict[str, Record]:
+def get_records_for_month(target_date: date, user_id: int,
+                          user_group: int) -> Dict[str, List[Record]]:
+    start = target_date - timedelta(days=settings.MONTH_OFFSET)
+    stop = target_date + timedelta(days=settings.MONTH_OFFSET)
+
+    records = defaultdict(list)
+    current = start
+    while current <= stop:
+        records[str(current)] = []
+        #     for record in records_at_persistence:
+        #         if record.persistence_id == 3:
+        #             records[str(current)].append(record)
+        #
+        current += timedelta(days=1)
+
+    records_at_date = session.query(Record) \
+        .filter(between(Record.target_date, start, stop)) \
+        .order_by(Record.created_at).all()
+
+    # records_at_persistence = session.query(Record) \
+    #     .filter_by(persistence_id=3) \
+    #     .order_by(Record.status_id).all()
+
+    for record in records_at_date:
+        records[str(record.target_date)].append(record)
+
+    return records
+
+def get_records_in_offset(target_date: date, user_id: int,
+                          user_group: int) -> Dict[str, List[Record]]:
     pass
+
 
 # def create_new_record(user_id: int, chosen_date_str: str) -> Record:
 #     """Create new record for given user_id and date.
