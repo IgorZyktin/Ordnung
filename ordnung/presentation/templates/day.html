@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{%- block add_to_head %}
+    <link href="{{ url_for('static', path='day.css') }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block content %}
+<div class="global">
+    <div class="day_contents">
+        <div class="header">
+            {% if records %}
+                {{ gettext(lang, 'Tasks on %s %s (%s-x)')|format(
+                    current_date.day,
+                    translate(lang, "month_%s_"|format(current_date.month)),
+                    records|length
+                ) }}
+            {% else %}
+                {{ gettext(lang, 'Nothing planned on %s')|format(current_date) }}
+            {% endif %}
+        </div>
+
+        {% for record in records %}
+            <div class="record">
+                {{ loop.index }}. Ololo
+            </div>
+        {% endfor %}
+
+        <div class="controls">
+            <a href="#" id="btn-add" class="btn">{{ gettext(lang, 'New record') }}</a>
+            <a href="#" id="btn-month" class="btn" onclick="relocate_with_args('{{ month_url }}')">{{ gettext(lang, 'Back to month') }}</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -19,9 +19,9 @@ def get_user_by_login(login: str) -> Optional[User]:
     return response
 
 
-def register_new_user(form: dict) -> bool:
-    pass
-
-
-def send_verification_email():
-    pass
+# def register_new_user(form: dict) -> bool:
+#     pass
+#
+#
+# def send_verification_email():
+#     pass

@@ -27,7 +27,7 @@
                     {% set index = day_index + week_index * 7 %}
                     {% set day = month[index] %}
 
-                    <div class="{{ day.css_class }}">
+                    <div class="{{ day.css_class }}" date="{{ day.date }}">
                         <span class="day_label wide">
                             {{ day.number }} {{ translate(lang, "month_%s_"|format(day.month)) }}
                         </span>

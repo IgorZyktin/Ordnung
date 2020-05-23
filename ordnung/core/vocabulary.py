@@ -9,7 +9,13 @@ STATIC_VOCABULARY = {
         "Step forward": "Шаг вперёд",
         "Leap forward": "Перейти вперёд",
 
-        #     "$new_record": "Новая запись",
+        "Tasks on %s %s (%s-x)": "Задачи на %s %s (%s шт.)",
+        "Nothing planned on %s": "Ничего не запланировано на %s",
+
+        "New record": "Новая запись",
+        "Back to month": "Назад к месяцу",
+
+
         #     "$author": "Автор",
         #     "$created_for": "Создана для",
         #     "$visible_for": "Видима для",
@@ -25,9 +31,7 @@ STATIC_VOCABULARY = {
         #     "$save": "Сохранить",
         #     "$delete": "Удалить",
         #     "$to_day": "Назад к дню",
-        #     "$to_month": "Назад к месяцу",
-        #     "$tasks": "Задачи на %s (%s шт.)",
-        #     "$nothing": "Ничего не запланировано на %s",
+
 
         #     "$confirm_text": "Вы уверены, что хотите удалить эту запись?",
         #     "$logout": "Вы успешно вышли из системы.",

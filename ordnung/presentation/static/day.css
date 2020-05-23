@@ -1,0 +1,112 @@
+.global {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.day_contents {
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px;
+}
+
+.header {
+    background-color: var(--ordnung-bg-color-5);
+    border:var(--ordnung-border-4);
+    color: var(--ordnung-color-2);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+    padding: 20px;
+}
+
+.record {
+    color: var(--ordnung-color-2);
+    border:var(--ordnung-border-1);
+    background-color: var(--ordnung-bg-color-6);
+    border:var(--ordnung-border-6);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.record:hover {
+    background: linear-gradient(to right, #23ce65 1%, #323232 1%);
+}
+
+.controls {
+
+}
+
+/*.day-task {*/
+
+/*}*/
+
+/*.status-1 {*/
+/*    !* pending *!*/
+/*    background: linear-gradient(to right, #55ea8d 1%, #181819 1%);*/
+/*}*/
+/*.status-2 {*/
+/*    !* drags on *!*/
+/*    background: linear-gradient(to right, #ff03bb 1%, #181819 1%);*/
+/*}*/
+/*.status-3 {*/
+/*    !* in progress *!*/
+/*    background: linear-gradient(to right, #00a3ff 1%, #181819 1%);*/
+/*}*/
+/*.status-4 {*/
+/*    !* complete *!*/
+/*    background: linear-gradient(to right, #38ff00 1%, #34502a 1%);*/
+/*}*/
+/*.status-5 {*/
+/*    !* failed *!*/
+/*    background: linear-gradient(to right, #ff0000 1%, #3d2020 1%);*/
+/*}*/
+/*.status-6 {*/
+/*    !* rescheduled *!*/
+/*    background: linear-gradient(to right, #8215ff 1%, #181819 1%);*/
+/*}*/
+/*.status-7 {*/
+/*    !* reshaped *!*/
+/*    background: linear-gradient(to right, #ffbe19 1%, #181819 1%);*/
+/*}*/
+/*.status-8 {*/
+/*    !* cancelled *!*/
+/*    background: linear-gradient(to right, #ff4a00 1%, #181819 1%);*/
+/*}*/
+
+/*.status-1:hover {*/
+/*    !* pending *!*/
+/*    background: linear-gradient(to right, #55ea8d 1%, #5a5a5a 5%);*/
+/*}*/
+/*.status-2:hover {*/
+/*    !* drags on *!*/
+/*    background: linear-gradient(to right, #ff03bb 1%, #5a5a5a 5%);*/
+/*}*/
+/*.status-3:hover {*/
+/*    !* in progress *!*/
+/*    background: linear-gradient(to right, #00a3ff 1%, #5a5a5a 5%);*/
+/*}*/
+/*.status-4:hover {*/
+/*    !* complete *!*/
+/*    background: linear-gradient(to right, #38ff00 1%, #5a5a5a 5%);*/
+/*}*/
+/*.status-5:hover {*/
+/*    !* failed *!*/
+/*    background: linear-gradient(to right, #ff0000 1%, #5a5a5a 5%);*/
+/*}*/
+/*.status-6:hover {*/
+/*    !* rescheduled *!*/
+/*    background: linear-gradient(to right, #8215ff 1%, #5a5a5a 5%);*/
+/*}*/
+/*.status-7:hover {*/
+/*    !* reshaped *!*/
+/*    background: linear-gradient(to right, #ffbe19 1%, #5a5a5a 5%);*/
+/*}*/
+/*.status-8:hover {*/
+/*    !* cancelled *!*/
+/*    background: linear-gradient(to right, #ff4a00 1%, #5a5a5a 5%);*/
+/*}*/

@@ -12,7 +12,7 @@ from ordnung.presentation.access import get_lang, get_date
 from ordnung.presentation.presentation_settings import HTTP_POST_REDIRECT_GET
 from ordnung.presentation.rendering import render_template, extract_date
 from ordnung.presentation.validation import registration_form_is_invalid
-from ordnung.storage.access import register_new_user, send_verification_email
+# from ordnung.storage.access import register_new_user, send_verification_email
 
 
 # TODO - должно быть доступно только после авторизации
@@ -23,8 +23,6 @@ async def month(request: Request) -> HTMLResponse:
     lang = get_lang(request)
     current_date = get_date(request)
     header = translate(lang, f'month_{current_date.month}') + f' ({current_date})'
-
-    base_url = request.url_for('month')
     leap_back, step_back, step_forward, leap_forward = get_offset_dates(current_date)
 
     context = {
@@ -32,41 +30,37 @@ async def month(request: Request) -> HTMLResponse:
         'header': header,
         'month': form_month(current_date),
         'records': {},  # FIXME
-        'tasks': [['a', 'b', 'c'], ['d', 'e', 'f']],
+        'tasks': [['a', 'b', 'c'], ['d', 'e', 'f']],  # FIXME
         'lang': lang,
         'menu_is_visible': int(request.query_params.get('menu', '0')),
         'current_date': current_date,
         'day_names': get_day_names(lang),
-        'leap_back_url': f'{base_url}?date={leap_back}',
-        'step_back_url': f'{base_url}?date={step_back}',
-        'step_forward_url': f'{base_url}?date={step_forward}',
-        'leap_forward_url': f'{base_url}?date={leap_forward}',
+        'leap_back_url': f'/month?date={leap_back}',
+        'step_back_url': f'/month?date={step_back}',
+        'step_forward_url': f'/month?date={step_forward}',
+        'leap_forward_url': f'/month?date={leap_forward}',
     }
     return render_template("month.html", context)
 
 
-@requires('authenticated', redirect='unauthorized')
-async def show_day(request: Request):
+# TODO - должно быть доступно только после авторизации
+# @requires('authenticated', redirect='unauthorized')
+async def day(request: Request):
     """Single day navigation.
     """
-    at_date = extract_date(request)
-    #     chosen_date_str, chosen_date = extract_date(request)
-    #     namespace = request.user.namespace
-    #     records = get_records(chosen_date, offset=0)
-    #     day_records = records[chosen_date_str]
-    #
+    lang = get_lang(request)
+    current_date = get_date(request)
+    header = translate(lang, f'month_{current_date.month}') + f' ({current_date})'
+
     context = {
         'request': request,
-        #         'header': translate(namespace, 'generic', '$day') + f' ({chosen_date_str})',
-        #         'chosen_date': chosen_date,
-        #         'chosen_date_str': chosen_date_str,
-        #         'records': day_records,
-        #         **request.state.context_extensions,
+        'header': header,
+        'lang': lang,
+        'current_date': current_date,
+        'month_url': f'/month?date={current_date}',
+        'records': ['1', '2']
     }
-    return HTMLResponse(f'day - {at_date}')
-
-
-#     return templates.TemplateResponse('show_day.html', context)
+    return render_template("day.html", context)
 
 
 @requires('authenticated', redirect='unauthorized')
@@ -93,7 +87,7 @@ async def show_record(request: Request):
 async def index(request: Request) -> RedirectResponse:
     """Starting page.
     """
-    if request.user.is_authenticated:
+    if request.user.is_authenticated or True:  # FIXME
         return RedirectResponse(request.url_for("month"))
     return RedirectResponse(request.url_for('login'))
 

@@ -2,12 +2,13 @@
 
 """Database tools.
 """
-from typing import Optional
+from datetime import date
+from typing import Optional, Dict
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 
-from ordnung.storage.models import Record
+from ordnung.storage.models import Record, User
 from ordnung.storage import storage_settings
 
 engine = create_engine(storage_settings.DB_PATH, echo=False)
@@ -22,19 +23,22 @@ def init_db():
     metadata.create_all(bind=engine)
 
 
-def create_new_record(user_id: int, chosen_date_str: str) -> Record:
-    """Create new record for given user_id and date.
-    """
-    record = Record(
-        user_id=user_id,
-        target_date=chosen_date_str,
-        title=''
-    )
-    return record
+def get_records_for_month(current_date: date, user: User) -> Dict[str, Record]:
+    pass
 
-
-def get_existing_record(record_id: int) -> Optional[Record]:
-    """Load from db existing record with this id.
-    """
-    record = session.query(Record).filter_by(id=record_id).first()
-    return record
+# def create_new_record(user_id: int, chosen_date_str: str) -> Record:
+#     """Create new record for given user_id and date.
+#     """
+#     record = Record(
+#         user_id=user_id,
+#         target_date=chosen_date_str,
+#         title=''
+#     )
+#     return record
+#
+#
+# def get_existing_record(record_id: int) -> Optional[Record]:
+#     """Load from db existing record with this id.
+#     """
+#     record = session.query(Record).filter_by(id=record_id).first()
+#     return record

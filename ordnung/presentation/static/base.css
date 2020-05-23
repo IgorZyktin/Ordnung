@@ -4,6 +4,7 @@
   --ordnung-bg-color-3: #24211d;
   --ordnung-bg-color-4: #1c1c17;
   --ordnung-bg-color-5: #20262f;
+  --ordnung-bg-color-6: #151414;
 
   --ordnung-color-1: #ffffff;
   --ordnung-color-2: #ababab;
@@ -14,6 +15,7 @@
   --ordnung-border-3: 1px solid #f85903;
   --ordnung-border-4: 1px solid #585c6e;
   --ordnung-border-5: 1px solid #288500;
+  --ordnung-border-6: 1px solid #383b47;
 }
 
 @media screen and (max-width: 900px) {
@@ -59,4 +61,30 @@ h1, h2, h3, h4, h5 {
 
 hr {
     width: 100%;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #3a423b;
+    background-color: rgb(42, 53, 48);
+    color: #848484;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 5px;
+    text-decoration: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-shadow: 10px 11px 16px -2px rgba(0, 0, 0, 0.6);
+}
+
+.btn:hover {
+    color: #c3c3c3;
+    background-color: rgb(77, 93, 86);
+}
+
+.btn:active {
+    position: relative;
+    top: 1px;
 }

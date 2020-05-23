@@ -21,3 +21,16 @@ function self_delete(button) {
 function relocate(url) {
     window.location.href = url;
 }
+
+function relocate_with_args(url) {
+    let new_params = '';
+
+    if (!window.location.href.includes('?')) new_params += '?';
+
+    let menu = $('#menu');
+    if (menu.css("display") !== undefined) {
+        if (menu.css("display") !== 'none') new_params += '&menu=1'
+        else new_params += '&menu=0'
+    }
+    window.location.href = url + new_params;
+}
