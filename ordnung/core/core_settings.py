@@ -11,5 +11,5 @@ WEEKS_IN_MONTH = 5
 MONTH_OFFSET = 20  # additional days to search in both directions during month rendering
 
 # localisation
-DEFAULT_NAMESPACE = 'RU'
-TERM_PLACEHOLDER = '???'
+DEFAULT_LANG = 'EN'
+DEFAULT_PLACEHOLDER = '???'

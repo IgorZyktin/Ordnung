@@ -63,6 +63,7 @@
 
 .today:hover {
     border: var(--ordnung-border-3);
+    background-color: var(--ordnung-bg-color-5);
 }
 
 .weekend {

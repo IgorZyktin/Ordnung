@@ -1,68 +1,59 @@
 # -*- coding: utf-8 -*-
 
-"""Tools, related to different languages processing.
+"""Core language processing.
 """
-from datetime import date
-from functools import lru_cache
-from typing import Optional, List, Dict, Tuple
+from typing import List, Tuple
 
 from ordnung.core import core_settings
-from ordnung.core.vocabulary import get_vocabulary
+from ordnung.core.vocabulary import get_static_vocabulary, get_dynamic_vocabulary
 
 
-def get_month_header(namespace: str, at_date: date) -> str:
-    pass
+def gettext(lang: str, sentence: str) -> str:
+    """Translate message and return it as a string.
 
+    Similar to Django gettext, but without session middleware,
+    so we have to pass locale explicitly.
 
-def get_day_header(namespace: str, at_date: date) -> str:
-    pass
-
-
-def get_record_header(namespace: str, title: str) -> str:
-    pass
-
-
-@lru_cache
-def extract_term(namespace: str, key: str) -> Optional[str]:
-    """Get translation from the vocabulary, or None instead.
-
-    >>> extract_term('RU', 'month')
-    'Месяц'
-    >>> extract_term('EN', 'lol')
+    >>> gettext('RU', 'January')
+    'Январь'
     """
-    mapping = get_vocabulary().get(namespace, {})
-    term = mapping.get(key)
-    return term
+    if lang == core_settings.DEFAULT_LANG:
+        translation = sentence
+
+    elif (vocabulary := get_static_vocabulary().get(lang)) is None:
+        translation = sentence
+
+    elif (translation := vocabulary.get(sentence)) is None:
+        translation = sentence
+
+    return translation
 
 
-@lru_cache
-def translate(namespace: str, key: str) -> str:
+def translate(lang: str, key: str) -> str:
     """Search for translation in the vocabulary and substitute its value.
 
-    >>> translate('RU', 'month')
-    'Месяц'
-    >>> translate('EN', 'month')
-    'Month'
+    >>> translate('RU', 'month_1')
+    'Январь'
+    >>> translate('EN', 'month_1')
+    'January'
     >>> translate('EN', 'lol')
     '???'
     """
-    term = extract_term(namespace, key)
+    if (vocabulary := get_dynamic_vocabulary().get(lang)) is None:
+        vocabulary = get_dynamic_vocabulary().get(core_settings.DEFAULT_LANG)
 
-    if term is None:
-        term = extract_term(core_settings.DEFAULT_NAMESPACE, key)
+    while (translation := vocabulary.get(key)) is None:
+        if key.endswith('_'):
+            key = key[:-1]
+        else:
+            translation = core_settings.DEFAULT_PLACEHOLDER
+            break
 
-    return term or core_settings.TERM_PLACEHOLDER
-
-
-def make_lexis(namespace: str, words: List[str]) -> Dict[str, str]:
-    lexis = {}
-    for word in words:
-        lexis[word] = translate(namespace, word)
-    return lexis
+    return translation
 
 
-def get_day_names(namespace: str) -> List[Tuple[str, str]]:
-    """Get list of weekday names in user namespace.
+def get_day_names(lang: str) -> List[Tuple[str, str]]:
+    """Get list of weekday names in user lang.
 
     >>> get_day_names('RU')[:3]
     [('Понедельник', 'ПН'), ('Вторник', 'ВТ'), ('Среда', 'СР')]
@@ -70,7 +61,6 @@ def get_day_names(namespace: str) -> List[Tuple[str, str]]:
     [('Monday', 'MON'), ('Tuesday', 'TUE'), ('Wednesday', 'WED')]
     """
     numbers = range(1, 8)
-    long_names = [translate(namespace, f'day_{x}') for x in numbers]
-    short_names = [translate(namespace, f'day_{x}_short') for x in numbers]
-    output = list(zip(long_names, short_names))
-    return output
+    long_names = [translate(lang, f'day_{x}') for x in numbers]
+    short_names = [translate(lang, f'day_{x}_short') for x in numbers]
+    return list(zip(long_names, short_names))

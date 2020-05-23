@@ -2,41 +2,45 @@
 
 """Regular views.
 """
-from pip._vendor.html5lib.treeadapters.sax import namespace
 from starlette.authentication import requires
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from ordnung.core.access import form_month, get_offset_dates
-from ordnung.core.date_and_time import today
-from ordnung.core.lexis import Lexis
-from ordnung.core.localisation import translate, make_lexis, get_day_names
-from ordnung.core.records import get_records
+from ordnung.core.date_and_time import get_offset_dates, form_month
+from ordnung.core.localisation import translate, get_day_names
+from ordnung.presentation.access import get_lang, get_date
+from ordnung.presentation.presentation_settings import HTTP_POST_REDIRECT_GET
 from ordnung.presentation.rendering import render_template, extract_date
 from ordnung.presentation.validation import registration_form_is_invalid
 from ordnung.storage.access import register_new_user, send_verification_email
 
-HTTP_OK = 200
-HTTP_POST_REDIRECT_GET = 303
-HTTP_UNAUTHORIZED = 401
 
-
+# TODO - должно быть доступно только после авторизации
 # @requires('authenticated', redirect='unauthorized')
-async def show_month(request: Request):
+async def month(request: Request) -> HTMLResponse:
     """Main page, navigation starts from here. Shows single month.
     """
-    current_date = extract_date(request)
-    lexis = Lexis(request.user.namespace)
+    lang = get_lang(request)
+    current_date = get_date(request)
+    header = translate(lang, f'month_{current_date.month}') + f' ({current_date})'
+
+    base_url = request.url_for('month')
+    leap_back, step_back, step_forward, leap_forward = get_offset_dates(current_date)
 
     context = {
         'request': request,
-        'header': lexis[f'month_{current_date.month}'] + f' ({current_date})',
-        'month': form_month(current_date, lexis),
-        'records': get_records(current_date),
+        'header': header,
+        'month': form_month(current_date),
+        'records': {},  # FIXME
+        'tasks': [['a', 'b', 'c'], ['d', 'e', 'f']],
+        'lang': lang,
+        'menu_is_visible': int(request.query_params.get('menu', '0')),
         'current_date': current_date,
-        'lexis': lexis,
-        'day_names': get_day_names(request.user.namespace),
-        **get_offset_dates(current_date),
+        'day_names': get_day_names(lang),
+        'leap_back_url': f'{base_url}?date={leap_back}',
+        'step_back_url': f'{base_url}?date={step_back}',
+        'step_forward_url': f'{base_url}?date={step_forward}',
+        'leap_forward_url': f'{base_url}?date={leap_forward}',
     }
     return render_template("month.html", context)
 
@@ -90,7 +94,7 @@ async def index(request: Request) -> RedirectResponse:
     """Starting page.
     """
     if request.user.is_authenticated:
-        return RedirectResponse(request.url_for("show_month", at_date=str(today())))
+        return RedirectResponse(request.url_for("month"))
     return RedirectResponse(request.url_for('login'))
 
 

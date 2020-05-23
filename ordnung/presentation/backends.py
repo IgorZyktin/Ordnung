@@ -58,7 +58,7 @@ class UnauthenticatedUser(BaseUser):
         return ""
 
     @property
-    def namespace(self):
+    def lang(self):
         return "RU"
 
 
@@ -82,7 +82,7 @@ class User(BaseUser):
         return self.username
 
     @property
-    def namespace(self):
+    def lang(self):
         return "RU"
 
 

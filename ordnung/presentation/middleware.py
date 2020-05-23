@@ -9,7 +9,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import HTTPConnection
 from starlette.types import Scope, Receive, Send
 
-from ordnung.core.localisation import translate
+from ordnung.core.localisation import translate, gettext
 from ordnung.presentation.backends import UnauthenticatedUser
 
 
@@ -52,6 +52,7 @@ class ContextExtensionMiddleware(BaseHTTPMiddleware):
         except AttributeError:
             context_extensions = {}
 
+        context_extensions['gettext'] = gettext
         context_extensions['translate'] = translate
         context_extensions['user'] = request.user
         request.state.context_extensions = context_extensions

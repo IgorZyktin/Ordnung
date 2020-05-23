@@ -1,7 +1,14 @@
-from functools import lru_cache
-
-VOCABULARY = {
+STATIC_VOCABULARY = {
     "RU": {
+        "Month": "месяц",
+        "Day": "день",
+
+        "Leap back": "Перейти назад",
+        "Step back": "Шаг назад",
+        "Step on date": "На дату",
+        "Step forward": "Шаг вперёд",
+        "Leap forward": "Перейти вперёд",
+
         #     "$new_record": "Новая запись",
         #     "$author": "Автор",
         #     "$created_for": "Создана для",
@@ -21,13 +28,7 @@ VOCABULARY = {
         #     "$to_month": "Назад к месяцу",
         #     "$tasks": "Задачи на %s (%s шт.)",
         #     "$nothing": "Ничего не запланировано на %s",
-        "leap_back": "Перейти назад",
-        "step_back": "Шаг назад",
-        "step_on_date": "На дату",
-        "step_forward": "Шаг вперёд",
-        "leap_forward": "Перейти вперёд",
-        "month": "Месяц",
-        "day": "День",
+
         #     "$confirm_text": "Вы уверены, что хотите удалить эту запись?",
         #     "$logout": "Вы успешно вышли из системы.",
         #     "$unauthorized": "У вас нет прав доступа к этому ресурсу.",
@@ -60,6 +61,145 @@ VOCABULARY = {
         #     "8": "Каждый месяц",
         #     "9": "Каждый год"
         # },
+
+
+        # },
+        # "errors": {
+        #     "$no_title": "У записи должен быть заголовок.",
+        #     "$record_not_found": "Запись с id %s не найдена.",
+        #     "$no_record_id": "Не указан id требуемой записи."
+        # },
+        # "register": {
+        #     "$label_username": "[?] Имя пользователя",
+        #     "$label_login": "[?] Логин",
+        #     "$label_email": "[?] Адрес электронной почты",
+        #     "$label_password": "[?] Пароль",
+        #     "$label_button": "Отправить",
+        #     "$hint_username": "Имя пользователя будет отображаться в меню, а также по нему другие пользователи смогут вас узнать.",
+        #     "$hint_login": "Логин будет использоваться только для входа на сайт.",
+        #     "$hint_email": "Будет использоваться для восстановления пароля.",
+        #     "$hint_password": "Не используйте пароль от банковского приложения! Безопасность не входит в число сильных сторон этого приложения.",
+        #     "$placeholder_username": "Ваше имя",
+        #     "$placeholder_login": "Ваш логин",
+        #     "$placeholder_email": "Ваш e-mail",
+        #     "$placeholder_password": "Ваш пароль",
+        #     "$placeholder_password_repeat": "Повторите пароль",
+        #     "$confirm": "Вы сможете войти на сайт после подтверждения. Письмо отправлено на %s."
+        # },
+        # "EN": {
+        #         "$new_record": "New record",
+        #         "$author": "Author",
+        #         "$created_for": "Created for",
+        #         "$visible_for": "Visible for",
+        #         "$everyone": "Everyone",
+        #         "$only_me": "Only for me",
+        #         "$target_date": "Target date",
+        #         "$target_time": "Target time",
+        #         "$title": "Title",
+        #         "$description": "Description",
+        #         "$status": "Status",
+        #         "$persistence": "Persistence",
+        #         "$create": "Create",
+        #         "$save": "Save",
+        #         "$delete": "Delete",
+        #         "$to_day": "Back to day",
+        #         "$to_month": "Back to month",
+        #         "$tasks": "Tasks on %s (%s-x)",
+        #         "$nothing": "Nothing planned on %s",
+
+        #         "$month": "Month",
+        #         "$day": "Day",
+        #         "$confirm_text": "Are you sure you want to delete this record?",
+        #         "$logout": "You have be successfully logged out.",
+        #         "$unauthorized": "You have no access rights to this resource.",
+        #         "$restore_start": "Enter your email or login.",
+        #         "$restore_prove": "Prove that you're the actual owner of the account.",
+        #         "$register": "Registration of a new user.",
+        #         "$login_failed": "You may gain access only after login.",
+        #         "$login_retry": "Try log in once again.",
+        #         "$goto_register": "Register new user.",
+        #         "$goto_restore": "Forgot password."
+        #     "status": {
+        #         "1": "Pending",
+        #         "2": "Drags on",
+        #         "3": "In progress",
+        #         "4": "Complete",
+        #         "5": "Failed",
+        #         "6": "Rescheduled",
+        #         "7": "Reshaped",
+        #         "8": "Cancelled"
+        #     "persistence": {
+        #         "1": "Once",
+        #         "2": "Once, until complete",
+        #         "3": "Every day",
+        #         "4": "Every week",
+        #         "5": "Every odd week",
+        #         "6": "Every even week",
+        #         "7": "Every weekday",
+        #         "8": "Every month",
+        #         "9": "Every year"
+
+        #     "errors": {
+        #         "$no_title": "Every record must have a title.",
+        #         "$record_not_found": "Record with id %s is not found.",
+        #         "$no_record_id": "Record id is not supplied."
+        #     "register": {
+        #         "$label_username": "[?] Name",
+        #         "$label_login": "[?] Login",
+        #         "$label_email": "[?] E-mail",
+        #         "$label_password": "[?] Password",
+        #         "$label_button": "Register",
+        #         "$hint_username": "Name will be displayed in the menu and also will help other users to recognise you.",
+        #         "$hint_login": "Login will be used only  to enter the site.",
+        #         "$hint_email": "E-mail is needed only to restore forgotten password.",
+        #         "$hint_password": "Do not use password from your bank account here! Safety were not of my goals in this app.",
+        #         "$placeholder_username": "Your name",
+        #         "$placeholder_login": "Your login",
+        #         "$placeholder_email": "Your e-mail",
+        #         "$placeholder_password": "Your password",
+        #         "$placeholder_password_repeat": "Repeat your password",
+        #         "$confirm": "You could enter after confirmation. Message has been sent to %s."
+        #     }
+    }
+}
+
+DYNAMIC_VOCABULARY = {
+    "EN": {
+
+        # days
+        "day_1": "Monday",
+        "day_2": "Tuesday",
+        "day_3": "Wednesday",
+        "day_4": "Thursday",
+        "day_5": "Friday",
+        "day_6": "Saturday",
+        "day_7": "Sunday",
+
+        # days short
+        "day_1_short": "MON",
+        "day_2_short": "TUE",
+        "day_3_short": "WED",
+        "day_4_short": "THU",
+        "day_5_short": "FRI",
+        "day_6_short": "SAT",
+        "day_7_short": "SUN",
+
+        # months
+        "month_1": "January",
+        "month_2": "February",
+        "month_3": "March",
+        "month_4": "April",
+        "month_5": "May",
+        "month_6": "June",
+        "month_7": "July",
+        "month_8": "August",
+        "month_9": "September",
+        "month_10": "October",
+        "month_11": "November",
+        "month_12": "December",
+    },
+    "RU": {
+
         # days
         "day_1": "Понедельник",
         "day_2": "Вторник",
@@ -105,142 +245,18 @@ VOCABULARY = {
         "month_10_": "октября",
         "month_11_": "ноября",
         "month_12_": "декабря",
+    },
 
-        # },
-        # "errors": {
-        #     "$no_title": "У записи должен быть заголовок.",
-        #     "$record_not_found": "Запись с id %s не найдена.",
-        #     "$no_record_id": "Не указан id требуемой записи."
-        # },
-        # "register": {
-        #     "$label_username": "[?] Имя пользователя",
-        #     "$label_login": "[?] Логин",
-        #     "$label_email": "[?] Адрес электронной почты",
-        #     "$label_password": "[?] Пароль",
-        #     "$label_button": "Отправить",
-        #     "$hint_username": "Имя пользователя будет отображаться в меню, а также по нему другие пользователи смогут вас узнать.",
-        #     "$hint_login": "Логин будет использоваться только для входа на сайт.",
-        #     "$hint_email": "Будет использоваться для восстановления пароля.",
-        #     "$hint_password": "Не используйте пароль от банковского приложения! Безопасность не входит в число сильных сторон этого приложения.",
-        #     "$placeholder_username": "Ваше имя",
-        #     "$placeholder_login": "Ваш логин",
-        #     "$placeholder_email": "Ваш e-mail",
-        #     "$placeholder_password": "Ваш пароль",
-        #     "$placeholder_password_repeat": "Повторите пароль",
-        #     "$confirm": "Вы сможете войти на сайт после подтверждения. Письмо отправлено на %s."
-        # },
-        # "EN": {
-        #         "$new_record": "New record",
-        #         "$author": "Author",
-        #         "$created_for": "Created for",
-        #         "$visible_for": "Visible for",
-        #         "$everyone": "Everyone",
-        #         "$only_me": "Only for me",
-        #         "$target_date": "Target date",
-        #         "$target_time": "Target time",
-        #         "$title": "Title",
-        #         "$description": "Description",
-        #         "$status": "Status",
-        #         "$persistence": "Persistence",
-        #         "$create": "Create",
-        #         "$save": "Save",
-        #         "$delete": "Delete",
-        #         "$to_day": "Back to day",
-        #         "$to_month": "Back to month",
-        #         "$tasks": "Tasks on %s (%s-x)",
-        #         "$nothing": "Nothing planned on %s",
-        #         "$leap_back": "Leap back",
-        #         "$step_back": "Step back",
-        #         "$step_on_date": "Step on date",
-        #         "$step_forward": "Step forward",
-        #         "$leap_forward": "Leap forward",
-        #         "$month": "Month",
-        #         "$day": "Day",
-        #         "$confirm_text": "Are you sure you want to delete this record?",
-        #         "$logout": "You have be successfully logged out.",
-        #         "$unauthorized": "You have no access rights to this resource.",
-        #         "$restore_start": "Enter your email or login.",
-        #         "$restore_prove": "Prove that you're the actual owner of the account.",
-        #         "$register": "Registration of a new user.",
-        #         "$login_failed": "You may gain access only after login.",
-        #         "$login_retry": "Try log in once again.",
-        #         "$goto_register": "Register new user.",
-        #         "$goto_restore": "Forgot password."
-        #     "status": {
-        #         "1": "Pending",
-        #         "2": "Drags on",
-        #         "3": "In progress",
-        #         "4": "Complete",
-        #         "5": "Failed",
-        #         "6": "Rescheduled",
-        #         "7": "Reshaped",
-        #         "8": "Cancelled"
-        #     "persistence": {
-        #         "1": "Once",
-        #         "2": "Once, until complete",
-        #         "3": "Every day",
-        #         "4": "Every week",
-        #         "5": "Every odd week",
-        #         "6": "Every even week",
-        #         "7": "Every weekday",
-        #         "8": "Every month",
-        #         "9": "Every year"
-        #     "days": {
-        #         "0": "Monday",
-        #         "1": "Tuesday",
-        #         "2": "Wednesday",
-        #         "3": "Thursday",
-        #         "4": "Friday",
-        #         "5": "Saturday",
-        #         "6": "Sunday"
-        #     "days_short": {
-        #         "0": "MON",
-        #         "1": "TUE",
-        #         "2": "WED",
-        #         "3": "THU",
-        #         "4": "FRI",
-        #         "5": "SAT",
-        #         "6": "SUN"
-        #     "months": {
-        #         "1": "january",
-        #         "2": "february",
-        #         "3": "march",
-        #         "4": "april",
-        #         "5": "may",
-        #         "6": "june",
-        #         "7": "july",
-        #         "8": "august",
-        #         "9": "september",
-        #         "10": "october",
-        #         "11": "november",
-        #         "12": "december"
-        #     "errors": {
-        #         "$no_title": "Every record must have a title.",
-        #         "$record_not_found": "Record with id %s is not found.",
-        #         "$no_record_id": "Record id is not supplied."
-        #     "register": {
-        #         "$label_username": "[?] Name",
-        #         "$label_login": "[?] Login",
-        #         "$label_email": "[?] E-mail",
-        #         "$label_password": "[?] Password",
-        #         "$label_button": "Register",
-        #         "$hint_username": "Name will be displayed in the menu and also will help other users to recognise you.",
-        #         "$hint_login": "Login will be used only  to enter the site.",
-        #         "$hint_email": "E-mail is needed only to restore forgotten password.",
-        #         "$hint_password": "Do not use password from your bank account here! Safety were not of my goals in this app.",
-        #         "$placeholder_username": "Your name",
-        #         "$placeholder_login": "Your login",
-        #         "$placeholder_email": "Your e-mail",
-        #         "$placeholder_password": "Your password",
-        #         "$placeholder_password_repeat": "Repeat your password",
-        #         "$confirm": "You could enter after confirmation. Message has been sent to %s."
-        #     }
-    }
 }
 
 
-@lru_cache
-def get_vocabulary() -> dict:
-    """Return project vocabulary.
+def get_static_vocabulary() -> dict:
+    """Return project static vocabulary.
     """
-    return VOCABULARY.copy()
+    return STATIC_VOCABULARY
+
+
+def get_dynamic_vocabulary() -> dict:
+    """Return project dynamic vocabulary.
+    """
+    return DYNAMIC_VOCABULARY
