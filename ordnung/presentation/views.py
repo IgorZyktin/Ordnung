@@ -34,7 +34,7 @@ async def month(request: Request) -> HTMLResponse:
         'request': request,
         'header': header,
         'month': form_month(current_date),
-        'records': get_records_for_month(current_date, request.user.id, request.user.group),
+        'records': [],
         'tasks': [['a', 'b', 'c'], ['d', 'e', 'f']],  # FIXME
         'lang': lang,
         'menu_is_visible': int(request.query_params.get('menu', '0')),
