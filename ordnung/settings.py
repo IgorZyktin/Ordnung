@@ -40,3 +40,6 @@ else:
     RELOAD = False
 
 PORT = 8000
+import os
+print(os.getcwd())
+print(os.path.absolute(os.getcwd()))
