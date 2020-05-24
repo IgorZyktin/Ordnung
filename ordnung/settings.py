@@ -25,7 +25,7 @@ DEFAULT_PLACEHOLDER = '???'
 
 LOGGER_FILENAME = 'ordnung.log'
 LOGGER_ROTATION = '1 week'
-DB_PATH = 'sqlite:///../database.db'
+DB_PATH = 'sqlite:///database.db'
 
 #  -------------- PRESENTATION SETTINGS --------------
 
@@ -42,4 +42,4 @@ else:
 PORT = 8000
 import os
 print(os.getcwd())
-print(os.path.absolute(os.getcwd()))
+
