@@ -25,16 +25,18 @@ DEFAULT_PLACEHOLDER = '???'
 
 LOGGER_FILENAME = 'ordnung.log'
 LOGGER_ROTATION = '1 week'
-DB_PATH = 'sqlite:///database.db'
+DB_PATH = 'sqlite:///../database.db'
 
 #  -------------- PRESENTATION SETTINGS --------------
 
 if sys.platform == 'win32':
     # for lan broadcasting
     HOST = get_local_ip()
+    DEBUG = True
+    RELOAD = True
 else:
     HOST = '127.0.0.1'
+    DEBUG = False
+    RELOAD = False
 
 PORT = 8000
-DEBUG = True
-RELOAD = True
