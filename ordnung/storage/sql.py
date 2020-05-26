@@ -29,7 +29,7 @@ PERSISTENCE_1_SECTION = f"""
 -- Persistence <happens_once>
 select *
 from dates d
-         inner join records r on d.cur_date = r.target_date
+         inner join {{table_name}} r on d.cur_date = r.target_date
 where r.persistence_id = {ONCE}
 """
 
@@ -39,7 +39,7 @@ select *
 from (
          select *
          from dates
-                  cross join records r
+                  cross join {{table_name}} r
          where r.persistence_id = {UNTIL_COMPLETE}
      ) as r
 where r.cur_date between r.start_date and coalesce(r.end_date, r.target_date)
@@ -49,7 +49,7 @@ PERSISTENCE_3_SECTION = f"""
 -- Persistence <every_day>
 select *
 from dates d
-         cross join records r
+         cross join {{table_name}} r
 where r.persistence_id = {EVERY_DAY}
   and d.cur_date between r.start_date and coalesce(r.end_date, d.last_day)
 """
@@ -58,7 +58,7 @@ PERSISTENCE_4_SECTION = f"""
 -- Persistence <every_week>
 select *
 from dates d
-         cross join records r
+         cross join {{table_name}} r
 where extract(dow from d.cur_date) = extract(dow from r.target_date)
   and r.persistence_id = {EVERY_WEEK}
 """
@@ -67,7 +67,7 @@ PERSISTENCE_5_SECTION = f"""
 -- Persistence <every_odd_week>
 select *
 from dates d
-         cross join records r
+         cross join {{table_name}} r
 where extract(dow from d.cur_date) = extract(dow from r.target_date)
   and r.persistence_id = {EVERY_ODD_WEEK}
     and extract(week from d.cur_date)::int % 2 <> 0
@@ -76,7 +76,7 @@ PERSISTENCE_6_SECTION = f"""
 -- Persistence <every_even_week>
 select *
 from dates d
-         cross join records r
+         cross join {{table_name}} r
 where extract(dow from d.cur_date) = extract(dow from r.target_date)
   and r.persistence_id = {EVERY_EVEN_WEEK}
     and extract(week from d.cur_date)::int % 2 = 0
@@ -86,7 +86,7 @@ PERSISTENCE_7_SECTION = f"""
 -- Persistence <every_month>
 select *
 from dates d
-         cross join records r
+         cross join {{table_name}} r
 where extract(day from d.cur_date) = extract(day from r.target_date)
   and r.persistence_id = {EVERY_MONTH}
 """
@@ -94,7 +94,7 @@ PERSISTENCE_8_SECTION = f"""
 -- Persistence <every_year>
 select *
 from dates d
-         cross join records r
+         cross join {{table_name}} r
 where extract(day from d.cur_date) = extract(day from r.target_date)
   and extract(month from d.cur_date) = extract(month from r.target_date)
   and r.persistence_id = {EVERY_YEAR}
@@ -117,5 +117,10 @@ UNION
 {PERSISTENCE_7_SECTION}
 UNION
 {PERSISTENCE_8_SECTION}
+order by cur_date;
+"""
+MEGA_REQUEST = f"""
+{INIT_SECTION}
+{PERSISTENCE_1_SECTION}
 order by cur_date;
 """

@@ -13,7 +13,7 @@ from ordnung import settings
 from ordnung.storage.models import Record
 from ordnung.storage.sql import MEGA_REQUEST
 
-engine = create_engine(settings.DB_PATH, echo=False)
+engine = create_engine(settings.DB_URI, echo=True)
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -25,7 +25,7 @@ def init_db():
     metadata.create_all(bind=engine)
 
 
-def get_records(target_date: date, offset: int) -> List[Record]:
+def get_records(target_date: date, offset: int, table_name: str = 'records') -> List[Record]:
     """Retrieve all interesting records from database.
 
     This function works with extremely complicated SQL request.
@@ -33,8 +33,8 @@ def get_records(target_date: date, offset: int) -> List[Record]:
     rather than making a lot of consecutive request. In previous version, each Day
     could retrieve all of it's records. Therefore, we had to do at least ~35 requests.
     """
-    stmt = text(MEGA_REQUEST)
-    records = session.execute(stmt, target_date=target_date, offset=offset)
+    stmt = text(MEGA_REQUEST.format(table_name=table_name))
+    records = session.execute(stmt, params=dict(target_date=target_date, offset=offset))
     return records
 
 

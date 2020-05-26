@@ -2,6 +2,7 @@
 
 """Project parameters.
 """
+import os
 import sys
 
 #  ------------------ CORE SETTINGS ------------------
@@ -23,7 +24,7 @@ DEFAULT_PLACEHOLDER = '???'
 
 LOGGER_FILENAME = 'ordnung.log'
 LOGGER_ROTATION = '1 week'
-DB_PATH = 'sqlite:///database.db'
+DB_URI = os.getenv('ORDNUNG_DB_URI')
 
 #  -------------- PRESENTATION SETTINGS --------------
 

@@ -4,15 +4,16 @@
 """
 from collections import defaultdict
 from datetime import date, timedelta
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict
 
 from sqlalchemy import between
+from sqlalchemy.engine import ResultProxy
 
 import ordnung.settings
-from ordnung.core import core_settings
+from ordnung import settings
 from ordnung.core.localisation import translate
 from ordnung.presentation.backends import User
-from ordnung.storage.database import create_new_record, get_existing_record, session
+from ordnung.storage.database import session
 from ordnung.storage.models import Record
 
 # from view.rendering import (
@@ -20,33 +21,22 @@ from ordnung.storage.models import Record
 # )
 
 
-def organize_records(all_records: List[Record]) -> dict:
+def organize_records(all_records: ResultProxy, current_date: date,
+                     offset: int) -> Dict[str, List[dict]]:
     """Split all records into dictionary, with date as key and list of Record as value.
     """
-    # FIXME
-    start = target_date - timedelta(days=offset)
-    stop = target_date + timedelta(days=offset)
+    start = current_date - timedelta(days=offset)
+    stop = current_date + timedelta(days=offset)
 
-    records = defaultdict(list)
+    records = {}
+    current = start
+    while current <= stop:
+        records[str(current)] = []
+        current += timedelta(days=1)
 
-    records_at_date = session.query(Record) \
-        .filter(between(Record.target_date, start, stop)) \
-        .all()
-
-    # records_at_persistence = session.query(Record) \
-    #     .filter_by(persistence_id=3) \
-    #     .order_by(Record.status_id).all()
-
-    for record in records_at_date:
-        records[str(record.target_date)].append(record)
-
-    # current = start
-    # while current <= stop:
-    #     for record in records_at_persistence:
-    #         if record.persistence_id == 3:
-    #             records[str(current)].append(record)
-    #
-    #     current += timedelta(days=1)
+    for record in all_records:
+        record_as_dict = {column: value for column, value in record.items()}
+        records[str(record.target_date)].append(record_as_dict)
 
     return records
 

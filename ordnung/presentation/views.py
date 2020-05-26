@@ -29,8 +29,10 @@ async def month(request: Request) -> HTMLResponse:
     header = translate(lang, f'month_{current_date.month}') + f' ({current_date})'
     leap_back, step_back, step_forward, leap_forward = get_offset_dates(current_date)
 
-    all_records = get_records(current_date, settings.MONTH_OFFSET)
-    records = organize_records(all_records)
+    all_records = get_records(current_date, settings.MONTH_OFFSET, table_name='test_records')
+    print(all_records)
+    records = organize_records(all_records, current_date, settings.MONTH_OFFSET)
+    print(records)
 
     context = {
         'request': request,
