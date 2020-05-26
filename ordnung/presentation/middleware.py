@@ -56,6 +56,5 @@ class ContextExtensionMiddleware(BaseHTTPMiddleware):
         context_extensions['translate'] = translate
         context_extensions['user'] = request.user
         request.state.context_extensions = context_extensions
-
         response = await call_next(request)
         return response

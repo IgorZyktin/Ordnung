@@ -10,19 +10,22 @@ from starlette.templating import Jinja2Templates
 templates = Jinja2Templates(directory='ordnung/presentation/templates')
 
 
-def render_template(name: str, context: dict, status_code: int = 200, **kwargs):
+def render_template(name: str, context: dict, status_code: int = 200,
+                    headers: dict = None, **kwargs):
     """Render template into HTML.
 
     Just a small wrapper to make it look more like Flask.
 
-    :param status_code: HTTP status code.
     :param name: template filename (html).
     :param context: dict with required variables (including request itself).
+    :param status_code: HTTP status code.
+    :param headers: response headers ad dict.
     :return: rendered Jinja2 template.
     """
+    headers = headers or {}
     extensions = context['request'].state.context_extensions
     context = {**context, **extensions, **kwargs}
-    return templates.TemplateResponse(name, context, status_code)
+    return templates.TemplateResponse(name, context, status_code, headers)
 
 
 def extract_date(request: Request) -> date:

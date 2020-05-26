@@ -15,6 +15,14 @@ STATIC_VOCABULARY = {
         "New record": "Новая запись",
         "Back to month": "Назад к месяцу",
 
+        "You may gain access only after login": "Доступ к данным возможен только после входа",
+        "Try log in once again": "Ещё раз попробовать войти",
+        "Register": "Зарегистрироваться",
+        "Restore password": "Восстановить пароль",
+        "You have no access to this resource": "У вас нет прав доступа к этому ресурсу",
+        "You have been successfully logged out": "Вы успешно вышли из системы",
+
+
 
         #     "$author": "Автор",
         #     "$created_for": "Создана для",
@@ -34,15 +42,9 @@ STATIC_VOCABULARY = {
 
 
         #     "$confirm_text": "Вы уверены, что хотите удалить эту запись?",
-        #     "$logout": "Вы успешно вышли из системы.",
-        #     "$unauthorized": "У вас нет прав доступа к этому ресурсу.",
         #     "$restore_start": "Укажите ваш адрес электронной почты или логин.",
         #     "$restore_prove": "Подтвердите, что вы фактический владелец аккаунта.",
-        #     "$login_failed": "Доступ к данным возможен только после входа.",
-        #     "$login_retry": "Ещё раз попробовать войти.",
-        #     "$goto_register": "Зарегистрировать нового пользователя.",
-        #     "$goto_restore": "Не помню пароль.",
-        #     "$register": "Регистрация нового пользователя."
+
         # },
         # "status": {
         #     "1": "Ожидает",
@@ -114,15 +116,9 @@ STATIC_VOCABULARY = {
         #         "$month": "Month",
         #         "$day": "Day",
         #         "$confirm_text": "Are you sure you want to delete this record?",
-        #         "$logout": "You have be successfully logged out.",
-        #         "$unauthorized": "You have no access rights to this resource.",
         #         "$restore_start": "Enter your email or login.",
         #         "$restore_prove": "Prove that you're the actual owner of the account.",
-        #         "$register": "Registration of a new user.",
-        #         "$login_failed": "You may gain access only after login.",
-        #         "$login_retry": "Try log in once again.",
-        #         "$goto_register": "Register new user.",
-        #         "$goto_restore": "Forgot password."
+
         #     "status": {
         #         "1": "Pending",
         #         "2": "Drags on",

@@ -4,8 +4,6 @@
 """
 import sys
 
-from ordnung.presentation.access import get_local_ip
-
 #  ------------------ CORE SETTINGS ------------------
 
 # date and time
@@ -30,16 +28,12 @@ DB_PATH = 'sqlite:///database.db'
 #  -------------- PRESENTATION SETTINGS --------------
 
 if sys.platform == 'win32':
-    # for lan broadcasting
-    HOST = get_local_ip()
     DEBUG = True
     RELOAD = True
+
 else:
-    HOST = '127.0.0.1'
     DEBUG = False
     RELOAD = False
 
+HOST = '127.0.0.1'
 PORT = 8000
-import os
-print(os.getcwd())
-

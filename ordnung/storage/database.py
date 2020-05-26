@@ -6,11 +6,12 @@ from collections import defaultdict
 from datetime import date, timedelta
 from typing import Dict, List
 
-from sqlalchemy import create_engine, MetaData, between
+from sqlalchemy import create_engine, MetaData, between, text
 from sqlalchemy.orm import sessionmaker
 
 from ordnung import settings
 from ordnung.storage.models import Record
+from ordnung.storage.sql import MEGA_REQUEST
 
 engine = create_engine(settings.DB_PATH, echo=False)
 metadata = MetaData(bind=engine)
@@ -22,6 +23,19 @@ def init_db():
     """Prepare db for work.
     """
     metadata.create_all(bind=engine)
+
+
+def get_records(target_date: date, offset: int) -> List[Record]:
+    """Retrieve all interesting records from database.
+
+    This function works with extremely complicated SQL request.
+    Main goal of doing it like this is to fetch all required resources in single action,
+    rather than making a lot of consecutive request. In previous version, each Day
+    could retrieve all of it's records. Therefore, we had to do at least ~35 requests.
+    """
+    stmt = text(MEGA_REQUEST)
+    records = session.execute(stmt, target_date=target_date, offset=offset)
+    return records
 
 
 def get_records_for_month(target_date: date, user_id: int,

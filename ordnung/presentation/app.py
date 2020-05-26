@@ -8,7 +8,7 @@ from starlette.middleware import Middleware
 
 from ordnung import settings
 from ordnung.presentation.backends import OrdnungAuthBackend
-from ordnung.presentation.middleware import AuthMiddleware, ContextExtensionMiddleware
+from ordnung.presentation.middleware import ContextExtensionMiddleware, AuthMiddleware
 from ordnung.presentation.routes import routes
 from ordnung.storage.database import init_db
 

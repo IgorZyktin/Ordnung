@@ -4,7 +4,7 @@
 """
 from collections import defaultdict
 from datetime import date, timedelta
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from sqlalchemy import between
 
@@ -20,7 +20,9 @@ from ordnung.storage.models import Record
 # )
 
 
-def get_records(target_date: date, offset: int = ordnung.settings.MONTH_OFFSET) -> dict:
+def organize_records(all_records: List[Record]) -> dict:
+    """Split all records into dictionary, with date as key and list of Record as value.
+    """
     # FIXME
     start = target_date - timedelta(days=offset)
     stop = target_date + timedelta(days=offset)
