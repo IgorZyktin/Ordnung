@@ -25,7 +25,9 @@ function relocate(url) {
 function relocate_with_args(url) {
     let new_params = '';
 
-    if (!window.location.href.includes('?') && !url.includes('?')) new_params += '?';
+    if (!url.includes('?')) {
+        new_params += '?';
+    }
 
     let menu = $('#menu');
     if (menu.css("display") !== undefined) {

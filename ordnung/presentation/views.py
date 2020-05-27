@@ -7,7 +7,6 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from ordnung import settings
-from ordnung.core.records import organize_records
 from ordnung.core.date_and_time import get_offset_dates, form_month
 from ordnung.core.localisation import translate, get_day_names, gettext
 from ordnung.presentation.access import get_date, get_lang
@@ -20,7 +19,8 @@ HTTP_UNAUTHORIZED = 401
 HTTP_FORBIDDEN = 403
 
 
-@requires('authenticated', redirect='unauthorized')
+# TODO - должно быть доступно только после авторизации
+# @requires('authenticated', redirect='unauthorized')
 async def month(request: Request) -> HTMLResponse:
     """Main page, navigation starts from here. Shows single month.
     """
@@ -29,17 +29,20 @@ async def month(request: Request) -> HTMLResponse:
     header = translate(lang, f'month_{current_date.month}') + f' ({current_date})'
     leap_back, step_back, step_forward, leap_forward = get_offset_dates(current_date)
 
-    all_records = get_records(current_date, settings.MONTH_OFFSET, table_name='test_records')
-    print(all_records)
-    records = organize_records(all_records, current_date, settings.MONTH_OFFSET)
-    print(records)
+    records = get_records(target_date=current_date,
+                          offset_left=settings.MONTH_OFFSET,
+                          offset_right=settings.MONTH_OFFSET)
+
+    tasks = get_records(target_date=current_date,
+                        offset_left=0,
+                        offset_right=2)
 
     context = {
         'request': request,
         'header': header,
         'month': form_month(current_date),
         'records': records,
-        'tasks': [['a', 'b', 'c'], ['d', 'e', 'f']],  # FIXME
+        'tasks': tasks,  # FIXME
         'lang': lang,
         'menu_is_visible': int(request.query_params.get('menu', '0')),
         'current_date': current_date,
@@ -53,7 +56,8 @@ async def month(request: Request) -> HTMLResponse:
     return render_template("month.html", context)
 
 
-@requires('authenticated', redirect='unauthorized')
+# TODO - должно быть доступно только после авторизации
+# @requires('authenticated', redirect='unauthorized')
 async def day(request: Request):
     """Single day navigation.
     """
@@ -72,7 +76,8 @@ async def day(request: Request):
     return render_template("day.html", context)
 
 
-@requires('authenticated', redirect='unauthorized')
+# TODO - должно быть доступно только после авторизации
+# @requires('authenticated', redirect='unauthorized')
 async def show_record(request: Request):
     """Single record modification or creation.
     """
@@ -96,7 +101,7 @@ async def show_record(request: Request):
 async def index(request: Request) -> RedirectResponse:
     """Starting page.
     """
-    if request.user.is_authenticated:
+    if request.user.is_authenticated or True:  # FIXME
         return RedirectResponse(request.url_for('month'))
     return RedirectResponse(request.url_for('login'))
 

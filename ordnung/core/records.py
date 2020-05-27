@@ -21,24 +21,7 @@ from ordnung.storage.models import Record
 # )
 
 
-def organize_records(all_records: ResultProxy, current_date: date,
-                     offset: int) -> Dict[str, List[dict]]:
-    """Split all records into dictionary, with date as key and list of Record as value.
-    """
-    start = current_date - timedelta(days=offset)
-    stop = current_date + timedelta(days=offset)
 
-    records = {}
-    current = start
-    while current <= stop:
-        records[str(current)] = []
-        current += timedelta(days=1)
-
-    for record in all_records:
-        record_as_dict = {column: value for column, value in record.items()}
-        records[str(record.target_date)].append(record_as_dict)
-
-    return records
 
 
 def get_or_create_record(record_id: Optional[int], chosen_date_str: str,

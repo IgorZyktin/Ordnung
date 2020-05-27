@@ -33,7 +33,7 @@
                         </span>
                         <span class="day_label narrow">{{ day.number }}</span>
                         {% for record in records[day.date] %}
-                            <span class="record">{{ loop.index }}. {{ record.title }}</span>
+                            <span class="record">{{ loop.index }}. {{ record.text }}</span>
                         {% endfor %}
                     </div>
 
@@ -54,7 +54,7 @@
                 <span class="narrow"><</span>
             </div>
 
-            <div id ="step_on_date" onclick="alert('not ready')">{#FIXME#}
+            <div id ="step_on_date" onclick="relocate_with_args('/month')">{#FIXME#}
                 <span class="wide">{{ gettext(lang, 'Step on date') }}</span>
                 <span class="narrow">>|<</span>
             </div>
@@ -78,8 +78,9 @@
 
     <div id="menu" class="menu" style="display: {{ 'flex' if menu_is_visible else 'none' }}">
         {%- for section in tasks %}
-            {% for task in section -%}
-                <span class="task">{{ task }}</span>
+            <h5>{{ section }}</h5>
+            {% for task in tasks[section] -%}
+                <span class="task">{{ task.text }}</span>
             {% endfor -%}
 
             {%- if not loop.last -%}

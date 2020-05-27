@@ -99,7 +99,7 @@
 .menu {
     display: flex;
     background-color: var(--ordnung-bg-color-1);
-    min-width: 300px;
+    min-width: 400px;
     overflow-x: hidden;
     flex-direction: column;
     padding: 10px;
@@ -115,6 +115,7 @@
 
 .task {
     padding: 3px 10px;
+    overflow: hidden;
 }
 
 .task:hover {

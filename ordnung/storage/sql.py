@@ -14,8 +14,9 @@ EVERY_YEAR = 8
 
 INIT_SECTION = r"""
 with date_list as (
-    select (generate_series(date(:target_date) - :offset,
-                            date(:target_date) + :offset, '1 day'::interval)::date) as cur_date
+    select (generate_series(date(:target_date) - :offset_left,
+                            date(:target_date) + :offset_right, 
+                            '1 day'::interval)::date) as cur_date
     ),
      dates as (
          select *
@@ -47,57 +48,129 @@ where r.cur_date between r.start_date and coalesce(r.end_date, r.target_date)
 
 PERSISTENCE_3_SECTION = f"""
 -- Persistence <every_day>
+select 
+    cur_date, 
+    first_day, 
+    last_day, 
+    id, 
+    text, 
+    persistence_id, 
+    start_date, 
+    end_date, 
+    cur_date as target_date 
+from (
 select *
 from dates d
          cross join {{table_name}} r
 where r.persistence_id = {EVERY_DAY}
   and d.cur_date between r.start_date and coalesce(r.end_date, d.last_day)
+) as t3
 """
 
 PERSISTENCE_4_SECTION = f"""
 -- Persistence <every_week>
+select 
+    cur_date, 
+    first_day, 
+    last_day, 
+    id, 
+    text, 
+    persistence_id, 
+    start_date, 
+    end_date, 
+    cur_date as target_date 
+from (
 select *
 from dates d
          cross join {{table_name}} r
 where extract(dow from d.cur_date) = extract(dow from r.target_date)
   and r.persistence_id = {EVERY_WEEK}
+) as t4
 """
 
 PERSISTENCE_5_SECTION = f"""
 -- Persistence <every_odd_week>
+select 
+    cur_date, 
+    first_day, 
+    last_day, 
+    id, 
+    text, 
+    persistence_id, 
+    start_date, 
+    end_date, 
+    cur_date as target_date 
+from (
 select *
 from dates d
          cross join {{table_name}} r
 where extract(dow from d.cur_date) = extract(dow from r.target_date)
   and r.persistence_id = {EVERY_ODD_WEEK}
     and extract(week from d.cur_date)::int % 2 <> 0
+) as t5
 """
 PERSISTENCE_6_SECTION = f"""
 -- Persistence <every_even_week>
+select 
+    cur_date, 
+    first_day, 
+    last_day, 
+    id, 
+    text, 
+    persistence_id, 
+    start_date, 
+    end_date, 
+    cur_date as target_date 
+from (
 select *
 from dates d
          cross join {{table_name}} r
 where extract(dow from d.cur_date) = extract(dow from r.target_date)
   and r.persistence_id = {EVERY_EVEN_WEEK}
     and extract(week from d.cur_date)::int % 2 = 0
+) as t6
 """
 
 PERSISTENCE_7_SECTION = f"""
 -- Persistence <every_month>
+select 
+    cur_date, 
+    first_day, 
+    last_day, 
+    id, 
+    text, 
+    persistence_id, 
+    start_date, 
+    end_date, 
+    cur_date as target_date 
+from (
 select *
 from dates d
          cross join {{table_name}} r
 where extract(day from d.cur_date) = extract(day from r.target_date)
   and r.persistence_id = {EVERY_MONTH}
+) as t7
 """
 PERSISTENCE_8_SECTION = f"""
 -- Persistence <every_year>
-select *
-from dates d
-         cross join {{table_name}} r
-where extract(day from d.cur_date) = extract(day from r.target_date)
-  and extract(month from d.cur_date) = extract(month from r.target_date)
-  and r.persistence_id = {EVERY_YEAR}
+select 
+    cur_date, 
+    first_day, 
+    last_day, 
+    id, 
+    text, 
+    persistence_id, 
+    start_date, 
+    end_date, 
+    cur_date as target_date 
+from (
+    select *
+    from dates d
+             cross join {{table_name}} r
+    where extract(day from d.cur_date) = extract(day from r.target_date)
+      and extract(month from d.cur_date) = extract(month from r.target_date)
+      and r.persistence_id = {EVERY_YEAR}
+) as t8
 """
 
 MEGA_REQUEST = f"""
@@ -117,10 +190,5 @@ UNION
 {PERSISTENCE_7_SECTION}
 UNION
 {PERSISTENCE_8_SECTION}
-order by cur_date;
-"""
-MEGA_REQUEST = f"""
-{INIT_SECTION}
-{PERSISTENCE_1_SECTION}
 order by cur_date;
 """
