@@ -6,6 +6,8 @@ from datetime import date, datetime
 
 from starlette.requests import Request
 
+from ordnung.core.date_and_time import today
+
 
 def get_lang(request: Request) -> str:
     """Extract user language from request.
@@ -30,6 +32,6 @@ def get_date(request: Request) -> date:
     if (string := request.query_params.get('date')) is not None:
         target_date = datetime.strptime(string, "%Y-%m-%d").date()
     else:
-        target_date = datetime.today().date()
+        target_date = today()
 
     return target_date

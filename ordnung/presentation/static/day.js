@@ -1,4 +1,3 @@
 $(document).ready(function () {
-    // $('#btn-month').on("click", relocate_month);
-    // $('#btn-add').on("click", relocate_add);
+    // $('#btn_add').on("click", relocate_add);
 })

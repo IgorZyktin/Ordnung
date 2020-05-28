@@ -13,7 +13,7 @@
         </div>
 
         <div id="alerts-container">
-            {% for error in errors.values() %}
+            {% for error in errors %}
                 <button type="button" class="alert" onclick="self_delete(this);">{{ error }}</button>
             {% endfor %}
         </div>

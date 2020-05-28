@@ -2,9 +2,11 @@
 
 {%- block login_content %}
 <div>
-    <p>{{ header }}</p>
+    <p>{{ header }}.</p>
     <form method="POST">
-        <input type="text">
+        <label>
+            <input type="text" name="user_contact" value="{{ user_contact }}">
+        </label>
         <input type="submit">
     </form>
 </div>

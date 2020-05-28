@@ -64,14 +64,16 @@ async def day(request: Request):
     lang = get_lang(request)
     current_date = get_date(request)
     header = translate(lang, f'month_{current_date.month}') + f' ({current_date})'
-
+    tasks = get_records(target_date=current_date,
+                        offset_left=0,
+                        offset_right=0)
     context = {
         'request': request,
         'header': header,
         'lang': lang,
         'current_date': current_date,
         'month_url': f'/month?date={current_date}',
-        'records': ['1', '2']
+        'tasks': tasks[str(current_date)]
     }
     return render_template("day.html", context)
 
@@ -101,8 +103,8 @@ async def show_record(request: Request):
 async def index(request: Request) -> RedirectResponse:
     """Starting page.
     """
-    if request.user.is_authenticated or True:  # FIXME
-        return RedirectResponse(request.url_for('month'))
+    # if request.user.is_authenticated or True:  # FIXME
+    #     return RedirectResponse(request.url_for('month'))
     return RedirectResponse(request.url_for('login'))
 
 
@@ -118,9 +120,9 @@ async def login(request: Request) -> HTMLResponse:
         'request': request,
         'lang': lang,
         'header': gettext(lang, "You may gain access only after login"),
-        'retry': translate(lang, "Try log in once again"),
-        'register': translate(lang, "Register"),
-        'restore': translate(lang, "Restore password"),
+        'retry': gettext(lang, "Try log in once again"),
+        'register': gettext(lang, "Register"),
+        'restore': gettext(lang, "Restore password"),
         'errors': {},
     }
     return render_template("login.html", context, HTTP_UNAUTHORIZED, {"WWW-Authenticate": "Basic"})
@@ -174,37 +176,66 @@ async def register_confirm(request: Request):
 
 
 # TODO
-async def restore_start(request: Request):
+async def restore(request: Request):
     """Password restore page.
     """
-    # errors = {}
-    # if request.method == 'POST':
-    #     pass
-    #
-    # context = {
-    #     'request': request,
-    #     'header': translate(request.user.namespace, 'generic', '$restore_start'),
-    #     'errors': errors,
-    # }
-    # return render_template("restore_start.html", context)
-    raise
+    errors = {}
+    lang = get_lang(request)
+    user_contact = ''
+    if request.method == 'POST':
+        form = await request.form()
+        user_contact = form.get('user_contact')
+        if not user_contact:
+            errors = ['Надо указать данные']
+        elif user_contact == 'y':
+            errors = ['Нет емейла']
+        elif user_contact == 'u':
+            errors = ['Нет логина']
+        else:
+            await send_restore_link()
+            return RedirectResponse(request.url_for('restore_note'),
+                                    status_code=HTTP_POST_REDIRECT_GET)
+
+    context = {
+        'request': request,
+        'lang': lang,
+        'user_contact': user_contact,
+        'header': gettext(lang, 'Enter your email or login'),
+        'errors': errors,
+    }
+    return render_template("restore.html", context)
 
 
-# TODO
-async def restore_form(request: Request):
+async def send_restore_link():
+    print('send_restore_link')
+    pass
+
+
+async def restore_note(request: Request):
     """Password restore page (actual form).
     """
-    # errors = {}
-    # if request.method == 'POST':
-    #     pass
-    #
-    # context = {
-    #     'request': request,
-    #     'header': translate(request.user.namespace, 'generic', '$restore_prove'),
-    #     'errors': errors,
-    # }
-    # return render_template("restore_main.html", context)
-    raise
+    errors = {}
+    lang = get_lang(request)
+    context = {
+        'request': request,
+        'lang': lang,
+        'header': gettext(lang, 'Password restore link was sent to %(email)s'),
+        'errors': errors,
+    }
+    return render_template("restore_note.html", context)
+
+
+async def restore_password(request: Request):
+    errors = {}
+    if request.method == 'POST':
+        form = await request.form()
+
+    context = {
+        'request': request,
+        'header': 'passw',
+        'errors': errors,
+    }
+    return render_template("restore_password.html", context)
 
 
 async def unauthorized(request: Request) -> HTMLResponse:

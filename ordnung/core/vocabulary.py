@@ -21,8 +21,13 @@ STATIC_VOCABULARY = {
         "Restore password": "Восстановить пароль",
         "You have no access to this resource": "У вас нет прав доступа к этому ресурсу",
         "You have been successfully logged out": "Вы успешно вышли из системы",
-
-
+        "Enter your email or login": "Укажите ваш адрес электронной почты или логин",
+        "There is no user with login %(login)s": "Пользователь с логином "
+                                                 "%(login)s не зарегистрирован",
+        "There is no user with email %(email)s": "Пользователь с e-mail "
+                                                 "%(email)s не зарегистрирован",
+        'Password restore link was sent to %(email)s': "Ссылка для сброса пароля "
+                                                       "отправлена на %(email)s",
 
         #     "$author": "Автор",
         #     "$created_for": "Создана для",
@@ -40,10 +45,7 @@ STATIC_VOCABULARY = {
         #     "$delete": "Удалить",
         #     "$to_day": "Назад к дню",
 
-
         #     "$confirm_text": "Вы уверены, что хотите удалить эту запись?",
-        #     "$restore_start": "Укажите ваш адрес электронной почты или логин.",
-        #     "$restore_prove": "Подтвердите, что вы фактический владелец аккаунта.",
 
         # },
         # "status": {
@@ -67,7 +69,6 @@ STATIC_VOCABULARY = {
         #     "8": "Каждый месяц",
         #     "9": "Каждый год"
         # },
-
 
         # },
         # "errors": {
@@ -116,8 +117,8 @@ STATIC_VOCABULARY = {
         #         "$month": "Month",
         #         "$day": "Day",
         #         "$confirm_text": "Are you sure you want to delete this record?",
-        #         "$restore_start": "Enter your email or login.",
-        #         "$restore_prove": "Prove that you're the actual owner of the account.",
+        #         "$restore_start": ".",
+        #         "$restore_prove": ".",
 
         #     "status": {
         #         "1": "Pending",

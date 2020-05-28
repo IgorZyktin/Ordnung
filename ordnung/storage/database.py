@@ -2,7 +2,6 @@
 
 """Database tools.
 """
-import time
 from datetime import date, timedelta
 from typing import Dict, List
 
@@ -53,16 +52,35 @@ def load_records(target_date: date, offset_left: int, offset_right: int,
 def organize_records(all_records: ResultProxy, target_date: date,
                      offset_left: int, offset_right: int) -> Dict[str, List[dict]]:
     """Split all records into dictionary, with date as a key and list of records as value.
+
+    Example output:
+    {
+        '2020-05-08':
+        [
+            {
+                'id': 9,
+                'cur_date': datetime.date(2020, 5, 8),
+                'first_day': datetime.date(2020, 5, 8),
+                'last_day': datetime.date(2020, 6, 17),
+                'text': 'text',
+                'persistence_id': 3,
+                'start_date': datetime.date(2020, 5, 1),
+                'end_date': None,
+                'target_date': datetime.date(2020, 5, 19),
+                ...
+            }
+        ]
+    }
     """
     start = target_date - timedelta(days=offset_left)
     stop = target_date + timedelta(days=offset_right)
 
-    records = {}
+    tmp_records = {}
     current = start
     while current <= stop:
         # We can use defaultdict here, but actual goal is to
         # ensure that all dates are presented in dictionary
-        records[str(current)] = []
+        tmp_records[str(current)] = []
         current += timedelta(days=1)
 
     duplicates = set()
@@ -70,32 +88,17 @@ def organize_records(all_records: ResultProxy, target_date: date,
         record_as_dict = {column: value for column, value in record.items()}
 
         id_ = record_as_dict['id']
-        key = (id_, record.target_date)
+        key = (id_, record.cur_date)
 
-        if str(record.target_date) not in records:
-            print('отсутствует дата:', record_as_dict)
-        else:
+        if str(record.cur_date) not in tmp_records:
+            raise ValueError(f'Date {record.cur_date} is not found in record {record_as_dict}')
 
-            if key not in duplicates:
-                records[str(record.target_date)].append(record_as_dict)
-                duplicates.add(key)
+        if key not in duplicates:
+            tmp_records[str(record.cur_date)].append(record_as_dict)
+            duplicates.add(key)
+
+    records = {}
+    for day_date, day_records in tmp_records.items():
+        records[day_date] = sorted(day_records, key=lambda x: x['persistence_id'])
 
     return records
-
-
-# def create_new_record(user_id: int, chosen_date_str: str) -> Record:
-#     """Create new record for given user_id and date.
-#     """
-#     record = Record(
-#         user_id=user_id,
-#         target_date=chosen_date_str,
-#         title=''
-#     )
-#     return record
-#
-#
-# def get_existing_record(record_id: int) -> Optional[Record]:
-#     """Load from db existing record with this id.
-#     """
-#     record = session.query(Record).filter_by(id=record_id).first()
-#     return record
