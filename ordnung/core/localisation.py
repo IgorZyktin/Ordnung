@@ -5,7 +5,9 @@
 from typing import List, Tuple
 
 from ordnung import settings
-from ordnung.core.vocabulary import get_static_vocabulary, get_dynamic_vocabulary
+from ordnung.core.vocabulary import (
+    get_static_vocabulary, get_dynamic_vocabulary
+)
 
 
 def gettext(lang: str, sentence: str) -> str:

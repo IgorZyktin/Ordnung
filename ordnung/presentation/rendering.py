@@ -15,12 +15,6 @@ def render_template(name: str, context: dict, status_code: int = 200,
     """Render template into HTML.
 
     Just a small wrapper to make it look more like Flask.
-
-    :param name: template filename (html).
-    :param context: dict with required variables (including request itself).
-    :param status_code: HTTP status code.
-    :param headers: response headers ad dict.
-    :return: rendered Jinja2 template.
     """
     headers = headers or {}
     extensions = context['request'].state.context_extensions
@@ -30,9 +24,6 @@ def render_template(name: str, context: dict, status_code: int = 200,
 
 def extract_date(request: Request) -> date:
     """Extract date from request arguments.
-
-    :param request: starlette Request instance.
-    :return: stdlib date object.
 
     Example output:
         date(2020, 5, 3)

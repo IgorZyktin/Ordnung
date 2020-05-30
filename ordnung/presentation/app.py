@@ -2,14 +2,18 @@
 
 """Main app instance is here.
 """
+
 from loguru import logger
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse
 
 from ordnung import settings
 from ordnung.presentation.backends import OrdnungAuthBackend
-from ordnung.presentation.middleware import ContextExtensionMiddleware, AuthMiddleware
+from ordnung.presentation.middleware import (
+    ContextExtensionMiddleware, AuthMiddleware
+)
 from ordnung.presentation.routes import routes
 from ordnung.storage.database import init_db, session
 
@@ -23,6 +27,7 @@ def startup():
 
 
 middleware = [
+    Middleware(SessionMiddleware, secret_key=settings.SECRET_KEY),
     Middleware(AuthMiddleware, backend=OrdnungAuthBackend()),
     Middleware(ContextExtensionMiddleware),
 ]

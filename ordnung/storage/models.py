@@ -3,7 +3,7 @@
 """Database models.
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -12,19 +12,21 @@ Base = declarative_base()
 class User(Base):
     """User representation.
 
-    Please note, that application itself rely not on
-    this exact model, but on it's specific user class!
-    This one is only for database manipulations.
+    Please note, that application itself (login/logout, etc.)
+    rely not on this exact model, but on it's specific user
+    class! This one is only for database manipulations.
     """
     __tablename__ = 'users'
-    # ----------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     id = Column(Integer, primary_key=True)
-    # ----------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     name = Column(String, nullable=False)
-    login = Column(String, unique=True, nullable=False)
+    email = Column(String, nullable=False)
+    login = Column(String, nullable=False)
     password = Column(String, nullable=False)
     registered = Column(String, nullable=False)
     last_seen = Column(String, nullable=False)
+    UniqueConstraint('login', 'password', name='unique_user_cred')
 
 
 class Record(Base):
@@ -56,9 +58,9 @@ class Persistence(Base):
     show it to the user - every day, every week, etc.
     """
     __tablename__ = 'persistence'
-    # ----------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     id = Column(Integer, primary_key=True)
-    # ----------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     name = Column(String, nullable=False)
 
 

@@ -7,7 +7,7 @@ from starlette.staticfiles import StaticFiles
 
 from ordnung.presentation.views import (
     index, login, logout, month, register, restore,
-    unauthorized, day, restore_note, register_confirm, restore_password
+    unauthorized, day, restore_note, register_confirm, restore_password,
 )
 
 routes = [
@@ -15,14 +15,15 @@ routes = [
     Route('/', index),
 
     # auth
-    Route('/login', login, methods=['GET', 'POST']),
+    Route('/login', login),
     Route('/logout', logout, methods=['GET', 'POST']),
     Route('/register', register, methods=['GET', 'POST']),
     Route('/register_confirm', register_confirm),
 
     Route('/restore', restore, methods=['GET', 'POST']),
     Route('/restore_note', restore_note),
-    Route('/restore_password', restore_password, methods=['GET', 'POST']),
+    Route('/restore_password/{token}', restore_password, methods=['GET',
+                                                                  'POST']),
 
     Route('/unauthorized', unauthorized),
 
@@ -38,5 +39,7 @@ routes = [
     # Route('/show_record/{chosen_date}/{record_id}', ajax_delete_record, methods=['DELETE']),
 
     # static files
-    Mount('/static', app=StaticFiles(directory='ordnung/presentation/static'), name='static'),
+    Mount('/static',
+          app=StaticFiles(directory='ordnung/presentation/static'),
+          name='static'),
 ]

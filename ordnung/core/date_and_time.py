@@ -44,25 +44,19 @@ class Day:
         return css_class
 
 
-def today() -> date:
-    """Get today's date.
-    """
-    return date.today()
-
-
 def get_offset_dates(target_date: date) -> Tuple[date, date, date, date]:
-    """Calculate target dates that we will jump onto in case user will click step/leap forward/back.
+    """Calculate target dates that we will jump on step/leap forward/back.
 
-    leap_back   step_back   today   step_forward    leap_forward
-        │          │          │          │               │       Default parameters:
-        │          │          │          │               └────── today + 21 day
-        │          │          │          └────────────────────── today + 7 days
-        │          │          └───────────────────────────────── today
-        │          └──────────────────────────────────────────── today - 7 days
-        └─────────────────────────────────────────────────────── today - 21 day
+    leap_back  step_back  today  step_forward  leap_forward
+        │         │         │         │             │       Default parameters:
+        │         │         │         │             └────── today + 21 day
+        │         │         │         └──────────────────── today + 7 days
+        │         │         └────────────────────────────── today
+        │         └──────────────────────────────────────── today - 7 days
+        └────────────────────────────────────────────────── today - 21 day
 
     Example output:
-        [date(2020, 4, 12), date(2020, 4, 26), date(2020, 5, 10), date(2020, 5, 24)]
+        [date(2020, 4, 12), date(2020, 4, 26), date(2020, 5, 10), ...]
     """
     leap_back = target_date - timedelta(days=settings.LEAP_SIZE)
     step_back = target_date - timedelta(days=settings.STEP_SIZE)
