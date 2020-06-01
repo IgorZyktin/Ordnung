@@ -18,7 +18,8 @@ def render_template(name: str, context: dict, status_code: int = 200,
     """
     headers = headers or {}
     extensions = context['request'].state.context_extensions
-    context = {**context, **extensions, **kwargs}
+    context = {**extensions, **context, **kwargs}
+    context['index_url'] = context['request'].url_for('index')
     return templates.TemplateResponse(name, context, status_code, headers)
 
 

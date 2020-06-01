@@ -2,12 +2,13 @@
 
 {%- block login_content %}
 <div>
-    <p>{{ header }}.</p>
+    <h3>{{ header }}</h3>
     <form method="POST">
         <label>
             <input type="text" name="user_contact" value="{{ user_contact }}">
         </label>
         <input type="submit" class="login_button">
     </form>
+    <button class="login_button" onclick="relocate('{{ index_url }}');">{{ retry }}</button>
 </div>
 {% endblock %}

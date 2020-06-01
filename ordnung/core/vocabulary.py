@@ -17,6 +17,7 @@ STATIC_VOCABULARY = {
 
         "You may gain access only after login": "Доступ к данным возможен только после входа",
         "Try log in once again": "Ещё раз попробовать войти",
+        "Go to login page": "На стартовую страницу",
         "Register": "Зарегистрироваться",
         "Restore password": "Восстановить пароль",
         "You have no access to this resource": "У вас нет прав доступа к этому ресурсу",
@@ -29,6 +30,14 @@ STATIC_VOCABULARY = {
         'Password restore link was sent to %(email)s': "Ссылка для сброса пароля "
                                                        "отправлена на %(email)s",
 
+        # password restore page
+        "New password": "Новый пароль",
+        "Repeat new password": "Повторите новый пароль",
+        "You haven't asked for password restore": 'Вы не запрашивали смену пароля',
+        "Password restore link seems to be incorrect": 'Ссылка для восстановления пароля некорректна',
+        "Password restore link seems to be outdated": 'Ссылка для восстановления пароля устарела',
+        "Password restore": "Восстановление пароля",
+        "Something bad happened during password change": "Что то сломалось при смене пароля",
         #     "$author": "Автор",
         #     "$created_for": "Создана для",
         #     "$visible_for": "Видима для",

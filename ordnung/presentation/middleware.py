@@ -10,6 +10,7 @@ from starlette.requests import HTTPConnection
 from starlette.types import Scope, Receive, Send
 
 from ordnung.core.localisation import translate, gettext
+from ordnung.presentation.access import get_lang
 from ordnung.presentation.backends import UnauthenticatedUser
 
 
@@ -55,6 +56,9 @@ class ContextExtensionMiddleware(BaseHTTPMiddleware):
         context_extensions['gettext'] = gettext
         context_extensions['translate'] = translate
         context_extensions['user'] = request.user
+        context_extensions['lang'] = get_lang(request)
+        context_extensions['errors'] = []
+
         request.state.context_extensions = context_extensions
         response = await call_next(request)
         return response

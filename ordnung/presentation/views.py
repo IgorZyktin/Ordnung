@@ -2,25 +2,25 @@
 
 """Regular views.
 """
-from itsdangerous import URLSafeSerializer
+from itertools import chain
+
 from starlette.authentication import requires
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from ordnung import settings
-from ordnung.core.access import get_monotonic
+from ordnung.core.access import check_token, \
+    password_restore_token_is_too_old
 from ordnung.core.date_and_time import get_offset_dates, form_month
 from ordnung.core.localisation import translate, get_day_names, gettext
-from ordnung.presentation.access import get_date, get_lang, send_restore_link, \
+from ordnung.presentation.access import (
+    get_date, get_lang, send_restore_link,
     change_user_password
+)
+from ordnung.presentation.forms import PasswordRestoreForm
 from ordnung.presentation.rendering import render_template, extract_date
 from ordnung.storage.access import get_user_by_email_or_login
 from ordnung.storage.database import get_records
-
-HTTP_OK = 200
-HTTP_POST_REDIRECT_GET = 303
-HTTP_UNAUTHORIZED = 401
-HTTP_FORBIDDEN = 403
 
 
 async def index(request: Request) -> RedirectResponse:
@@ -41,17 +41,14 @@ async def login(request: Request) -> HTMLResponse:
 
     context = {
         'request': request,
-        'lang': lang,
         'header': gettext(lang, "You may gain access only after login"),
         'retry': gettext(lang, "Try log in once again"),
         'register': gettext(lang, "Register"),
         'restore': gettext(lang, "Restore password"),
-        'errors': {},
     }
-    return render_template(
-        "login.html", context, status_code=HTTP_UNAUTHORIZED,
-        headers={"WWW-Authenticate": 'Basic realm="Ordnung"'}
-    )
+    return render_template("login.html", context, status_code=401,
+                           headers={"WWW-Authenticate": 'Basic '
+                                                        'realm="Ordnung"'})
 
 
 @requires('authenticated', redirect='unauthorized')
@@ -82,7 +79,6 @@ async def month(request: Request) -> HTMLResponse:
         'month': form_month(current_date),
         'records': records,
         'tasks': tasks,  # FIXME
-        'lang': lang,
         'menu_is_visible': int(request.query_params.get('menu', '0')),
         'current_date': current_date,
         'day_names': get_day_names(lang),
@@ -109,7 +105,6 @@ async def day(request: Request):
     context = {
         'request': request,
         'header': header,
-        'lang': lang,
         'current_date': current_date,
         'month_url': f'/month?date={current_date}',
         'tasks': tasks[str(current_date)]
@@ -169,16 +164,12 @@ async def register(request: Request):
 async def register_confirm(request: Request):
     """Register page. Message about e-mail confirmation.
     """
-    errors = []
     lang = get_lang(request)
     context = {
         'request': request,
-        'lang': lang,
-        'header': gettext(lang,
-                          'Password confirm link was sent to %(email)s'),
-        'retry': gettext(lang, "Try log in once again"),
-        'index_url': request.url_for('index'),
-        'errors': errors,
+        'header': gettext(lang, 'Password confirm link '
+                                'was sent to %(email)s'),
+        'retry': gettext(lang, "Go to login page"),
     }
     return render_template("restore_note.html", context)
 
@@ -200,15 +191,15 @@ async def restore(request: Request):
             request.session['email_for_restore'] = user.email
             request.session['restore_url'] = restore_url  # FIXME
             return RedirectResponse(request.url_for('restore_note'),
-                                    status_code=HTTP_POST_REDIRECT_GET)
+                                    status_code=303)
         else:
             errors = [f'нет пользователя с конктктом {user_contact}']
 
     context = {
         'request': request,
-        'lang': lang,
         'user_contact': user_contact,
         'header': gettext(lang, 'Enter your email or login'),
+        'retry': gettext(lang, "Go to login page"),
         'errors': errors,
     }
     return render_template("restore.html", context)
@@ -217,7 +208,6 @@ async def restore(request: Request):
 async def restore_note(request: Request):
     """Password restore page (just message about email).
     """
-    errors = []
     lang = get_lang(request)
 
     email = request.session.get('email_for_restore', '')
@@ -225,16 +215,13 @@ async def restore_note(request: Request):
         header = gettext(lang, 'Password restore link was sent to %(email)s')
         header = header % dict(email=email)
     else:
-        header = 'Вы не запрашивали смену пароля.'
+        header = gettext(lang, "You haven't asked for password restore")
 
     context = {
         'request': request,
-        'lang': lang,
         'header': header,
-        'retry': gettext(lang, "Try log in once again"),
-        'index_url': request.url_for('index'),
-        'x': request.session['restore_url'],
-        'errors': errors,
+        'retry': gettext(lang, "Go to login page"),
+        'temporary_link': request.session['restore_url'],  # FIXME
     }
     return render_template("restore_note.html", context)
 
@@ -242,39 +229,44 @@ async def restore_note(request: Request):
 async def restore_password(request: Request):
     """Password restore page (actual form).
     """
+    token = request.path_params.get('token')
+    sig_okay, payload = check_token(token, 'restore_password')
+
     errors = []
     lang = get_lang(request)
-    auth_s = URLSafeSerializer(settings.SECRET_KEY, salt="restore_password")
-    token = request.path_params.get('token')
-    sig_okay, payload = auth_s.loads_unsafe(token)
-    print(payload)
+
+    form = await request.form()
+    form = PasswordRestoreForm(form)
+    form.password.label.text = gettext(lang, 'New password')
+    form.password_repeat.label.text = gettext(lang, 'Repeat new password')
+
     if not sig_okay:
-        header = 'вы не можете восстановить пароль'
+        header = gettext(lang, 'Password restore link seems to be incorrect')
+
+    elif password_restore_token_is_too_old(payload):
+        header = gettext(lang, 'Password restore link seems to be outdated')
+        sig_okay = False
+
     else:
-        delta = get_monotonic() - payload['monotonic']
-        if delta > settings.MAX_PASSWORD_RESTORE_INTERVAL:
-            header = 'ссылка восстановления пароля протухла'
-            sig_okay = False
-        else:
-            header = 'password restore'
+        header = gettext(lang, 'Password restore')
 
     if sig_okay and request.method == 'POST':
-        form = await request.form()
-        password_1 = form.get('password_1')
-        password_2 = form.get('password_2')
-        if password_1 != password_2:
-            errors = ['Пароли не совпадают']
-        elif change_user_password(payload['user_id'], password_1):
-            return RedirectResponse(request.url_for('login'),
-                                    status_code=HTTP_POST_REDIRECT_GET)
+
+        if form.validate():
+            if change_user_password(payload['user_id'], form.password.data):
+                return RedirectResponse(request.url_for('login'),
+                                        status_code=303)
+            else:
+                errors = [gettext(lang, 'Something bad happened '
+                                        'during password change')]
         else:
-            errors = ['не удалось']
+            errors = chain(*form.errors.values())
 
     context = {
         'request': request,
         'header': header,
-        'retry': gettext(lang, "Try log in once again"),
-        'index_url': request.url_for('index'),
+        'retry': gettext(lang, "Go to login page"),
+        'form': form,
         'sig_okay': sig_okay,
         'errors': errors,
     }
@@ -288,14 +280,10 @@ async def unauthorized(request: Request) -> HTMLResponse:
 
     context = {
         'request': request,
-        'lang': lang,
         'header': gettext(lang, "You have no access to this resource"),
-        'retry': gettext(lang, "Try log in once again"),
-        'index_url': request.url_for('index'),
-        'errors': {},
+        'retry': gettext(lang, "Go to login page"),
     }
-    return render_template("unauthorized.html", context,
-                           status_code=HTTP_FORBIDDEN)
+    return render_template("unauthorized.html", context, status_code=403)
 
 
 @requires('authenticated', redirect='unauthorized')
@@ -306,11 +294,7 @@ async def logout(request: Request) -> HTMLResponse:
 
     context = {
         'request': request,
-        'lang': lang,
         'header': gettext(lang, "You have been successfully logged out"),
-        'retry': gettext(lang, "Try log in once again"),
-        'index_url': request.url_for('index'),
-        'errors': {},
+        'retry': gettext(lang, "Go to login page"),
     }
-    return render_template("logout.html", context,
-                           status_code=HTTP_UNAUTHORIZED)
+    return render_template("logout.html", context, status_code=401)

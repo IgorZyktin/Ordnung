@@ -30,6 +30,11 @@
     position: relative;
 }
 
+.form_group p {
+    text-align: center;
+    color: forestgreen;
+}
+
 .login_button {
     display: block;
     width: 100%;

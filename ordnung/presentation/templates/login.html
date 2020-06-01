@@ -2,12 +2,12 @@
 
 {% block add_to_head %}
     {{ super() }}
-    <script src="/static/login.js"></script>
+    <script src="{{ url_for('static', path='login.js') }}"></script>
 {% endblock %}
 
 {%- block login_content %}
     <div class="form_group">
-        <p>{{ header }}.</p>
+        <h3>{{ header }}</h3>
         <button class="login_button" id="btn_login">{{ retry }}</button>
         <button class="login_button" id="btn_restore">{{ restore }}</button>
         <button class="login_button" id="btn_register">{{ register }}</button>
