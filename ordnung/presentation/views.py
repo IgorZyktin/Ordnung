@@ -9,17 +9,21 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from ordnung import settings
-from ordnung.core.access import check_token, \
-    password_restore_token_is_too_old
+from ordnung.core.access import (
+    check_token, token_is_too_old
+)
 from ordnung.core.date_and_time import get_offset_dates, form_month
 from ordnung.core.localisation import translate, get_day_names, gettext
 from ordnung.presentation.access import (
-    get_date, get_lang, send_restore_link,
-    change_user_password
+    get_date, get_lang, send_restore_email,
+    send_verification_email
 )
-from ordnung.presentation.forms import PasswordRestoreForm
+from ordnung.presentation.forms import PasswordRestoreForm, RegisterForm
 from ordnung.presentation.rendering import render_template, extract_date
-from ordnung.storage.access import get_user_by_email_or_login
+from ordnung.storage.access import (
+    get_user_by_email_or_login, change_user_password,
+    confirm_registration, register_new_user,
+)
 from ordnung.storage.database import get_records
 
 
@@ -60,10 +64,8 @@ async def month(request: Request) -> HTMLResponse:
     header = translate(lang,
                        f'month_{current_date.month}') + f' ({current_date})'
 
-    (leap_back,
-     step_back,
-     step_forward,
-     leap_forward) = get_offset_dates(current_date)
+    (leap_back, step_back,
+     step_forward, leap_forward) = get_offset_dates(current_date)
 
     records = get_records(target_date=current_date,
                           offset_left=settings.MONTH_OFFSET,
@@ -135,43 +137,93 @@ async def show_record(request: Request):
 async def register(request: Request):
     """Register page.
     """
-    # if request.user.is_authenticated:
-    #     return RedirectResponse(request.url_for('index'))
-    #
-    # errors = {}
-    # form = await request.form()
-    #
-    # if request.method == 'POST':
-    #     if not (errors := registration_form_is_invalid(form)):
-    #         register_new_user('s')
-    #         send_verification_email()
-    #         return RedirectResponse(request.url_for('register_confirm'),
-    #                                 status_code=HTTP_POST_REDIRECT_GET)
-    #
-    # context = {
-    #     'request': request,
-    #     'header': translate(request.user.namespace, 'generic', '$register'),
-    #     'entered_name': form.get('username', ''),
-    #     'entered_login': form.get('login', ''),
-    #     'entered_email': form.get('email', ''),
-    #     'errors': errors,
-    # }
-    # return render_template("register.html", context)
-    raise
+    if request.user.is_authenticated:
+        return RedirectResponse(request.url_for('index'))
+
+    lang = get_lang(request)
+    form = await request.form()
+    form = RegisterForm(form)
+
+    if request.method == 'POST' and form.validate():
+        new_user_id = register_new_user(form)
+
+        if new_user_id:
+            if send_verification_email(request, new_user_id, form.email.data):
+                request.session['email_for_confirm'] = form.email.data
+                return RedirectResponse(request.url_for('register_note'),
+                                        status_code=303)
+            else:
+                errors = [gettext(lang, 'Something bad happened '
+                                        'during registration confirmation')]
+        else:
+            errors = [gettext(lang, f'Login "{form.login.data}" '
+                                    f'is already in use')]
+    else:
+        errors = chain(*form.errors.values())
+
+    context = {
+        'request': request,
+        'header': 'Registration',
+        'form': form,
+        'errors': errors,
+        'retry': gettext(lang, "Go to login page"),
+    }
+    return render_template("register.html", context)
 
 
-# TODO
-async def register_confirm(request: Request):
+async def register_note(request: Request):
     """Register page. Message about e-mail confirmation.
     """
     lang = get_lang(request)
+
+    email = request.session.get('email_for_confirm', '')
+    if email:
+        header = gettext(lang, 'Confirmation link was sent to %(email)s')
+        header = header % dict(email=email)
+    else:
+        header = gettext(lang, "You haven't asked for registration")
+
     context = {
         'request': request,
-        'header': gettext(lang, 'Password confirm link '
-                                'was sent to %(email)s'),
+        'header': header,
         'retry': gettext(lang, "Go to login page"),
     }
-    return render_template("restore_note.html", context)
+    return render_template("login_note.html", context)
+
+
+async def register_confirm(request: Request):
+    """Registration confirmation page.
+    """
+    errors = []
+    token = request.path_params.get('token')
+    sig_okay, payload = check_token(token, 'confirm_registration')
+
+    lang = get_lang(request)
+
+    if not sig_okay:
+        header = gettext(lang, 'Confirmation link seems to be incorrect')
+
+    elif token_is_too_old(payload):
+        header = gettext(lang, 'Confirmation link seems to be outdated')
+        sig_okay = False
+
+    else:
+        if confirm_registration(payload['user_id']):
+            header = gettext(lang, 'Registration confirmed')
+
+        else:
+            header = gettext(lang, 'Registration is not confirmed')
+            errors = [gettext(lang, 'Something bad happened '
+                                    'during registration confirmation')]
+
+    context = {
+        'request': request,
+        'header': header,
+        'retry': gettext(lang, "Go to login page"),
+        'sig_okay': sig_okay,
+        'errors': errors
+    }
+    return render_template("login_note.html", context)
 
 
 async def restore(request: Request):
@@ -184,16 +236,18 @@ async def restore(request: Request):
         form = await request.form()
 
         if not (user_contact := form.get('user_contact')):
-            errors = ['укажи хоть что нибудь']
+            errors = ['User contact information required']
 
         elif (user := get_user_by_email_or_login(user_contact)) is not None:
-            restore_url = send_restore_link(request, user.id, user.email)
-            request.session['email_for_restore'] = user.email
-            request.session['restore_url'] = restore_url  # FIXME
-            return RedirectResponse(request.url_for('restore_note'),
-                                    status_code=303)
+            if send_restore_email(request, user.id, user.email):
+                request.session['email_for_restore'] = user.email
+                return RedirectResponse(request.url_for('restore_note'),
+                                        status_code=303)
+
+            errors = [gettext(lang, 'Something bad happened '
+                                    'during restoring email delivery')]
         else:
-            errors = [f'нет пользователя с конктктом {user_contact}']
+            errors = ['There is no user with supplied contact information']
 
     context = {
         'request': request,
@@ -221,18 +275,16 @@ async def restore_note(request: Request):
         'request': request,
         'header': header,
         'retry': gettext(lang, "Go to login page"),
-        'temporary_link': request.session['restore_url'],  # FIXME
     }
-    return render_template("restore_note.html", context)
+    return render_template("login_note.html", context)
 
 
-async def restore_password(request: Request):
+async def restore_confirm(request: Request):
     """Password restore page (actual form).
     """
     token = request.path_params.get('token')
     sig_okay, payload = check_token(token, 'restore_password')
 
-    errors = []
     lang = get_lang(request)
 
     form = await request.form()
@@ -243,24 +295,22 @@ async def restore_password(request: Request):
     if not sig_okay:
         header = gettext(lang, 'Password restore link seems to be incorrect')
 
-    elif password_restore_token_is_too_old(payload):
+    elif token_is_too_old(payload):
         header = gettext(lang, 'Password restore link seems to be outdated')
         sig_okay = False
 
     else:
         header = gettext(lang, 'Password restore')
 
-    if sig_okay and request.method == 'POST':
+    if sig_okay and request.method == 'POST' and form.validate():
 
-        if form.validate():
-            if change_user_password(payload['user_id'], form.password.data):
-                return RedirectResponse(request.url_for('login'),
-                                        status_code=303)
-            else:
-                errors = [gettext(lang, 'Something bad happened '
-                                        'during password change')]
-        else:
-            errors = chain(*form.errors.values())
+        if change_user_password(payload['user_id'], form.password.data):
+            return RedirectResponse(request.url_for('login'),
+                                    status_code=303)
+        errors = [gettext(lang, 'Something bad happened '
+                                'during password change')]
+    else:
+        errors = chain(*form.errors.values())
 
     context = {
         'request': request,
@@ -297,4 +347,4 @@ async def logout(request: Request) -> HTMLResponse:
         'header': gettext(lang, "You have been successfully logged out"),
         'retry': gettext(lang, "Go to login page"),
     }
-    return render_template("logout.html", context, status_code=401)
+    return render_template("login_note.html", context, status_code=401)

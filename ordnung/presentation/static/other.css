@@ -20,17 +20,17 @@
     padding: 10px;
 }
 
-.form_group {
+.form_section {
     margin: 5px;
 }
 
-.form_group label {
+.form_section label {
     display: block;
     padding: 5px;
     position: relative;
 }
 
-.form_group p {
+.form_section p {
     text-align: center;
     color: forestgreen;
 }
@@ -53,6 +53,7 @@
     color: #1a1a17;
 }
 
+select,
 input[type="email"],
 input[type="text"],
 input[type="password"] {
@@ -68,10 +69,8 @@ input[type="password"] {
     border-radius: 10px;
 }
 
-label:hover .tooltip {
-    top: 0;
-    transform: translateX(-105%);
-    display: block;
+select {
+    background-color: #1b1e21;
 }
 
 .tooltip {
@@ -84,4 +83,14 @@ label:hover .tooltip {
     background: #282727;
     color: #aa9764;
     text-align: center;
+}
+
+.form_group {
+    margin: 5px;
+}
+
+.form_group:hover .tooltip {
+    /*top: 0;*/
+    transform: translateX(-105%);
+    display: block;
 }

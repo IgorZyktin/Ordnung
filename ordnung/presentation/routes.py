@@ -6,8 +6,9 @@ from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 
 from ordnung.presentation.views import (
-    index, login, logout, month, register, restore,
-    unauthorized, day, restore_note, register_confirm, restore_password,
+    index, login, logout, month, register,
+    restore, unauthorized, day, restore_note,
+    register_note, restore_confirm, register_confirm,
 )
 
 routes = [
@@ -18,12 +19,13 @@ routes = [
     Route('/login', login),
     Route('/logout', logout, methods=['GET', 'POST']),
     Route('/register', register, methods=['GET', 'POST']),
-    Route('/register_confirm', register_confirm),
+    Route('/register_note', register_note),
+    Route('/register_confirm/{token}', register_confirm),
 
     Route('/restore', restore, methods=['GET', 'POST']),
     Route('/restore_note', restore_note),
-    Route('/restore_password/{token}', restore_password, methods=['GET',
-                                                                  'POST']),
+    Route('/restore_confirm/{token}', restore_confirm, methods=['GET',
+                                                                'POST']),
 
     Route('/unauthorized', unauthorized),
 

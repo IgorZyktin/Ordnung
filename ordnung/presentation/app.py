@@ -35,6 +35,8 @@ middleware = [
 
 async def server_error(request, exc):
     session.rollback()
+    # TODO - is it actually working?
+    print('server_error handler')
     return HTMLResponse(content='fuck', status_code=exc.status_code)
 
 

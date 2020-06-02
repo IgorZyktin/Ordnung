@@ -3,7 +3,9 @@
 """Database models.
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
+from sqlalchemy import (
+    Column, Integer, String, ForeignKey, UniqueConstraint, Boolean, DateTime
+)
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -22,11 +24,11 @@ class User(Base):
     # -------------------------------------------------------------------------
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    login = Column(String, nullable=False)
+    login = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
-    registered = Column(String, nullable=False)
-    last_seen = Column(String, nullable=False)
-    UniqueConstraint('login', 'password', name='unique_user_cred')
+    registered = Column(DateTime, nullable=False)
+    last_seen = Column(DateTime, nullable=False)
+    confirmed = Column(Boolean, nullable=False, default=False)
 
 
 class Record(Base):
@@ -68,7 +70,7 @@ class Comment(Base):
     """A single comment representation.
     """
     __tablename__ = 'comments'
-    # ----------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     id = Column(Integer, primary_key=True)
     record_id = Column(Integer, ForeignKey('records.id'))
     user_id = Column(Integer, ForeignKey('users.id'))

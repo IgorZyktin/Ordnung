@@ -37,8 +37,16 @@ def check_token(token: Optional[str], salt: str) -> Tuple[bool, Any]:
     return sig_okay, payload
 
 
-def password_restore_token_is_too_old(payload: dict) -> bool:
-    """Return True if link is too old and password can't be restored.
+def generate_token(payload: dict, salt: str) -> str:
+    """Generate new token.
+    """
+    auth_s = URLSafeSerializer(settings.SECRET_KEY, salt=salt)
+    token = auth_s.dumps(payload)
+    return token
+
+
+def token_is_too_old(payload: dict) -> bool:
+    """Return True if link is too old and can't be used.
     """
     delta = get_monotonic() - payload.get('monotonic', 0)
     return delta > settings.MAX_PASSWORD_RESTORE_INTERVAL

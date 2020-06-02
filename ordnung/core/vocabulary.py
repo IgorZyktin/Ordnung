@@ -160,7 +160,7 @@ STATIC_VOCABULARY = {
         #         "$label_password": "[?] Password",
         #         "$label_button": "Register",
         #         "$hint_username": "Name will be displayed in the menu and also will help other users to recognise you.",
-        #         "$hint_login": "Login will be used only  to enter the site.",
+        #         "$hint_login": "Login will be used only to enter the site.",
         #         "$hint_email": "E-mail is needed only to restore forgotten password.",
         #         "$hint_password": "Do not use password from your bank account here! Safety were not of my goals in this app.",
         #         "$placeholder_username": "Your name",

@@ -5,13 +5,8 @@
 from datetime import date, datetime
 
 from starlette.requests import Request
-from itsdangerous import URLSafeSerializer
-from werkzeug.security import generate_password_hash
 
-from ordnung import settings
-from ordnung.core.access import get_today, get_monotonic
-from ordnung.storage.access import get_user_by_id
-from ordnung.storage.database import session
+from ordnung.core.access import get_today, get_monotonic, generate_token
 
 
 def get_lang(request: Request) -> str:
@@ -42,19 +37,25 @@ def get_date(request: Request) -> date:
     return target_date
 
 
-def send_restore_link(request: Request, user_id: int, email: str):
-    # TODO
-    auth_s = URLSafeSerializer(settings.SECRET_KEY, salt="restore_password")
-    token = auth_s.dumps({"user_id": user_id, "monotonic": get_monotonic()})
+def send_restore_email(request: Request, user_id: int, email: str) -> str:
+    token = generate_token(
+        payload={'user_id': user_id, 'monotonic': get_monotonic()},
+        salt='restore_password'
+    )
     base_url = request.url_for('restore_password', token=token)
+    # todo
+    print('send_restore_email', base_url, email)
     return base_url
 
 
-def change_user_password(user_id: int, new_password: str):
-    user = get_user_by_id(user_id)
-    if user is not None:
-        user.password = generate_password_hash(new_password)
-        session.add(user)
-        session.commit()
-        return True
-    return False
+def send_verification_email(request: Request, user_id: int, email: str) -> str:
+    """Send link with activation URL to the user.
+    """
+    token = generate_token(
+        payload={'user_id': user_id, 'monotonic': get_monotonic()},
+        salt='confirm_registration'
+    )
+    base_url = request.url_for('register_confirm', token=token)
+    # todo
+    print('send_verification_email', base_url, email)
+    return base_url
