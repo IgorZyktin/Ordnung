@@ -47,6 +47,7 @@ else:
 HOST = '127.0.0.1'
 PORT = 8000
 URL_STYLE: Literal['absolute', 'relative'] = 'relative'
+URL_STYLE: Literal['absolute', 'relative'] = 'absolute'
 
 EMAIL_DEFAULT_ADDRESS = 'ordnung-auto@yandex.ru'
 EMAIL_LOGIN = 'ordnung-auto'
