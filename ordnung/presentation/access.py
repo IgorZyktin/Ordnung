@@ -60,7 +60,7 @@ def send_restore_email(request: Request, user_id: int, email: str) -> str:
     )
     base_url = url_for(request, 'restore_confirm', token=token)
     # todo
-    send_email('Password restore', [email], f'Your password restore link: http://84.201.137.8/{base_url}')
+    send_email('Password restore', [email], f'Your password restore link: http://84.201.137.8{base_url}')
     return base_url
 
 
@@ -73,5 +73,5 @@ def send_verification_email(request: Request, user_id: int, email: str) -> str:
     )
     base_url = url_for(request, 'register_confirm', token=token)
     # todo
-    send_email('Registration confirm', [email], f'Your confirmation link: http://84.201.137.8/{base_url}')
+    send_email('Registration confirm', [email], f'Your confirmation link: http://84.201.137.8{base_url}')
     return base_url
