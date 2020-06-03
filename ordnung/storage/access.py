@@ -8,10 +8,11 @@ from sqlalchemy import or_, func
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
 
+from ordnung import settings
 from ordnung.core.access import get_now
 from ordnung.presentation.forms import RegisterForm
 from ordnung.storage.database import session
-from ordnung.storage.models import User
+from ordnung.storage.models import User, Group, GroupMembership, Visibility
 
 
 def get_user_by_id(user_id: int) -> Optional[User]:
@@ -72,20 +73,46 @@ def confirm_registration(user_id: int) -> bool:
 def register_new_user(form: RegisterForm) -> int:
     """Register new user.
     """
-    new_user = User(
-        name=form.username.data,
-        email=form.email.data,
-        login=form.login.data,
-        password=generate_password_hash(form.password.data),
-        registered=get_now(),
-        last_seen=get_now(),
-        confirmed=False
-    )
     try:
+        new_user = User(
+            name=form.username.data,
+            email=form.email.data,
+            login=form.login.data,
+            password=generate_password_hash(form.password.data),
+            registered=get_now(),
+            last_seen=get_now(),
+            confirmed=False
+        )
         session.add(new_user)
         session.commit()
         session.refresh(new_user)
-        new_id = new_user.id
+        new_user_id = new_user.id
+
     except IntegrityError:
-        new_id = 0
-    return new_id
+        session.rollback()
+        new_user_id = 0
+
+    if new_user_id:
+        new_group = Group(
+            owner_id=new_user_id,
+            name=settings.DEFAULT_GROUP_NAME,
+        )
+        session.add(new_group)
+        session.commit()
+        session.refresh(new_group)
+
+        new_membership = GroupMembership(
+            user_id=new_user_id,
+            group_id=new_group.id,
+        )
+        session.add(new_membership)
+        session.commit()
+
+        new_visibility = Visibility(
+            user_id=new_user_id,
+            group_id=new_group.id
+        )
+        session.add(new_visibility)
+        session.commit()
+
+    return new_user_id

@@ -6,6 +6,8 @@ import os
 import sys
 
 #  ------------------ CORE SETTINGS ------------------
+from typing import Literal
+
 SECRET_KEY = os.getenv('ORDNUNG_SECRET_KEY')
 
 # date and time
@@ -24,6 +26,7 @@ DEFAULT_LANG = 'EN'
 DEFAULT_PLACEHOLDER = '???'
 
 MAX_PASSWORD_RESTORE_INTERVAL = 86400
+DEFAULT_GROUP_NAME = 'Home'
 
 #  ----------------- STORAGE SETTINGS ----------------
 
@@ -43,3 +46,4 @@ else:
 
 HOST = '127.0.0.1'
 PORT = 8000
+URL_STYLE: Literal['absolute', 'relative'] = 'relative'

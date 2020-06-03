@@ -2,6 +2,7 @@
 
 """Middleware classes.
 """
+from functools import partial
 
 from starlette.authentication import AuthenticationError, AuthCredentials
 from starlette.middleware.authentication import AuthenticationMiddleware
@@ -10,7 +11,7 @@ from starlette.requests import HTTPConnection
 from starlette.types import Scope, Receive, Send
 
 from ordnung.core.localisation import translate, gettext
-from ordnung.presentation.access import get_lang
+from ordnung.presentation.access import get_lang, url_for
 from ordnung.presentation.backends import UnauthenticatedUser
 
 
@@ -53,10 +54,12 @@ class ContextExtensionMiddleware(BaseHTTPMiddleware):
         except AttributeError:
             context_extensions = {}
 
-        context_extensions['gettext'] = gettext
-        context_extensions['translate'] = translate
+        lang = get_lang(request)
+        context_extensions['gettext'] = partial(gettext, lang)
+        context_extensions['url_for'] = partial(url_for, request)
+        context_extensions['translate'] = partial(translate, lang)
         context_extensions['user'] = request.user
-        context_extensions['lang'] = get_lang(request)
+        context_extensions['lang'] = lang
         context_extensions['errors'] = []
 
         request.state.context_extensions = context_extensions

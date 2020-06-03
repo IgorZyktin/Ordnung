@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-"""Tools, that rely on request contents.
+"""Tools that rely on request contents.
 """
+import urllib
 from datetime import date, datetime
 
 from starlette.requests import Request
 
 from ordnung.core.access import get_today, get_monotonic, generate_token
+from ordnung import settings
 
 
 def get_lang(request: Request) -> str:
@@ -37,7 +39,20 @@ def get_date(request: Request) -> date:
     return target_date
 
 
+def url_for(request: Request, *args, **kwargs) -> str:
+    """Wrapper for the standard url_for, that gives absolute/relative links.
+    """
+    base_url = request.url_for(*args, **kwargs)
+    if settings.URL_STYLE == 'absolute':
+        return base_url
+
+    segments = urllib.parse.urlparse(base_url)
+    return ''.join(segments[2:])
+
+
 def send_restore_email(request: Request, user_id: int, email: str) -> str:
+    """Send link with password restore URL to the user.
+    """
     token = generate_token(
         payload={'user_id': user_id, 'monotonic': get_monotonic()},
         salt='restore_password'
@@ -49,7 +64,7 @@ def send_restore_email(request: Request, user_id: int, email: str) -> str:
 
 
 def send_verification_email(request: Request, user_id: int, email: str) -> str:
-    """Send link with activation URL to the user.
+    """Send link with account activation URL to the user.
     """
     token = generate_token(
         payload={'user_id': user_id, 'monotonic': get_monotonic()},

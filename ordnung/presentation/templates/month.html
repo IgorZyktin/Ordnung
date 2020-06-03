@@ -29,7 +29,7 @@
 
                     <div class="{{ day.css_class }}" date="{{ day.date }}">
                         <span class="day_label wide">
-                            {{ day.number }} {{ translate(lang, "month_%s_"|format(day.month)) }}
+                            {{ day.number }} {{ translate("month_%s_"|format(day.month)) }}
                         </span>
                         <span class="day_label narrow">{{ day.number }}</span>
                         {% for record in records[day.date] %}
@@ -45,27 +45,27 @@
         <div class="footer">
 
             <div id="leap_back" onclick="relocate_with_args('{{ leap_back_url }}')">
-                <span class="wide">{{ gettext(lang, 'Leap back') }}</span>
+                <span class="wide">{{ gettext('Leap back') }}</span>
                 <span class="narrow"><--</span>
             </div>
 
             <div id ="step_back" onclick="relocate_with_args('{{ step_back_url }}')">
-                <span class="wide">{{ gettext(lang, 'Step back') }}</span>
+                <span class="wide">{{ gettext('Step back') }}</span>
                 <span class="narrow"><</span>
             </div>
 
             <div id ="step_on_date" onclick="relocate_with_args('/month')">{#FIXME#}
-                <span class="wide">{{ gettext(lang, 'Step on date') }}</span>
+                <span class="wide">{{ gettext('Step on date') }}</span>
                 <span class="narrow">>|<</span>
             </div>
 
             <div id="step_forward" onclick="relocate_with_args('{{ step_forward_url }}')">
-                <span class="wide">{{ gettext(lang, 'Step forward') }}</span>
+                <span class="wide">{{ gettext('Step forward') }}</span>
                 <span class="narrow">></span>
             </div>
 
             <div id="leap_forward" onclick="relocate_with_args('{{ leap_forward_url }}')">
-                <span class="wide">{{ gettext(lang, 'Leap forward') }}</span>
+                <span class="wide">{{ gettext('Leap forward') }}</span>
                 <span class="narrow">--></span>
 
             </div>
