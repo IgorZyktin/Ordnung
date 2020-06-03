@@ -58,7 +58,7 @@ def send_restore_email(request: Request, user_id: int, email: str) -> str:
         payload={'user_id': user_id, 'monotonic': get_monotonic()},
         salt='restore_password'
     )
-    base_url = url_for(request, 'restore_password', token=token)
+    base_url = url_for(request, 'restore_confirm', token=token)
     # todo
     send_email('Password restore', [email], f'Your password restore link: http://84.201.137.8/{base_url}')
     return base_url
