@@ -10,6 +10,7 @@ from email.mime.text import MIMEText
 from typing import List
 
 from ordnung import settings
+from loguru import logger
 
 
 class SMTPServer:
@@ -40,7 +41,8 @@ class SMTPServer:
         """
         self.server.quit()
         if exc_val:
-            raise
+            logger.exception('Fail')
+            # raise
 
 
 def send_email(subject: str, targets: List[str], html: str,
