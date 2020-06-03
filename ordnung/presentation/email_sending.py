@@ -32,7 +32,10 @@ class SMTPServer:
     def __enter__(self):
         """
         """
-        self.server = smtplib.SMTP_SSL(self.host, self.port)
+        self.server = smtplib.SMTP(self.host, self.port)
+        self.server.ehlo()
+        self.server.starttls()
+        self.server.ehlo()
         self.server.login(self.username, self.password)
         return self.server
 
