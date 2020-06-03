@@ -47,3 +47,9 @@ else:
 HOST = '127.0.0.1'
 PORT = 8000
 URL_STYLE: Literal['absolute', 'relative'] = 'relative'
+
+EMAIL_DEFAULT_ADDRESS = 'ordnung-auto@yandex.ru'
+EMAIL_LOGIN = 'ordnung-auto'
+EMAIL_PASSWORD = os.getenv('ORDNUNG_EMAIL_PASSWORD')
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465

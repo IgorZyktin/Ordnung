@@ -9,6 +9,7 @@ from starlette.requests import Request
 
 from ordnung.core.access import get_today, get_monotonic, generate_token
 from ordnung import settings
+from ordnung.presentation.email_sending import send_email
 
 
 def get_lang(request: Request) -> str:
@@ -59,7 +60,7 @@ def send_restore_email(request: Request, user_id: int, email: str) -> str:
     )
     base_url = request.url_for('restore_password', token=token)
     # todo
-    print('send_restore_email', base_url, email)
+    send_email('Password restore', [email], f'Your password restore link: {base_url}')
     return base_url
 
 
@@ -72,5 +73,5 @@ def send_verification_email(request: Request, user_id: int, email: str) -> str:
     )
     base_url = request.url_for('register_confirm', token=token)
     # todo
-    print('send_verification_email', base_url, email)
+    send_email('Registration confirm', [email], f'Your confirmation link: {base_url}')
     return base_url
