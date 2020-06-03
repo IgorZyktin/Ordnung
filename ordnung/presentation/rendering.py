@@ -7,6 +7,8 @@ from datetime import date, datetime
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 
+from ordnung.presentation.access import url_for
+
 templates = Jinja2Templates(directory='ordnung/presentation/templates')
 
 
@@ -19,7 +21,7 @@ def render_template(name: str, context: dict, status_code: int = 200,
     headers = headers or {}
     extensions = context['request'].state.context_extensions
     context = {**extensions, **context, **kwargs}
-    context['index_url'] = context['request'].url_for('index')
+    context['index_url'] = url_for(context['request'], 'index')
     return templates.TemplateResponse(name, context, status_code, headers)
 
 

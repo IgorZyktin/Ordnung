@@ -16,7 +16,7 @@ from ordnung.core.date_and_time import get_offset_dates, form_month
 from ordnung.core.localisation import translate, get_day_names, gettext
 from ordnung.presentation.access import (
     get_date, get_lang, send_restore_email,
-    send_verification_email
+    send_verification_email, url_for
 )
 from ordnung.presentation.forms import PasswordRestoreForm, RegisterForm
 from ordnung.presentation.rendering import render_template, extract_date
@@ -31,15 +31,15 @@ async def index(request: Request) -> RedirectResponse:
     """Starting page.
     """
     if request.user.is_authenticated:
-        return RedirectResponse(request.url_for('month'))
-    return RedirectResponse(request.url_for('login'))
+        return RedirectResponse(url_for(request, 'month'))
+    return RedirectResponse(url_for(request, 'login'))
 
 
 async def login(request: Request) -> HTMLResponse:
     """Login page.
     """
     if request.user.is_authenticated:
-        return RedirectResponse(request.url_for('index'))
+        return RedirectResponse(url_for(request, 'index'))
 
     lang = get_lang(request)
 
@@ -138,7 +138,7 @@ async def register(request: Request):
     """Register page.
     """
     if request.user.is_authenticated:
-        return RedirectResponse(request.url_for('index'))
+        return RedirectResponse(url_for(request, 'index'))
 
     lang = get_lang(request)
     form = await request.form()
@@ -150,7 +150,7 @@ async def register(request: Request):
         if new_user_id:
             if send_verification_email(request, new_user_id, form.email.data):
                 request.session['email_for_confirm'] = form.email.data
-                return RedirectResponse(request.url_for('register_note'),
+                return RedirectResponse(url_for(request, 'register_note'),
                                         status_code=303)
             else:
                 errors = [gettext(lang, 'Something bad happened '
@@ -241,7 +241,7 @@ async def restore(request: Request):
         elif (user := get_user_by_email_or_login(user_contact)) is not None:
             if send_restore_email(request, user.id, user.email):
                 request.session['email_for_restore'] = user.email
-                return RedirectResponse(request.url_for('restore_note'),
+                return RedirectResponse(url_for(request, 'restore_note'),
                                         status_code=303)
 
             errors = [gettext(lang, 'Something bad happened '
@@ -305,7 +305,7 @@ async def restore_confirm(request: Request):
     if sig_okay and request.method == 'POST' and form.validate():
 
         if change_user_password(payload['user_id'], form.password.data):
-            return RedirectResponse(request.url_for('login'),
+            return RedirectResponse(url_for(request, 'login'),
                                     status_code=303)
         errors = [gettext(lang, 'Something bad happened '
                                 'during password change')]
