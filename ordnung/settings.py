@@ -45,7 +45,7 @@ else:
     ROOT_PATH = '84.201.137.8'
 
 HOST = '127.0.0.1'
-PORT = 8731
+PORT = 8000
 
 EMAIL_SENDER = 'ordnung.auto@gmail.com'
 EMAIL_LOGIN = 'ordnung.auto'
