@@ -9,8 +9,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import List
 
+from starlette.requests import Request
+
 from ordnung import settings
 from loguru import logger
+
+from ordnung.core.access import generate_token, get_monotonic
 
 
 class SMTPServer:
@@ -49,7 +53,7 @@ class SMTPServer:
 
 
 def send_email(subject: str, targets: List[str], html: str,
-               sender: str = settings.EMAIL_DEFAULT_ADDRESS):
+               sender: str = settings.EMAIL_SENDER):
     """
     """
     msg = MIMEMultipart()
@@ -83,3 +87,29 @@ def send_email(subject: str, targets: List[str], html: str,
 
     with SMTPServer(sender) as server:
         server.sendmail(sender, targets, msg.as_string())
+
+
+def send_restore_email(request: Request, user_id: int, email: str) -> str:
+    """Send link with password restore URL to the user.
+    """
+    token = generate_token(
+        payload={'user_id': user_id, 'monotonic': get_monotonic()},
+        salt='restore_password'
+    )
+    restore_confirm_url = request.url_for('restore_confirm', token=token)
+    # todo
+    send_email('Password restore', [email], f'Your password restore url: {restore_confirm_url}')
+    return restore_confirm_url
+
+
+def send_verification_email(request: Request, user_id: int, email: str) -> str:
+    """Send link with account activation URL to the user.
+    """
+    token = generate_token(
+        payload={'user_id': user_id, 'monotonic': get_monotonic()},
+        salt='confirm_registration'
+    )
+    register_confirm_url = request.url_for('register_confirm', token=token)
+    # todo
+    send_email('Registration confirm', [email], f'Your confirmation url: {register_confirm_url}')
+    return register_confirm_url

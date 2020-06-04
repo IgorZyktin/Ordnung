@@ -1,38 +1,50 @@
-function self_delete(button) {
-    $(button).remove();
+$(document).ready(function () {
+    $("div[class^='alert']").on("click", function () {
+        kill(this);
+    })
+
+    $('#btn_retry').on("click", function () {
+        refresh();
+        return false;
+    });
+
+    $('#btn_restore').on("click", function () {
+        relocate('/restore');
+        return false;
+    });
+
+    $('#btn_register').on("click", function () {
+        relocate('/register');
+        return false;
+    });
+
+    $('#btn_go_main').on("click", function () {
+        relocate('/');
+        return false;
+    });
+
+    $("div[class^='day']").on("click", function () {
+        let date = $(this).attr('date');
+        relocate('/day?date=' + date);
+    })
+
+    $('#menu_toggle').on("click", function () {
+        $('#menu').toggle();
+    })
+
+});
+
+function refresh() {
+    // reload whole page
+    document.location.reload();
 }
 
-// function view_record(record_id) {
-//     relocate('/show_record/' + chosen_date + '/' + record_id);
-// }
-//
-// function relocate_month() {
-//     relocate('/show_month/' + chosen_date);
-// }
-//
-// function relocate_day() {
-//     relocate('/show_day/' + chosen_date);
-// }
-//
-// function relocate_add() {
-//     relocate('/add_record/' + chosen_date);
-// }
+function kill(target) {
+    // delete this. used on alerts to close them
+    $(target).remove();
+}
 
 function relocate(url) {
+    // change location
     window.location.href = url;
-}
-
-function relocate_with_args(url) {
-    let new_params = '';
-
-    if (!url.includes('?')) {
-        new_params += '?';
-    }
-
-    let menu = $('#menu');
-    if (menu.css("display") !== undefined) {
-        if (menu.css("display") !== 'none') new_params += '&menu=1'
-        else new_params += '&menu=0'
-    }
-    window.location.href = url + new_params;
 }

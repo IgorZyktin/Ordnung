@@ -8,6 +8,7 @@ from sqlalchemy import (
     UniqueConstraint, Boolean, DateTime, Index
 )
 from sqlalchemy.ext.declarative import declarative_base
+from werkzeug.security import generate_password_hash, check_password_hash
 
 Base = declarative_base()
 
@@ -31,6 +32,21 @@ class User(Base):
     last_seen = Column(DateTime, nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
     Index('users_id_uindex', 'user_id')
+
+    def is_authenticated(self) -> bool:
+        """Return True if the user is authenticated.
+        """
+        return self.confirmed
+
+    def set_password(self, password) -> None:
+        """Set new password for the user.
+        """
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password: str) -> bool:
+        """Check if password is correct.
+        """
+        return check_password_hash(self.password, password)
 
 
 class Group(Base):

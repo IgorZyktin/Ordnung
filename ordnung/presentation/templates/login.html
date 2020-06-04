@@ -1,15 +1,7 @@
-{% extends "login_base.html" %}
+{% extends "base_auth.html" %}
 
-{% block add_to_head %}
-    {{ super() }}
-    <script src="{{ url_for('static', path='login.js') }}"></script>
-{% endblock %}
-
-{%- block login_content %}
-    <div class="form_section">
-        <h3>{{ header }}</h3>
-        <button class="login_button" id="btn_login">{{ retry }}</button>
-        <button class="login_button" id="btn_restore">{{ restore }}</button>
-        <button class="login_button" id="btn_register">{{ register }}</button>
-    </div>
+{%- block main_form %}
+<button class="login_button" id="btn_retry">{{ retry }}</button>
+<button class="login_button" id="btn_restore">{{ restore }}</button>
+<button class="login_button" id="btn_register">{{ register }}</button>
 {% endblock %}

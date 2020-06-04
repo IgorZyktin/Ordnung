@@ -30,11 +30,6 @@
     position: relative;
 }
 
-.form_section p {
-    text-align: center;
-    color: forestgreen;
-}
-
 .login_button {
     display: block;
     width: 100%;

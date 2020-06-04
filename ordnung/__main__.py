@@ -15,6 +15,7 @@ def main():
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.RELOAD,
+        root_path=settings.ROOT_PATH,
     )
 
 

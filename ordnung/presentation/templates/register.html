@@ -1,46 +1,43 @@
-{% extends "login_base.html" %}
+{% extends "base_auth.html" %}
 
-{%- block login_content %}
-<div class="form_section">
-    <h3>{{ header }}</h3>
-    <form method="POST">
+{%- block main_form %}
+<form method="POST">
 
-        <div class="form_group">
-            <span class="tooltip">Name will be displayed in the menu and also will help other users to recognise you</span>
-            {{ form.username.label }}
-            {{ form.username() }}
-        </div>
+    <div class="form_group">
+        <span class="tooltip">Name will be displayed in the menu and also will help other users to recognise you</span>
+        {{ form.username.label }}
+        {{ form.username() }}
+    </div>
 
-        <div class="form_group">
-            <span class="tooltip">Login will be used only to enter the site</span>
-            {{ form.login.label }}
-            {{ form.login() }}
-        </div>
+    <div class="form_group">
+        <span class="tooltip">Login will be used only to enter the site</span>
+        {{ form.login.label }}
+        {{ form.login() }}
+    </div>
 
-        <div class="form_group">
-            <span class="tooltip">E-mail is mainly needed to restore forgotten password</span>
-            {{ form.email.label }}
-            {{ form.email() }}
-        </div>
+    <div class="form_group">
+        <span class="tooltip">E-mail is mainly needed to restore forgotten password</span>
+        {{ form.email.label }}
+        {{ form.email() }}
+    </div>
 
-        <div class="form_group">
-            {{ form.language.label }}
-            {{ form.language() }}
-        </div>
+    <div class="form_group">
+        {{ form.language.label }}
+        {{ form.language() }}
+    </div>
 
-        <div class="form_group">
-            <span class="tooltip">Do not use password from your bank account here! Safety were not of my goals in this app.</span>
-            {{ form.password.label }}
-            {{ form.password() }}
-        </div>
+    <div class="form_group">
+        <span class="tooltip">Do not use password from your bank account here! Safety was not of my goals in this app.</span>
+        {{ form.password.label }}
+        {{ form.password() }}
+    </div>
 
-        <div class="form_group">
-            {{ form.password_repeat.label }}
-            {{ form.password_repeat() }}
-        </div>
+    <div class="form_group">
+        {{ form.password_repeat.label }}
+        {{ form.password_repeat() }}
+    </div>
 
-        <input type="submit" class="login_button" value="Register">
-    </form>
-    <button class="login_button" onclick="relocate('{{ index_url }}');">{{ retry }}</button>
-</div>
+    <input type="submit" class="login_button">
+</form>
+<button class="login_button" id="btn_go_main">{{ retry }}</button>
 {% endblock %}

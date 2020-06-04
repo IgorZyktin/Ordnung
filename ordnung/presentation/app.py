@@ -15,13 +15,12 @@ from ordnung.presentation.middleware import (
     ContextExtensionMiddleware, AuthMiddleware
 )
 from ordnung.presentation.routes import routes
-from ordnung.storage.database import init_db, session
+from ordnung.storage.database import session
 
 
 def startup():
     """Gets called on server startup.
     """
-    init_db()
     logger.add(settings.LOGGER_FILENAME, rotation=settings.LOGGER_ROTATION)
     logger.info('Server start')
 

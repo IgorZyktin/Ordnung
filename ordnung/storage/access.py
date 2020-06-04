@@ -10,7 +10,6 @@ from werkzeug.security import generate_password_hash
 
 from ordnung import settings
 from ordnung.core.access import get_now
-from ordnung.presentation.forms import RegisterForm
 from ordnung.storage.database import session
 from ordnung.storage.models import User, Group, GroupMembership, Visibility
 
@@ -27,7 +26,6 @@ def get_user_by_login(login: str) -> Optional[User]:
     response = session.query(User).filter(
         func.lower(User.login) == login.lower()
     ).first()
-
     return response
 
 
@@ -70,14 +68,15 @@ def confirm_registration(user_id: int) -> bool:
     return False
 
 
-def register_new_user(form: RegisterForm) -> int:
+def register_user(name: str, login: str, email: str, password: str,
+                  language: str) -> int:
     """Register new user.
     """
     try:
         new_user = User(
             name=form.username.data,
-            email=form.email.data,
             login=form.login.data,
+            email=form.email.data,
             password=generate_password_hash(form.password.data),
             registered=get_now(),
             last_seen=get_now(),

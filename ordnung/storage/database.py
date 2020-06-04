@@ -12,18 +12,11 @@ from ordnung import settings
 from ordnung.core.records import organize_records, sort_nested_records
 from ordnung.storage.sql import MEGA_REQUEST
 
-# TODO - check isolation
 engine = create_engine(settings.DB_URI, echo=False,
                        isolation_level='AUTOCOMMIT')
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
-
-
-def init_db():
-    """Prepare db for work.
-    """
-    metadata.create_all(bind=engine)
 
 
 def get_records(target_date: date,

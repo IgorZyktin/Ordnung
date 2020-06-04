@@ -4,13 +4,14 @@
 """
 from wtforms import Form, PasswordField, SelectField, StringField
 from wtforms.validators import Length, DataRequired, EqualTo
+from wtforms.fields.html5 import EmailField
 
 
 class PasswordRestoreForm(Form):
     """PasswordRestoreForm.
     """
     password = PasswordField(
-        '',
+        'New password',
         validators=[
             DataRequired(message='Password is required'),
             Length(
@@ -21,7 +22,7 @@ class PasswordRestoreForm(Form):
         ]
     )
     password_repeat = PasswordField(
-        '',
+        'Repeat new password',
         validators=[
             DataRequired(message='Password repeat is required'),
             Length(
@@ -58,7 +59,7 @@ class RegisterForm(Form):
             message='Login must be of 2 to 30 symbols long'
         ),
     ])
-    email = StringField('E-mail', validators=[
+    email = EmailField('E-mail', validators=[
         DataRequired(message='Login is required'),
         Length(
             min=3,

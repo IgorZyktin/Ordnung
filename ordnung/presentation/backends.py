@@ -8,91 +8,15 @@ import binascii
 from starlette.authentication import (
     AuthCredentials, AuthenticationError, AuthenticationBackend
 )
-from starlette.authentication import BaseUser as AbstractUser
 from starlette.requests import Request
-from werkzeug.security import generate_password_hash, check_password_hash
 
 from ordnung.storage.access import get_user_by_login
-
-
-class BaseUser(AbstractUser):
-    @property
-    def id(self) -> int:
-        raise NotImplementedError()  # pragma: no cover
-
-    @property
-    def name(self) -> str:
-        return 'Anonymous'
-
-    @property
-    def group(self) -> int:
-        return 0
-
-    @property
-    def namespace(self):
-        raise NotImplementedError()  # pragma: no cover
-
-    @property
-    def password(self):
-        raise NotImplementedError()  # pragma: no cover
-
-    @password.setter
-    def password(self, value):
-        raise RuntimeError()  # pragma: no cover
-
-
-class UnauthenticatedUser(BaseUser):
-    """Class for unauthenticated user representation.
-    """
-
-    @property
-    def id(self) -> int:
-        return 1
-
-    @property
-    def name(self) -> str:
-        return 'Anonymous'
-
-    @property
-    def is_authenticated(self) -> bool:
-        return False
-
-    @property
-    def display_name(self) -> str:
-        return ""
-
-    @property
-    def lang(self):
-        return "RU"
-
-
-class User(BaseUser):
-    """Class for user representation.
-    """
-
-    def __init__(self, username: str) -> None:
-        self.username = username
-
-    @property
-    def id(self) -> int:
-        return 0
-
-    @property
-    def is_authenticated(self) -> bool:
-        return True
-
-    @property
-    def display_name(self) -> str:
-        return self.username
-
-    @property
-    def lang(self):
-        return "RU"
 
 
 class OrdnungAuthBackend(AuthenticationBackend):
     """Authentication backend, that handles user distinction.
     """
+
     async def authenticate(self, request: Request):
         """Runs on every request.
         """
@@ -109,8 +33,7 @@ class OrdnungAuthBackend(AuthenticationBackend):
                 raise AuthenticationError('Invalid basic auth credentials')
 
             username, _, password = decoded.partition(":")
-            user_db = get_user_by_login(username)
+            user = get_user_by_login(username)
 
-            if user_db and check_password_hash(user_db.password, password):
-                user_backend = User(username)
-                return AuthCredentials(["authenticated"]), user_backend
+            if user and user.check_password(password):
+                return AuthCredentials(["authenticated"]), user
