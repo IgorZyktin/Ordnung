@@ -42,7 +42,7 @@ if sys.platform == 'win32':
 else:
     DEBUG = False
     RELOAD = False
-    ROOT_PATH = ''
+    ROOT_PATH = '84.201.137.8'
 
 HOST = '127.0.0.1'
 PORT = 8000
