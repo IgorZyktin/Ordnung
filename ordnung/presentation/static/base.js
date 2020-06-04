@@ -23,6 +23,11 @@ $(document).ready(function () {
         return false;
     });
 
+    $('#btn_logout').on("click", function () {
+        relocate('/logout');
+        return false;
+    });
+
     $("div[class^='day']").on("click", function () {
         let date = $(this).attr('date');
         relocate('/day?date=' + date);

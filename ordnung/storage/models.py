@@ -48,6 +48,20 @@ class User(Base):
         """
         return check_password_hash(self.password, password)
 
+    @property
+    def lang(self) -> str:
+        """Get chosen language for this user.
+        """
+        # FIXME
+        return 'RU'
+
+    @property
+    def menu(self) -> bool:
+        """Get chosen menu visibility for this user.
+        """
+        # FIXME
+        return False
+
 
 class Group(Base):
     """User group. Defines visibility of records within group.

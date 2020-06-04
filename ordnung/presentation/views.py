@@ -90,25 +90,22 @@ async def month(request: Request) -> HTMLResponse:
     return render_template('month.html', context)
 
 
-# @requires('authenticated', redirect='unauthorized')
-# async def day(request: Request):
-#     """Single day navigation.
-#     """
-#     lang = get_lang(request)
-#     current_date = get_date(request)
-#     header = translate(lang,
-#                        f'month_{current_date.month}') + f' ({current_date})'
-#     tasks = get_records(target_date=current_date,
-#                         offset_left=0,
-#                         offset_right=0)
-#     context = {
-#         'request': request,
-#         'header': header,
-#         'current_date': current_date,
-#         'month_url': f'/month?date={current_date}',
-#         'tasks': tasks[str(current_date)]
-#     }
-#     return render_template("day.html", context)
+@requires('authenticated', redirect='unauthorized')
+async def day(request: Request):
+    """Single day navigation.
+    """
+    _ = get_translate(request.user.lang)
+    current_date = get_date(request)
+    tasks = get_records(target_date=current_date,
+                        offset_left=0, offset_right=0)
+    context = {
+        'request': request,
+        'header': _(f'month_{current_date.month}') + f' ({current_date})',
+        'current_date': current_date,
+        'month_url': f'/month?date={current_date}',
+        'tasks': tasks[str(current_date)]
+    }
+    return render_template("day.html", context)
 
 
 # async def show_record(request: Request):
