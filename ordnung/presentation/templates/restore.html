@@ -2,9 +2,11 @@
 
 {%- block main_form %}
 <form method="POST">
-    <label>
-        <input type="text" name="user_contact" value="{{ user_contact }}">
-    </label>
+    {{ form.csrf_token }}
+    <div class="form_group">
+        {{ form.contact.label }}
+        {{ form.contact() }}
+    </div>
     <input type="submit" class="login_button">
 </form>
 <button class="login_button" id="btn_go_main">{{ retry }}</button>

@@ -13,12 +13,13 @@ from ordnung.core.access import check_token, token_is_too_old
 from ordnung.core.date_and_time import get_offset_dates, form_month
 from ordnung.core.localisation import get_day_names
 from ordnung.presentation.access import (
-    get_date, get_gettext, get_translate
+    get_date, get_gettext, get_translate, get_errors
 )
 from ordnung.presentation.email_sending import (
     send_restore_email, send_verification_email
 )
-from ordnung.presentation.forms import PasswordRestoreForm, RegisterForm
+from ordnung.presentation.forms import PasswordRestoreForm, RegisterForm, \
+    UserContactForm
 from ordnung.presentation.rendering import render_template
 from ordnung.storage.access import (
     get_user_by_email_or_login, change_user_password,
@@ -45,7 +46,7 @@ async def login(request: Request) -> HTMLResponse:
 
     context = {
         'request': request,
-        'header': _('You may gain access only after login'),
+        'header': _('You could get access only after login'),
         'retry': _('Try log in once again'),
         'register': _('Register'),
         'restore': _('Restore password'),
@@ -136,7 +137,9 @@ async def register(request: Request):
 
     _ = get_gettext(request.user.lang)
     form = await request.form()
-    form = RegisterForm(form)
+    form = RegisterForm(form,
+                        lang=request.user.lang,
+                        meta={'csrf_context': request.session})
 
     if request.method == 'POST' and form.validate():
         new_user_id = register_user(form.username, form.login, form.email,
@@ -152,19 +155,19 @@ async def register(request: Request):
                             'reasons we could not send you confirmation email.'
                             ' Please request for this email later.')]
         else:
-            errors = [_('Login "{login}" '
-                        'is already in use').format(login=form.login.data)]
+            errors = [_('Login "%(login)s" '
+                        'is already in use') % dict(login=form.login.data)]
     else:
-        errors = chain(*form.errors.values())
+        errors = get_errors(request.user.lang, form.errors)
 
     context = {
         'request': request,
-        'header': 'Registration',
+        'header': _('Registration'),
         'form': form,
         'errors': errors,
-        'retry': _('Go to login page'),
+        'retry': _('To the start page'),
     }
-    return render_template("register.html", context)
+    return render_template('register.html', context)
 
 
 async def register_note(request: Request):
@@ -175,14 +178,14 @@ async def register_note(request: Request):
     email = request.session.get('email_for_confirm', '')
     if email:
         header = _('Confirmation link was '
-                   'sent to "{email}"').format(email=email)
+                   'sent to "%(email)s"') % dict(email=email)
     else:
         header = _("You haven't asked for registration")
 
     context = {
         'request': request,
         'header': header,
-        'retry': _("Go to login page"),
+        'retry': _("To the start page"),
     }
     return render_template("login_note.html", context)
 
@@ -214,7 +217,7 @@ async def register_confirm(request: Request):
         'request': request,
         'header': header,
         'sig_okay': sig_okay,
-        'retry': _("Go to login page"),
+        'retry': _("To the start page"),
         'errors': errors,
     }
     return render_template("login_note.html", context)
@@ -225,15 +228,15 @@ async def restore(request: Request):
     """
     errors = []
     _ = get_gettext(request.user.lang)
-    user_contact = ''
+
+    form = await request.form()
+    form = UserContactForm(form,
+                           lang=request.user.lang,
+                           meta={'csrf_context': request.session})
+
     if request.method == 'POST':
-        form = await request.form()
-
-        if (user_contact := form.get('user_contact')) is None:
-            errors = ['User contact information required']
-
-        elif (user := get_user_by_email_or_login(user_contact)) is None:
-            errors = ['There is no user with supplied contact information']
+        if (user := get_user_by_email_or_login(form.contact.data)) is None:
+            errors = [_('There is no user with supplied contact information.')]
 
         elif send_restore_email(request, user.id, user.email):
             request.session['email_for_restore'] = user.email
@@ -245,9 +248,9 @@ async def restore(request: Request):
 
     context = {
         'request': request,
-        'user_contact': user_contact,
         'header': _('Enter your email or login'),
-        'retry': _('Go to login page'),
+        'retry': _('To the start page'),
+        'form': form,
         'errors': errors,
     }
     return render_template("restore.html", context)
@@ -261,14 +264,14 @@ async def restore_note(request: Request):
     email = request.session.get('email_for_restore', '')
     if email:
         header = _('Password restore link was '
-                   'sent to "{email}"').fomat(email=email)
+                   'sent to "%(email)s"') % dict(email=email)
     else:
         header = _("You haven't asked for password restore")
 
     context = {
         'request': request,
         'header': header,
-        'retry': _("Go to login page"),
+        'retry': _("To the start page"),
     }
     return render_template("login_note.html", context)
 
@@ -281,7 +284,9 @@ async def restore_confirm(request: Request):
     sig_okay, payload = check_token(token, 'restore_password')
 
     form = await request.form()
-    form = PasswordRestoreForm(form)
+    form = PasswordRestoreForm(form,
+                               lang=request.user.lang,
+                               meta={'csrf_context': request.session})
 
     if not sig_okay:
         header = _('Password restore link is incorrect')
@@ -305,7 +310,7 @@ async def restore_confirm(request: Request):
     context = {
         'request': request,
         'header': header,
-        'retry': _('Go to login page'),
+        'retry': _('To the start page'),
         'form': form,
         'sig_okay': sig_okay,
         'errors': errors,
@@ -321,7 +326,7 @@ async def unauthorized(request: Request) -> HTMLResponse:
     context = {
         'request': request,
         'header': _('You have no access to this resource'),
-        'retry': _('Go to login page'),
+        'retry': _('To the start page'),
     }
     return render_template('unauthorized.html', context, status_code=403)
 
@@ -335,6 +340,6 @@ async def logout(request: Request) -> HTMLResponse:
     context = {
         'request': request,
         'header': _('You have been successfully logged out'),
-        'retry': _('Go to login page'),
+        'retry': _('To the start page'),
     }
     return render_template('login_note.html', context, status_code=401)

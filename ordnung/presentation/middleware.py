@@ -62,6 +62,7 @@ class ContextExtensionMiddleware(BaseHTTPMiddleware):
             context_extensions = {}
 
         context_extensions['gettext'] = get_gettext(request.user.lang)
+        context_extensions['_'] = get_gettext(request.user.lang)
         context_extensions['translate'] = get_translate(request.user.lang)
         context_extensions['user'] = request.user
         context_extensions['errors'] = []

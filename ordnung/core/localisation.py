@@ -19,7 +19,7 @@ def gettext(lang: str, sentence: str) -> str:
     >>> gettext('RU', 'January')
     'Январь'
     """
-    if lang == settings.DEFAULT_LANG:
+    if lang == 'EN':
         translation = sentence
 
     elif (vocabulary := get_static_vocabulary().get(lang)) is None:

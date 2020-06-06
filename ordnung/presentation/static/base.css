@@ -51,14 +51,15 @@ h1, h2, h3, h4, h5 {
 }
 
 .alert {
-    background-color: crimson;
-    color: black;
+    background-color: #5d0a0a;
+    color: #ff9f9f;
     font-size: 20px;
     display: block;
-    width: 100%;
     border-radius: 10px;
     border: 2px solid black;
     padding: 15px;
+    text-align: center;
+    margin-top: 5px;
 }
 
 hr {

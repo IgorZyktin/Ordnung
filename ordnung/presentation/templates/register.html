@@ -2,7 +2,7 @@
 
 {%- block main_form %}
 <form method="POST">
-
+    {{ form.csrf_token }}
     <div class="form_group">
         <span class="tooltip">Name will be displayed in the menu and also will help other users to recognise you</span>
         {{ form.username.label }}

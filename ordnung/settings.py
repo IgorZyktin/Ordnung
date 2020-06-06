@@ -20,7 +20,7 @@ WEEKS_IN_MONTH = 5
 MONTH_OFFSET = 20
 
 # localisation
-DEFAULT_LANG = 'EN'
+DEFAULT_LANG = 'RU'
 DEFAULT_PLACEHOLDER = '???'
 
 MAX_PASSWORD_RESTORE_INTERVAL = 86400
@@ -37,12 +37,10 @@ DB_URI = os.getenv('ORDNUNG_DB_URI')
 if sys.platform == 'win32':
     DEBUG = True
     RELOAD = True
-    ROOT_PATH = ''
 
 else:
     DEBUG = False
     RELOAD = False
-    ROOT_PATH = ''
 
 HOST = '127.0.0.1'
 PORT = 8000

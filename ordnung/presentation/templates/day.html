@@ -9,13 +9,13 @@
     <div class="day_contents">
         <div class="header">
             {% if tasks %}
-                {{ gettext('Tasks on %s %s (%s-x)')|format(
+                {{ _('Tasks on %s %s (%s-x)')|format(
                     current_date.day,
                     translate("month_%s_"|format(current_date.month)),
                     tasks|length
                 ) }}
             {% else %}
-                {{ gettext('Nothing planned on %s')|format(current_date) }}
+                {{ _('Nothing planned on %s')|format(current_date) }}
             {% endif %}
         </div>
 
@@ -26,8 +26,8 @@
         {% endfor %}
 
         <div class="controls">
-            <a href="#" id="btn_add" class="btn">{{ gettext('New record') }}</a>
-            <a href="#" id="btn_month" class="btn" onclick="relocate_with_args('{{ month_url }}')">{{ gettext('Back to month') }}</a>
+            <a href="{{ month_url }}" id="btn_add" class="btn">{{ _('New record') }}</a>
+            <a href="{{ month_url }}" id="btn_month" class="btn">{{ _('Back to month') }}</a>
         </div>
 
     </div>

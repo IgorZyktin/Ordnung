@@ -3,6 +3,11 @@ $(document).ready(function () {
         kill(this);
     })
 
+    $('#btn_add').on("click", function () {
+        alert(1);
+        return false;
+    });
+
     $('#btn_retry').on("click", function () {
         refresh();
         return false;

@@ -15,13 +15,13 @@ from ordnung.storage.models import User, Group, GroupMembership, Visibility
 
 
 def get_user_by_id(user_id: int) -> Optional[User]:
-    """Go to DB and search for the specified user id.
+    """Go to DB and search user by the specified user id.
     """
     return session.query(User).filter_by(id=user_id).first()
 
 
 def get_user_by_login(login: str) -> Optional[User]:
-    """Go to DB and search for the specified login. Case insensitive.
+    """Go to DB and search user by the specified login. Case insensitive.
     """
     response = session.query(User).filter(
         func.lower(User.login) == login.lower()
@@ -30,7 +30,7 @@ def get_user_by_login(login: str) -> Optional[User]:
 
 
 def get_user_by_email_or_login(user_contact: str) -> Optional[User]:
-    """Go to DB and search for the specified login/email. Case insensitive.
+    """Go to DB and search user by the specified login/email. Case insensitive.
     """
     response = session.query(User).filter(
         or_(
@@ -38,7 +38,6 @@ def get_user_by_email_or_login(user_contact: str) -> Optional[User]:
             func.lower(User.email) == user_contact.lower(),
         )
     ).first()
-
     return response
 
 

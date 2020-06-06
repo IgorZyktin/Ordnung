@@ -4,7 +4,7 @@
 """
 from datetime import date, datetime
 from functools import partial
-from typing import Callable
+from typing import Callable, List
 
 from starlette.requests import Request
 
@@ -42,3 +42,18 @@ def get_date(request: Request) -> date:
         target_date = datetime.strptime(string, "%Y-%m-%d").date()
 
     return target_date
+
+
+def get_errors(lang: str, errors_dict: dict) -> List[str]:
+    """Extract errors from WTF.
+    """
+    errors = []
+
+    for key, value in errors_dict.items():
+        name = gettext(lang, key).capitalize()
+
+        for each in value:
+            description = gettext(lang, each).capitalize()
+            errors.append(f'<strong>{name}</strong><br>{description}')
+
+    return errors

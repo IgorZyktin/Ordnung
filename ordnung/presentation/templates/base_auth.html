@@ -17,7 +17,7 @@
 
         <div id="alerts-container">
             {% for error in errors %}
-                <div class="alert">{{ error }}</div>
+                <div class="alert">{{ error|safe }}</div>
             {% endfor %}
         </div>
 

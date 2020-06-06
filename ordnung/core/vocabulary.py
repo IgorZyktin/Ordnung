@@ -15,14 +15,16 @@ STATIC_VOCABULARY = {
         "New record": "Новая запись",
         "Back to month": "Назад к месяцу",
 
-        "You may gain access only after login": "Доступ к данным возможен только после входа",
+        "You could get access only after login": "Доступ к данным возможен только после входа",
         "Try log in once again": "Ещё раз попробовать войти",
-        "Go to login page": "На стартовую страницу",
+        "To the start page": "На стартовую страницу",
         "Register": "Зарегистрироваться",
+        "Registration": "Регистрация",
         "Restore password": "Восстановить пароль",
         "You have no access to this resource": "У вас нет прав доступа к этому ресурсу",
         "You have been successfully logged out": "Вы успешно вышли из системы",
         "Enter your email or login": "Укажите ваш адрес электронной почты или логин",
+        "There is no user with supplied contact information.": "В базе нет пользователя с подобными контактными данными.",
         "There is no user with login %(login)s": "Пользователь с логином "
                                                  "%(login)s не зарегистрирован",
         "There is no user with email %(email)s": "Пользователь с e-mail "
@@ -31,13 +33,35 @@ STATIC_VOCABULARY = {
                                                        "отправлена на %(email)s",
 
         # password restore page
-        "New password": "Новый пароль",
-        "Repeat new password": "Повторите новый пароль",
+        "Displayed name:": "Отображаемое имя пользователя:",
+        "Login:": "Логин:",
+        "Language:": "Язык интерфейса:",
+        "New password:": "Новый пароль:",
+        "Repeat new password:": "Повторите новый пароль:",
         "You haven't asked for password restore": 'Вы не запрашивали смену пароля',
         "Password restore link seems to be incorrect": 'Ссылка для восстановления пароля некорректна',
         "Password restore link seems to be outdated": 'Ссылка для восстановления пароля устарела',
         "Password restore": "Восстановление пароля",
         "Something bad happened during password change": "Что то сломалось при смене пароля",
+
+        # fields
+        "username": "имя",
+        "login": "логин",
+        "password": "пароль",
+        "password_repeat": "повтор пароля",
+        # "": "",
+        # "": "",
+        # "": "",
+        # "": "",
+        # "": "",
+        # "": "",
+
+        # form errors
+        "Field must be between %(min)d and %(max)d characters long.": "Поле должно быть от %(min)d до %(max)d символов.",
+        "Field must be equal to %(other_name)s.": "Поле должно совпадать с полем %(other_name)s.",
+        # "": "",
+        # "": "",
+        # "": "",
         #     "$author": "Автор",
         #     "$created_for": "Создана для",
         #     "$visible_for": "Видима для",

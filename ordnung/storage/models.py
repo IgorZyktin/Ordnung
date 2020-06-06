@@ -2,12 +2,15 @@
 
 """Database models.
 """
+from itertools import chain
+from typing import Set
 
 from sqlalchemy import (
     Column, Integer, String, ForeignKey,
     UniqueConstraint, Boolean, DateTime, Index
 )
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 
 Base = declarative_base()
@@ -31,6 +34,15 @@ class User(Base):
     registered = Column(DateTime, nullable=False)
     last_seen = Column(DateTime, nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
+
+    groups_in = relationship("GroupMembership",
+                             back_populates="user",
+                             collection_class=set)
+
+    groups_see = relationship("Visibility",
+                              back_populates="user",
+                              collection_class=set)
+
     Index('users_id_uindex', 'user_id')
 
     def is_authenticated(self) -> bool:
@@ -62,6 +74,13 @@ class User(Base):
         # FIXME
         return False
 
+    @property
+    def actual_groups(self) -> Set[int]:
+        """Set of group_id user is included in and wants to see.
+        """
+        # noinspection PyTypeChecker
+        return {x.group_id for x in chain(self.groups_in, self.groups_see)}
+
 
 class Group(Base):
     """User group. Defines visibility of records within group.
@@ -88,6 +107,7 @@ class GroupMembership(Base):
     group_id = Column(Integer, ForeignKey('groups.id'))
     # -------------------------------------------------------------------------
     Index('group_membership_idx', 'user_id', 'group_id')
+    user = relationship("User", back_populates="groups_in")
 
 
 class Visibility(Base):
@@ -101,6 +121,7 @@ class Visibility(Base):
     group_id = Column(Integer, ForeignKey('groups.id'), nullable=False)
     UniqueConstraint('user_id', 'group_id')
     Index('visibility_idx', 'user_id', 'group_id')
+    user = relationship("User", back_populates="groups_see")
 
 
 class Record(Base):
@@ -136,7 +157,6 @@ class Persistence(Base):
     id = Column(Integer, primary_key=True)
     # -------------------------------------------------------------------------
     name = Column(String, nullable=False)
-
 
 # class Comment(Base):
 #     """A single comment representation.
