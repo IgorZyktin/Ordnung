@@ -8,8 +8,24 @@ from typing import Callable, List
 
 from starlette.requests import Request
 
+from ordnung import settings
 from ordnung.core.access import get_today
 from ordnung.core.localisation import gettext, translate
+
+
+def get_lang(request: Request) -> str:
+    """Extract user language from request.
+    """
+    if request.user.is_authenticated:
+        return request.user.parameters.lang
+    return extract_language(request)
+
+
+def extract_language(request: Request) -> str:
+    """Extract user language from any part of request we could search for.
+    """
+    # TODO
+    return settings.DEFAULT_LANG
 
 
 def get_gettext(lang: str) -> Callable:
@@ -45,7 +61,7 @@ def get_date(request: Request) -> date:
 
 
 def get_errors(lang: str, errors_dict: dict) -> List[str]:
-    """Extract errors from WTF.
+    """Extract errors from WTForm.
     """
     errors = []
 

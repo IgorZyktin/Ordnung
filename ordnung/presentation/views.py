@@ -10,22 +10,21 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from ordnung import settings
 from ordnung.core.access import check_token, token_is_too_old
-from ordnung.core.date_and_time import get_offset_dates, form_month
+from ordnung.core.date_and_time import get_offset_dates, get_month
 from ordnung.core.localisation import get_day_names
 from ordnung.presentation.access import (
-    get_date, get_gettext, get_translate, get_errors
+    get_date, get_gettext, get_translate, get_errors, get_lang
 )
 from ordnung.presentation.email_sending import (
     send_restore_email, send_verification_email
 )
 from ordnung.presentation.forms import PasswordRestoreForm, RegisterForm, \
-    UserContactForm
+    UserContactForm, GoalForm
 from ordnung.presentation.rendering import render_template
 from ordnung.storage.access import (
     get_user_by_email_or_login, change_user_password,
     confirm_registration, register_user,
 )
-from ordnung.storage.database import get_records
 
 
 async def index(request: Request) -> RedirectResponse:
@@ -42,7 +41,7 @@ async def login(request: Request) -> HTMLResponse:
     if request.user.is_authenticated:
         return RedirectResponse(request.url_for('index'))
 
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
 
     context = {
         'request': request,
@@ -62,27 +61,18 @@ async def month(request: Request) -> HTMLResponse:
     """Main page, navigation starts from here. Shows single month.
     """
     current_date = get_date(request)
-    _ = get_translate(request.user.lang)
+    _ = get_translate(get_lang(request))
 
     (leap_back, step_back,
      step_forward, leap_forward) = get_offset_dates(current_date)
 
-    records = get_records(target_date=current_date,
-                          offset_left=settings.MONTH_OFFSET,
-                          offset_right=settings.MONTH_OFFSET)
-
-    tasks = get_records(target_date=current_date,
-                        offset_left=0,
-                        offset_right=2)
     context = {
         'request': request,
         'header': _(f'month_{current_date.month}') + f' ({current_date})',
-        'month': form_month(current_date),
-        'records': records,
-        'tasks': tasks,  # FIXME
+        'month': get_month(current_date),
         'menu_is_visible': int(request.query_params.get('menu', '0')),
         'current_date': current_date,
-        'day_names': get_day_names(request.user.lang),
+        'day_names': get_day_names(get_lang(request)),
         'leap_back_url': f'/month?date={leap_back}',
         'step_back_url': f'/month?date={step_back}',
         'step_forward_url': f'/month?date={step_forward}',
@@ -95,16 +85,16 @@ async def month(request: Request) -> HTMLResponse:
 async def day(request: Request):
     """Single day navigation.
     """
-    _ = get_translate(request.user.lang)
+    _ = get_translate(get_lang(request))
     current_date = get_date(request)
-    tasks = get_records(target_date=current_date,
-                        offset_left=0, offset_right=0)
+    # tasks = get_records(target_date=current_date,
+    #                     offset_left=0, offset_right=0)
     context = {
         'request': request,
         'header': _(f'month_{current_date.month}') + f' ({current_date})',
         'current_date': current_date,
         'month_url': f'/month?date={current_date}',
-        'tasks': tasks[str(current_date)]
+        'tasks': []
     }
     return render_template("day.html", context)
 
@@ -128,6 +118,24 @@ async def day(request: Request):
 #     }
 #     return HTMLResponse(f'day - {at_date}')
 
+async def create_goal(request: Request):
+    """Create new goal.
+    """
+    form = await request.form()
+    lang = get_lang(request)
+    _ = get_gettext(lang)
+    form = GoalForm(form, lang=lang, meta={'csrf_context': request.session})
+    errors = get_errors(lang, form.errors)
+
+    context = {
+        'request': request,
+        'header': _('Create new goal'),
+        'form': form,
+        'errors': errors,
+        'back': _('Back to month'),
+    }
+    return render_template('create_goal.html', context)
+
 
 async def register(request: Request):
     """Register page.
@@ -135,10 +143,10 @@ async def register(request: Request):
     if request.user.is_authenticated:
         return RedirectResponse(request.url_for('index'))
 
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
     form = await request.form()
     form = RegisterForm(form,
-                        lang=request.user.lang,
+                        lang=get_lang(request),
                         meta={'csrf_context': request.session})
 
     if request.method == 'POST' and form.validate():
@@ -158,7 +166,7 @@ async def register(request: Request):
             errors = [_('Login "%(login)s" '
                         'is already in use') % dict(login=form.login.data)]
     else:
-        errors = get_errors(request.user.lang, form.errors)
+        errors = get_errors(get_lang(request), form.errors)
 
     context = {
         'request': request,
@@ -173,7 +181,7 @@ async def register(request: Request):
 async def register_note(request: Request):
     """Register page. Message about e-mail confirmation.
     """
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
 
     email = request.session.get('email_for_confirm', '')
     if email:
@@ -193,7 +201,7 @@ async def register_note(request: Request):
 async def register_confirm(request: Request):
     """Registration confirmation page.
     """
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
     errors = []
     token = request.path_params.get('token')
     sig_okay, payload = check_token(token, 'confirm_registration')
@@ -227,11 +235,11 @@ async def restore(request: Request):
     """Password restore page.
     """
     errors = []
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
 
     form = await request.form()
     form = UserContactForm(form,
-                           lang=request.user.lang,
+                           lang=get_lang(request),
                            meta={'csrf_context': request.session})
 
     if request.method == 'POST':
@@ -259,7 +267,7 @@ async def restore(request: Request):
 async def restore_note(request: Request):
     """Password restore page (just message about email).
     """
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
 
     email = request.session.get('email_for_restore', '')
     if email:
@@ -279,13 +287,13 @@ async def restore_note(request: Request):
 async def restore_confirm(request: Request):
     """Password restore page (actual form).
     """
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
     token = request.path_params.get('token')
     sig_okay, payload = check_token(token, 'restore_password')
 
     form = await request.form()
     form = PasswordRestoreForm(form,
-                               lang=request.user.lang,
+                               lang=get_lang(request),
                                meta={'csrf_context': request.session})
 
     if not sig_okay:
@@ -321,7 +329,7 @@ async def restore_confirm(request: Request):
 async def unauthorized(request: Request) -> HTMLResponse:
     """When user is not yet authorised but tries to get something.
     """
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
 
     context = {
         'request': request,
@@ -335,7 +343,7 @@ async def unauthorized(request: Request) -> HTMLResponse:
 async def logout(request: Request) -> HTMLResponse:
     """Logout page.
     """
-    _ = get_gettext(request.user.lang)
+    _ = get_gettext(get_lang(request))
 
     context = {
         'request': request,

@@ -22,7 +22,7 @@
     padding: 20px;
 }
 
-.record {
+.goal {
     color: var(--ordnung-color-2);
     border:var(--ordnung-border-1);
     background-color: var(--ordnung-bg-color-6);
@@ -33,7 +33,7 @@
     margin-bottom: 10px;
 }
 
-.record:hover {
+.goal:hover {
     background: linear-gradient(to right, #23ce65 1%, #323232 1%);
 }
 

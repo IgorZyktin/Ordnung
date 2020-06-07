@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 from ordnung import settings
 from ordnung.core.access import get_now
 from ordnung.storage.database import session
-from ordnung.storage.models import User, Group, GroupMembership, Visibility
+from ordnung.storage.models import User, Group, GroupMembership, Parameter
 
 
 def get_user_by_id(user_id: int) -> Optional[User]:
@@ -67,50 +67,71 @@ def confirm_registration(user_id: int) -> bool:
     return False
 
 
-def register_user(name: str, login: str, email: str, password: str,
-                  language: str) -> int:
+def register_user(name: str, login: str, email: str,
+                  password: str, language: str) -> int:
     """Register new user.
     """
     try:
-        new_user = User(
-            name=form.username.data,
-            login=form.login.data,
-            email=form.email.data,
-            password=generate_password_hash(form.password.data),
-            registered=get_now(),
-            last_seen=get_now(),
-            confirmed=False
-        )
-        session.add(new_user)
-        session.commit()
-        session.refresh(new_user)
-        new_user_id = new_user.id
+        with session.begin(subtransactions=True):
+            new_user = User(
+                name=name,
+                login=login,
+                email=email,
+                password=generate_password_hash(password),
+                registered=get_now(),
+                last_seen=get_now(),
+                confirmed=False
+            )
+            session.add(new_user)
+            session.commit()
+            session.refresh(new_user)
+            new_user_id = new_user.id
 
+            with session.begin(subtransactions=True):
+                new_group = Group(
+                    owner_id=new_user_id,
+                    name=settings.DEFAULT_GROUP_NAME,
+                )
+                session.add(new_group)
+                session.commit()
+                session.refresh(new_group)
+
+                new_parameter = Parameter(
+                    user_id=new_user_id,
+                    lang=language,
+                    menu=False,
+                )
+                session.add(new_parameter)
+                session.commit()
+
+                with session.begin(subtransactions=True):
+                    new_membership = GroupMembership(
+                        user_id=new_user_id,
+                        group_id=new_group.id,
+                    )
+                    session.add(new_membership)
+                    session.commit()
+
+            session.commit()
     except IntegrityError:
         session.rollback()
         new_user_id = 0
 
-    if new_user_id:
-        new_group = Group(
-            owner_id=new_user_id,
-            name=settings.DEFAULT_GROUP_NAME,
-        )
-        session.add(new_group)
-        session.commit()
-        session.refresh(new_group)
-
-        new_membership = GroupMembership(
-            user_id=new_user_id,
-            group_id=new_group.id,
-        )
-        session.add(new_membership)
-        session.commit()
-
-        new_visibility = Visibility(
-            user_id=new_user_id,
-            group_id=new_group.id
-        )
-        session.add(new_visibility)
-        session.commit()
-
     return new_user_id
+
+
+def drop_user(user_id: int) -> bool:
+    """Remove user and all corresponding records.
+    """
+    # TODO
+    groups = 0
+    membership = 0
+    parameters = 0
+    goals = 0
+    achievements = 0
+
+    with session.begin_nested():
+        user_groups = session.query(Group).filter_by(owner_id=user_id)
+        for group in user_groups:
+            session.delete(group)
+    return False

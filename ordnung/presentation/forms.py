@@ -2,12 +2,14 @@
 
 """Application forms.
 """
+from wtforms import (
+    Form, PasswordField, SelectField, StringField, HiddenField,
+    BooleanField, TextAreaField
+)
 from wtforms.csrf.session import SessionCSRF
-
-from wtforms import Form, PasswordField, SelectField, StringField
-from wtforms.validators import Length, DataRequired, EqualTo
 from wtforms.fields.html5 import EmailField
 from wtforms.meta import DefaultMeta
+from wtforms.validators import Length, DataRequired, EqualTo
 
 from ordnung import settings
 from ordnung.core.localisation import gettext
@@ -17,6 +19,7 @@ from ordnung.presentation.access import get_gettext
 class OrdnungFormTranslator:
     """Custom form translator.
     """
+
     def __init__(self, lang: str):
         """Initialize instance.
         """
@@ -47,6 +50,7 @@ class OrdnungMeta(DefaultMeta):
 class OrdnungForm(Form):
     """Custom form class that allows to handle localisation.
     """
+
     class Meta(OrdnungMeta):
         csrf = True
         csrf_secret = settings.SECRET_KEY.encode('utf-8')
@@ -116,3 +120,27 @@ class RegisterForm(OrdnungForm):
         validators=[DataRequired(), Length(min=4, max=100),
                     EqualTo('password')]
     )
+
+
+class GoalForm(OrdnungForm):
+    """Goal creating and altering form.
+    """
+    goal_id = HiddenField()
+
+    goal_title = StringField('Title')
+    goal_description = TextAreaField('Description')
+
+    target_date = StringField('Target Date:')
+    target_time = SelectField('Target time:')
+    persistence = SelectField('Persistence:')
+
+    start_time = StringField('Start time:')
+    end_time = StringField('End time:')
+
+    has_metric = BooleanField('Has measurable metric?', default='checked')
+    metric_name = StringField('Metric name:',
+                              render_kw={'disabled': 'disabled'})
+    metric_objective = StringField('Metric objective:',
+                                   render_kw={'disabled': 'disabled'})
+    metric_step = StringField('Metric step:',
+                              render_kw={'disabled': 'disabled'})

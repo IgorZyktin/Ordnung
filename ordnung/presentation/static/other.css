@@ -49,6 +49,7 @@
 }
 
 select,
+textarea,
 input[type="email"],
 input[type="text"],
 input[type="password"] {
@@ -61,7 +62,20 @@ input[type="password"] {
     box-sizing: border-box;
     color: #d9dec5;
     padding: 5px;
-    border-radius: 10px;
+    border-radius: 5px;
+}
+
+select:disabled,
+textarea:disabled,
+input[type="email"]:disabled,
+input[type="text"]:disabled,
+input[type="password"]:disabled {
+    background: rgba(68, 68, 68, 0.1);
+}
+
+textarea {
+    height: 100%;
+    margin: 0;
 }
 
 select {
@@ -82,10 +96,11 @@ select {
 
 .form_group {
     margin: 5px;
+    display: flex;
+    flex-direction: column;
 }
 
 .form_group:hover .tooltip {
-    /*top: 0;*/
     transform: translateX(-105%);
     display: block;
 }

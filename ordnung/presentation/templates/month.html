@@ -20,19 +20,18 @@
         </div>
 
         {# Day contents here, five weeks of seven days #}
-        {%- for week_index in range(5) -%}
+        {%- for week in month.weeks() -%}
             <div class="week">
-                {%- for day_index in range(7) %}
-                    {% set index = day_index + week_index * 7 %}
-                    {% set day = month[index] %}
-
+                {%- for day in week %}
                     <div class="{{ day.css_class }}" date="{{ day.date }}">
                         <span class="day_label wide">
                             {{ day.number }} {{ translate("month_%s_"|format(day.month)) }}
                         </span>
-                        <span class="day_label narrow">{{ day.number }}</span>
-                        {% for record in records[day.date] %}
-                            <span class="record">{{ loop.index }}. {{ record.text }}</span>
+                        <span class="day_label narrow">
+                            {{ day.number }}
+                        </span>
+                        {% for goal in day.goals() %}
+                            <span class="goal">{{ loop.index }}. {{ goal }}</span>
                         {% endfor %}
                     </div>
 
@@ -44,28 +43,28 @@
         <div class="footer">
 
             <div id="leap_back" onclick="relocate('{{ leap_back_url }}')">
-                <span class="wide">{{ gettext('Leap back') }}</span>
-                <span class="narrow"> <-- </span>
+                <span class="wide">{{ _('Leap back') }}</span>
+                <span class="narrow"> ⇇ </span>
             </div>
 
             <div id ="step_back" onclick="relocate('{{ step_back_url }}')">
-                <span class="wide">{{ gettext('Step back') }}</span>
-                <span class="narrow"> < </span>
+                <span class="wide">{{ _('Step back') }}</span>
+                <span class="narrow"> ← </span>
             </div>
 
             <div id ="step_on_date" onclick="relocate('/month')">{#FIXME#}
-                <span class="wide">{{ gettext('Step on date') }}</span>
-                <span class="narrow"> >|< </span>
+                <span class="wide">{{ _('Step on date') }}</span>
+                <span class="narrow"> ↸ </span>
             </div>
 
             <div id="step_forward" onclick="relocate('{{ step_forward_url }}')">
-                <span class="wide">{{ gettext('Step forward') }}</span>
-                <span class="narrow"> > </span>
+                <span class="wide">{{ _('Step forward') }}</span>
+                <span class="narrow"> → </span>
             </div>
 
             <div id="leap_forward" onclick="relocate('{{ leap_forward_url }}')">
-                <span class="wide">{{ gettext('Leap forward') }}</span>
-                <span class="narrow"> --> </span>
+                <span class="wide">{{ _('Leap forward') }}</span>
+                <span class="narrow"> ⇉ </span>
 
             </div>
         </div>
@@ -74,10 +73,12 @@
 
     <div id="menu_toggle" class="menu_toggle"></div>
 
-    <div id="menu" class="menu" style="display: {{ 'flex' if menu_is_visible else 'none' }}">
+    {% set menu_style = 'flex' if menu_is_visible else 'none' %}
+    <div id="menu" class="menu" style="display: {{ menu_style }}">
         <h5>{{ user.name }}</h5>
-        <button class="small_button" id="btn_logout">Logout</button>
+        <button id="btn_logout" class="small_button">{{ _('Logout') }}</button>
         <hr>
+        <button id="btn_add_goal" class="small_button">{{ _('Create goal') }}</button>
 
         {%- for section in tasks %}
             <h5>{{ section }}</h5>

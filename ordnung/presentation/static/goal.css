@@ -1,0 +1,35 @@
+.goal_div {
+    border: 2px solid #3a423b;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 1000px;
+    padding: 10px;
+}
+
+.one_row {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: stretch;
+    margin: 0;
+    padding: 0;
+}
+
+.one_column {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    flex: 1;
+    position: relative;
+    margin: 5px;
+    padding: 0;
+}
+
+.one_row_centered {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}

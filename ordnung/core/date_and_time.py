@@ -3,9 +3,10 @@
 """Tools, related to time operations.
 """
 from datetime import date, timedelta
-from typing import Tuple, List
+from typing import Tuple, List, Dict, Generator
 
 from ordnung import settings
+from ordnung.core.access import get_today
 
 
 class Day:
@@ -43,6 +44,49 @@ class Day:
 
         return css_class
 
+    def goals(self):
+        """Enlist goals for this day.
+        """
+        return [1, 2]
+
+
+class Month:
+    """Container for Days.
+    """
+
+    def __init__(self, current_date: date) -> None:
+        """Initialize instance.
+        """
+        self.origin_date = current_date
+        self.current_date = str(current_date)
+        self.days_list: List[Day] = []
+        self.days_dict: Dict[str, Day] = {}
+        self.today_index = 0
+
+    def __repr__(self) -> str:
+        """Textual representation.
+        """
+        return (f'{type(self).__name__}'
+                f'<{self.days_list[0:1]}..{self.days_list[-2:-1]}>')
+
+    def add_day(self, new_day: Day):
+        """Put day in month. Created to fill days_dict.
+        """
+        position = len(self.days_list)
+        self.days_list.append(new_day)
+        self.days_dict[new_day.date] = new_day
+
+        if new_day.is_today:
+            self.today_index = position
+
+    def weeks(self) -> Generator[List[Day], None, None]:
+        """Iterate over weeks.
+        """
+        top_level = settings.MONTH_LENGTH + 1 - settings.WEEK_LENGTH
+        for i in range(0, top_level, settings.WEEK_LENGTH):
+            sector = slice(i, i + settings.WEEK_LENGTH)
+            yield self.days_list[sector]
+
 
 def get_offset_dates(target_date: date) -> Tuple[date, date, date, date]:
     """Calculate target dates that we will jump on step/leap forward/back.
@@ -66,27 +110,30 @@ def get_offset_dates(target_date: date) -> Tuple[date, date, date, date]:
     return leap_back, step_back, step_forward, leap_forward
 
 
-def form_month(current_date: date) -> List[Day]:
+def get_month(current_date: date) -> Month:
     """Form contents for the main table.
 
     Example output:
-        [
+        Month(
             Day(2020-05-04),
             Day(2020-05-05),
             Day(2020-05-06),
             Day(2020-05-07),
             ...
-        ]
+        )
     """
     weekday = current_date.weekday()
     index = settings.WEEK_LENGTH * 2 + weekday
+    days_total = settings.WEEK_LENGTH * settings.WEEKS_IN_MONTH
 
-    month: List[Day] = [None] * settings.WEEK_LENGTH * settings.WEEKS_IN_MONTH
-    month[index] = Day(current_date, is_today=True)
-
-    for i, day in enumerate(month):
-        if not day:
-            actual_date = current_date + timedelta(days=i - index)
-            month[i] = Day(actual_date, is_today=False)
+    month = Month(current_date)
+    for day_number in range(days_total):
+        actual_date = current_date + timedelta(days=day_number - index)
+        new_day = Day(actual_date, is_today=day_number == index)
+        month.add_day(new_day)
 
     return month
+
+x = Month(get_today())
+print(x)
+print(x.weeks())

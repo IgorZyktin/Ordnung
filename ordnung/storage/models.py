@@ -2,12 +2,11 @@
 
 """Database models.
 """
-from itertools import chain
-from typing import Set
 
 from sqlalchemy import (
     Column, Integer, String, ForeignKey,
-    UniqueConstraint, Boolean, DateTime, Index
+    Boolean, DateTime, Index, Date, Time, Float,
+    ARRAY
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -18,10 +17,6 @@ Base = declarative_base()
 
 class User(Base):
     """User representation.
-
-    Please note, that application itself (login/logout, etc.)
-    rely not on this exact model, but on it's specific user
-    class! This one is only for database manipulations.
     """
     __tablename__ = 'users'
     # -------------------------------------------------------------------------
@@ -35,14 +30,11 @@ class User(Base):
     last_seen = Column(DateTime, nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
 
-    groups_in = relationship("GroupMembership",
-                             back_populates="user",
-                             collection_class=set)
+    groups = relationship("GroupMembership",
+                          back_populates="user", collection_class=set)
 
-    groups_see = relationship("Visibility",
-                              back_populates="user",
-                              collection_class=set)
-
+    parameters = relationship("Parameter",
+                              back_populates="user", uselist=False)
     Index('users_id_uindex', 'user_id')
 
     def is_authenticated(self) -> bool:
@@ -74,12 +66,21 @@ class User(Base):
         # FIXME
         return False
 
-    @property
-    def actual_groups(self) -> Set[int]:
-        """Set of group_id user is included in and wants to see.
-        """
-        # noinspection PyTypeChecker
-        return {x.group_id for x in chain(self.groups_in, self.groups_see)}
+
+class Parameter(Base):
+    """User defined settings.
+    """
+    __tablename__ = 'parameters'
+    # -------------------------------------------------------------------------
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    # -------------------------------------------------------------------------
+    lang = Column(String, nullable=False)
+    menu = Column(Boolean, nullable=False)
+    hidden_groups = Column(ARRAY(Integer), nullable=False)
+    hidden_persistence = Column(ARRAY(Integer), nullable=False)
+
+    user = relationship("User", back_populates="parameters")
 
 
 class Group(Base):
@@ -87,7 +88,7 @@ class Group(Base):
     """
     __tablename__ = 'groups'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     # -------------------------------------------------------------------------
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     name = Column(String(255), nullable=False)
@@ -101,49 +102,38 @@ class GroupMembership(Base):
     """
     __tablename__ = 'group_membership'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     # -------------------------------------------------------------------------
     user_id = Column(Integer, ForeignKey('users.id'))
     group_id = Column(Integer, ForeignKey('groups.id'))
     # -------------------------------------------------------------------------
     Index('group_membership_idx', 'user_id', 'group_id')
-    user = relationship("User", back_populates="groups_in")
+    user = relationship("User", back_populates="groups")
 
 
-class Visibility(Base):
-    """Visible user groups.
-    """
-    __tablename__ = 'visibility'
-    # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True)
-    # -------------------------------------------------------------------------
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    group_id = Column(Integer, ForeignKey('groups.id'), nullable=False)
-    UniqueConstraint('user_id', 'group_id')
-    Index('visibility_idx', 'user_id', 'group_id')
-    user = relationship("User", back_populates="groups_see")
-
-
-class Record(Base):
+class Goal(Base):
     """A single task/goal/activity/etc. representation.
 
     Main component of the application.
     """
-    __tablename__ = 'records'
+    __tablename__ = 'goals'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     group_id = Column(Integer, ForeignKey('groups.id'))
     persistence_id = Column(Integer, ForeignKey('persistence.id'))
     # -------------------------------------------------------------------------
-    created_at = Column(String, nullable=False)
-    last_edit = Column(String, nullable=False)
-    title = Column(String, nullable=False)
+    created = Column(DateTime, nullable=False)
+    last_edit = Column(DateTime, nullable=False)
+    title = Column(String(255), nullable=False)
     description = Column(String, nullable=False)
-    target_date = Column(String, nullable=False)
-    target_time = Column(String, nullable=False)
-    start_date = Column(String, nullable=False)
-    end_date = Column(String)
+    target_date = Column(Date)
+    target_time = Column(Time)
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime)
+    metric_name = Column(String(255), nullable=False)
+    metric_objective = Column(Float(), nullable=False)
+    metric_step = Column(Float(), nullable=False, default=1)
 
 
 class Persistence(Base):
@@ -154,41 +144,32 @@ class Persistence(Base):
     """
     __tablename__ = 'persistence'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     # -------------------------------------------------------------------------
     name = Column(String, nullable=False)
 
-# class Comment(Base):
-#     """A single comment representation.
-#     """
-#     __tablename__ = 'comments'
-#     # -------------------------------------------------------------------------
-#     id = Column(Integer, primary_key=True)
-#     record_id = Column(Integer, ForeignKey('records.id'))
-#     user_id = Column(Integer, ForeignKey('users.id'))
-#     # -------------------------------------------------------------------------
-#     created_at = Column(String, nullable=False)
-#     text = Column(String, nullable=False)
+
+class Status(Base):
+    """State of a condition. Not condition itself.
+    """
+    __tablename__ = 'statuses'
+    # -------------------------------------------------------------------------
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    # -------------------------------------------------------------------------
+    name = Column(String, nullable=False)
 
 
-# class Status(Base):
-#     """Name of a condition. Not condition itself.
-#     """
-#     __tablename__ = 'statuses'
-#     # ----------------------------------------------------------------------------------------------
-#     id = Column(Integer, primary_key=True)
-#     # ----------------------------------------------------------------------------------------------
-#     name = Column(String, nullable=False)
-#
-#
-# class Achievement(Base):
-#     """Actual state of a record. Makes it infinite in time and yet concrete at specific date.
-#     """
-#     __tablename__ = 'achievement'
-#     # ----------------------------------------------------------------------------------------------
-#     id = Column(Integer, primary_key=True)
-#     record_id = Column(Integer, ForeignKey('records.id'))
-#     status_id = Column(Integer, ForeignKey('statuses.id'))
-#     # ----------------------------------------------------------------------------------------------
-#     event_time = Column(String, nullable=False)
-#     event_value = Column(Integer, nullable=False, default=0)
+class Achievement(Base):
+    """Actual state of a goal.
+
+    Makes it infinite in time and yet concrete at specific date.
+    """
+    __tablename__ = 'achievements'
+    # -------------------------------------------------------------------------
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    goal_id = Column(Integer, ForeignKey('goals.id'))
+    status_id = Column(Integer, ForeignKey('statuses.id'))
+    # -------------------------------------------------------------------------
+    event_date = Column(Date, nullable=False)
+    event_time = Column(DateTime, nullable=False)
+    value = Column(Integer, nullable=False, default=0)
