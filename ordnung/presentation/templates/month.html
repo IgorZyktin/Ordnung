@@ -2,6 +2,10 @@
 
 {%- block head_content %}
     <link href="{{ url_for('static', path='month.css') }}" rel="stylesheet" type="text/css">
+    <script src="{{ url_for('static', path='month.js') }}"></script>
+    <script>
+        let current_date = '{{ current_date }}';
+    </script>
 {% endblock %}
 
 {%- block body_content %}
@@ -31,7 +35,7 @@
                             {{ day.number }}
                         </span>
                         {% for goal in day.goals() %}
-                            <span class="goal">{{ loop.index }}. {{ goal }}</span>
+                            <span class="goal">{{ loop.index }}. {{ goal.title }}</span>
                         {% endfor %}
                     </div>
 
@@ -42,31 +46,30 @@
         {# Navigation buttons here #}
         <div class="footer">
 
-            <div id="leap_back" onclick="relocate('{{ leap_back_url }}')">
+            <a href="{{ leap_back_url }}">
                 <span class="wide">{{ _('Leap back') }}</span>
                 <span class="narrow"> ⇇ </span>
-            </div>
+            </a>
 
-            <div id ="step_back" onclick="relocate('{{ step_back_url }}')">
+            <a href="{{ step_back_url }}">
                 <span class="wide">{{ _('Step back') }}</span>
                 <span class="narrow"> ← </span>
-            </div>
+            </a>
 
-            <div id ="step_on_date" onclick="relocate('/month')">{#FIXME#}
+            <a href="/month">{#FIXME#}
                 <span class="wide">{{ _('Step on date') }}</span>
                 <span class="narrow"> ↸ </span>
-            </div>
+            </a>
 
-            <div id="step_forward" onclick="relocate('{{ step_forward_url }}')">
+            <a href="{{ step_forward_url }}">
                 <span class="wide">{{ _('Step forward') }}</span>
                 <span class="narrow"> → </span>
-            </div>
+            </a>
 
-            <div id="leap_forward" onclick="relocate('{{ leap_forward_url }}')">
+            <a href="{{ leap_forward_url }}">
                 <span class="wide">{{ _('Leap forward') }}</span>
                 <span class="narrow"> ⇉ </span>
-
-            </div>
+            </a>
         </div>
 
     </div>
@@ -76,14 +79,14 @@
     {% set menu_style = 'flex' if menu_is_visible else 'none' %}
     <div id="menu" class="menu" style="display: {{ menu_style }}">
         <h5>{{ user.name }}</h5>
-        <button id="btn_logout" class="small_button">{{ _('Logout') }}</button>
+        <a href="{{ url_for('logout') }}" class="small_button">{{ _('Logout') }}</a>
         <hr>
-        <button id="btn_add_goal" class="small_button">{{ _('Create goal') }}</button>
+        <a href="{{ url_for('create_goal', date=current_date) }}" class="small_button">{{ _('Create goal') }}</a>
 
-        {%- for section in tasks %}
+        {%- for section in goal_sections %}
             <h5>{{ section }}</h5>
-            {% for task in tasks[section] -%}
-                <span class="task">{{ task.text }}</span>
+            {% for goal in goal_sections[section] -%}
+                <a href="/update_goal/{{ goal.id }}" class="goal">{{ loop.index }}. {{ goal.title }}</a>
             {% endfor -%}
 
             {%- if not loop.last -%}

@@ -2,7 +2,7 @@
 
 """Database access tools.
 """
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import or_, func
 from sqlalchemy.exc import IntegrityError
@@ -11,7 +11,8 @@ from werkzeug.security import generate_password_hash
 from ordnung import settings
 from ordnung.core.access import get_now
 from ordnung.storage.database import session
-from ordnung.storage.models import User, Group, GroupMembership, Parameter
+from ordnung.storage.models import User, Group, GroupMembership, Parameter, \
+    Persistence, Status
 
 
 def get_user_by_id(user_id: int) -> Optional[User]:
@@ -39,6 +40,18 @@ def get_user_by_email_or_login(user_contact: str) -> Optional[User]:
         )
     ).first()
     return response
+
+
+def get_persistence_types() -> List[Persistence]:
+    """Get all available persistence types.
+    """
+    return session.query(Persistence).order_by('id').all()
+
+
+def get_status_types() -> List[Status]:
+    """Get all available status types.
+    """
+    return session.query(Status).order_by('id').all()
 
 
 def change_user_password(user_id: int, new_password: str) -> bool:

@@ -4,137 +4,22 @@
 """
 from itertools import chain
 
-from starlette.authentication import requires
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import RedirectResponse
 
-from ordnung import settings
 from ordnung.core.access import check_token, token_is_too_old
-from ordnung.core.date_and_time import get_offset_dates, get_month
-from ordnung.core.localisation import get_day_names
-from ordnung.presentation.access import (
-    get_date, get_gettext, get_translate, get_errors, get_lang
-)
+from ordnung.presentation.access import get_gettext, get_lang, get_errors
 from ordnung.presentation.email_sending import (
-    send_restore_email, send_verification_email
+    send_verification_email, send_restore_email
 )
-from ordnung.presentation.forms import PasswordRestoreForm, RegisterForm, \
-    UserContactForm, GoalForm
+from ordnung.presentation.forms import (
+    RegisterForm, UserContactForm, PasswordRestoreForm
+)
 from ordnung.presentation.rendering import render_template
 from ordnung.storage.access import (
-    get_user_by_email_or_login, change_user_password,
-    confirm_registration, register_user,
+    register_user, confirm_registration,
+    get_user_by_email_or_login, change_user_password
 )
-
-
-async def index(request: Request) -> RedirectResponse:
-    """Starting page.
-    """
-    if request.user.is_authenticated:
-        return RedirectResponse(request.url_for('month'))
-    return RedirectResponse(request.url_for('login'))
-
-
-async def login(request: Request) -> HTMLResponse:
-    """Login page.
-    """
-    if request.user.is_authenticated:
-        return RedirectResponse(request.url_for('index'))
-
-    _ = get_gettext(get_lang(request))
-
-    context = {
-        'request': request,
-        'header': _('You could get access only after login'),
-        'retry': _('Try log in once again'),
-        'register': _('Register'),
-        'restore': _('Restore password'),
-    }
-    return render_template(
-        "login.html", context, status_code=401,
-        headers={"WWW-Authenticate": 'Basic realm="Ordnung"'}
-    )
-
-
-@requires('authenticated', redirect='unauthorized')
-async def month(request: Request) -> HTMLResponse:
-    """Main page, navigation starts from here. Shows single month.
-    """
-    current_date = get_date(request)
-    _ = get_translate(get_lang(request))
-
-    (leap_back, step_back,
-     step_forward, leap_forward) = get_offset_dates(current_date)
-
-    context = {
-        'request': request,
-        'header': _(f'month_{current_date.month}') + f' ({current_date})',
-        'month': get_month(current_date),
-        'menu_is_visible': int(request.query_params.get('menu', '0')),
-        'current_date': current_date,
-        'day_names': get_day_names(get_lang(request)),
-        'leap_back_url': f'/month?date={leap_back}',
-        'step_back_url': f'/month?date={step_back}',
-        'step_forward_url': f'/month?date={step_forward}',
-        'leap_forward_url': f'/month?date={leap_forward}',
-    }
-    return render_template('month.html', context)
-
-
-@requires('authenticated', redirect='unauthorized')
-async def day(request: Request):
-    """Single day navigation.
-    """
-    _ = get_translate(get_lang(request))
-    current_date = get_date(request)
-    # tasks = get_records(target_date=current_date,
-    #                     offset_left=0, offset_right=0)
-    context = {
-        'request': request,
-        'header': _(f'month_{current_date.month}') + f' ({current_date})',
-        'current_date': current_date,
-        'month_url': f'/month?date={current_date}',
-        'tasks': []
-    }
-    return render_template("day.html", context)
-
-
-# async def show_record(request: Request):
-#     """Single record modification or creation.
-#     """
-#     at_date = extract_date(request)
-#     #     chosen_date_str, chosen_date = extract_date(request)
-#     #     record_id = request.path_params.get('record_id')
-#     #     record, sub_context = get_or_create_record(record_id, chosen_date_str, request.user)
-#     #
-#     context = {
-#         'request': request,
-#         #         'creator_name': request.user.name,
-#         #         'chosen_date': chosen_date,
-#         #         'chosen_date_str': chosen_date_str,
-#         #         'record': record,
-#         #         **sub_context,
-#         #         **request.state.context_extensions,
-#     }
-#     return HTMLResponse(f'day - {at_date}')
-
-async def create_goal(request: Request):
-    """Create new goal.
-    """
-    form = await request.form()
-    lang = get_lang(request)
-    _ = get_gettext(lang)
-    form = GoalForm(form, lang=lang, meta={'csrf_context': request.session})
-    errors = get_errors(lang, form.errors)
-
-    context = {
-        'request': request,
-        'header': _('Create new goal'),
-        'form': form,
-        'errors': errors,
-        'back': _('Back to month'),
-    }
-    return render_template('create_goal.html', context)
 
 
 async def register(request: Request):
@@ -324,30 +209,3 @@ async def restore_confirm(request: Request):
         'errors': errors,
     }
     return render_template('restore_password.html', context)
-
-
-async def unauthorized(request: Request) -> HTMLResponse:
-    """When user is not yet authorised but tries to get something.
-    """
-    _ = get_gettext(get_lang(request))
-
-    context = {
-        'request': request,
-        'header': _('You have no access to this resource'),
-        'retry': _('To the start page'),
-    }
-    return render_template('unauthorized.html', context, status_code=403)
-
-
-@requires('authenticated', redirect='unauthorized')
-async def logout(request: Request) -> HTMLResponse:
-    """Logout page.
-    """
-    _ = get_gettext(get_lang(request))
-
-    context = {
-        'request': request,
-        'header': _('You have been successfully logged out'),
-        'retry': _('To the start page'),
-    }
-    return render_template('login_note.html', context, status_code=401)

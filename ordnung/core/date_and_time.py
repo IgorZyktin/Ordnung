@@ -7,6 +7,8 @@ from typing import Tuple, List, Dict, Generator
 
 from ordnung import settings
 from ordnung.core.access import get_today
+from ordnung.storage.database import session
+from ordnung.storage.models import Goal
 
 
 class Day:
@@ -47,7 +49,7 @@ class Day:
     def goals(self):
         """Enlist goals for this day.
         """
-        return [1, 2]
+        return session.query(Goal).filter_by(target_date=self.origin_date).all()
 
 
 class Month:
@@ -68,6 +70,9 @@ class Month:
         """
         return (f'{type(self).__name__}'
                 f'<{self.days_list[0:1]}..{self.days_list[-2:-1]}>')
+
+    def __getitem__(self, item):
+        return self.days_dict[item]
 
     def add_day(self, new_day: Day):
         """Put day in month. Created to fill days_dict.
@@ -134,6 +139,17 @@ def get_month(current_date: date) -> Month:
 
     return month
 
-x = Month(get_today())
-print(x)
-print(x.weeks())
+
+def get_day(current_date: date, is_today: bool) -> Day:
+    return Day(current_date, is_today)
+
+
+def get_time_variants() -> List[Tuple[str, str]]:
+    variants = [('', '')]
+
+    for hour in range(0, 24):
+        for minute in range(0, 60, 15):
+            variant = f'{hour:02d}:{minute:02d}'
+            variants.append((variant, variant))
+
+    return variants

@@ -5,43 +5,46 @@
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 
-from ordnung.presentation.views import (
-    index, login, logout, month, register,
-    restore, unauthorized, restore_note, day,
-    register_note, restore_confirm, register_confirm, create_goal,
+from ordnung.presentation.views.auth import index, login, logout, unauthorized
+from ordnung.presentation.views.crud import create_goal, update_goal
+from ordnung.presentation.views.main import month, day
+from ordnung.presentation.views.register import (
+    restore_confirm, register_confirm, restore_note,
+    register_note, restore, register
 )
+
+GP = ['GET', 'POST']
 
 routes = [
 
-    # usage -------------------------------------------------------------------
+    # main --------------------------------------------------------------------
+
+    Route('/month', month),
+    Route('/month/{date}', month),
+    Route('/day/{date}', day),
+
+    # auth --------------------------------------------------------------------
 
     Route('/', index),
-    Route('/month', month),
-    Route('/day', day),
-
-    # CRUD --------------------------------------------------------------------
-
-    Route('/create_goal/{chosen_date}', create_goal),
-
-    # Route('/add_record/{chosen_date}', ajax_create_record, methods=['PUT']),
-
-    # Route('/show_record/{chosen_date}/{record_id}', show_record, methods=['GET']),
-    # Route('/show_record/{chosen_date}/{record_id}', ajax_update_record, methods=['PATCH']),
-    # Route('/show_record/{chosen_date}/{record_id}', ajax_delete_record, methods=['DELETE']),
-    # auth --------------------------------------------------------------------
     Route('/login', login),
-    Route('/logout', logout, methods=['GET', 'POST']),
+    Route('/logout', logout, methods=GP),
+    Route('/unauthorized', unauthorized),
 
-    Route('/register', register, methods=['GET', 'POST']),
+    # register-----------------------------------------------------------------
+
+    Route('/register', register, methods=GP),
     Route('/register_note', register_note),
     Route('/register_confirm/{token}', register_confirm),
 
-    Route('/restore', restore, methods=['GET', 'POST']),
+    Route('/restore', restore, methods=GP),
     Route('/restore_note', restore_note),
-    Route('/restore_confirm/{token}',
-          restore_confirm, methods=['GET', 'POST']),
+    Route('/restore_confirm/{token}', restore_confirm, methods=GP),
 
-    Route('/unauthorized', unauthorized),
+    # CRUD --------------------------------------------------------------------
+
+    Route('/create_goal', create_goal, methods=GP),
+    Route('/create_goal/{date}', create_goal, methods=GP),
+    Route('/update_goal/{goal_id}', update_goal, methods=GP),
 
     # static ------------------------------------------------------------------
 

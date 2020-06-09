@@ -50,7 +50,7 @@ def get_date(request: Request) -> date:
     Example output:
         date(2020, 5, 3)
     """
-    string = request.query_params.get('date')
+    string = request.path_params.get('date')
 
     if string is None:
         target_date = get_today()
@@ -60,7 +60,7 @@ def get_date(request: Request) -> date:
     return target_date
 
 
-def get_errors(lang: str, errors_dict: dict) -> List[str]:
+async def get_errors(lang: str, errors_dict: dict) -> List[str]:
     """Extract errors from WTForm.
     """
     errors = []

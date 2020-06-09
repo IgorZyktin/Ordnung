@@ -6,6 +6,7 @@ import os
 import sys
 
 #  ------------------ CORE SETTINGS ------------------
+import pytz as pytz
 
 SECRET_KEY = os.getenv('ORDNUNG_SECRET_KEY')
 
@@ -16,7 +17,7 @@ WEEKENDS = {5, 6}  # weekday indexes, saturday and sunday
 WEEK_LENGTH = 7
 WEEKS_IN_MONTH = 5
 MONTH_LENGTH = WEEKS_IN_MONTH * WEEK_LENGTH
-
+TIMEZONE = pytz
 # additional days to search in both directions during month rendering
 MONTH_OFFSET = 20
 

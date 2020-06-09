@@ -6,6 +6,8 @@
 }
 
 .day_contents {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     max-width: 1000px;
     padding: 20px;
@@ -31,6 +33,7 @@
     padding: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
+    text-decoration: none;
 }
 
 .goal:hover {

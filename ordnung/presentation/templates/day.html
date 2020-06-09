@@ -8,28 +8,26 @@
 <div class="global">
     <div class="day_contents">
         <div class="header">
-            {% if tasks %}
-                {{ _('Tasks on %s %s (%s-x)')|format(
+            {% if goals %}
+                {{ _('Goals on %s %s (%s-x)')|format(
                     current_date.day,
                     translate("month_%s_"|format(current_date.month)),
-                    tasks|length
+                    goals|length
                 ) }}
             {% else %}
                 {{ _('Nothing planned on %s')|format(current_date) }}
             {% endif %}
         </div>
 
-        {% for task in tasks %}
-            <div class="goal">
-                {{ loop.index }}. {{ task.text }}
-            </div>
+        {% for goal in goals %}
+            <a href="/update_goal/{{ goal.id }}" class="goal">{{ loop.index }}. {{ goal.title }}</a>
         {% endfor %}
 
         <div class="controls">
-            <a href="{{ month_url }}" id="btn_add" class="btn">{{ _('New record') }}</a>
-            <a href="{{ month_url }}" id="btn_month" class="btn">{{ _('Back to month') }}</a>
+            <a href="{{ url_for('create_goal', date=current_date) }}" class="btn">{{ _('New goal') }}</a>
+            <a href="{{ url_for('month', date=current_date) }}" class="btn">{{ _('Back to month') }}</a>
         </div>
-
     </div>
+
 </div>
 {% endblock %}

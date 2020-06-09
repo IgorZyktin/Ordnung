@@ -67,10 +67,13 @@ input[type="password"] {
 
 select:disabled,
 textarea:disabled,
+.form_section label:disabled,
 input[type="email"]:disabled,
 input[type="text"]:disabled,
 input[type="password"]:disabled {
     background: rgba(68, 68, 68, 0.1);
+    border: 2px solid #1d1f1d;
+    color: #383933;
 }
 
 textarea {

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{%- block head_content %}
+    <link href="{{ url_for('static', path='goal.css') }}" rel="stylesheet" type="text/css">
+    <script src="{{ url_for('static', path='goal.js') }}"></script>
+{% endblock %}
+
+{% block body_content %}
+    <div class="container">
+        <div class="goal_div">
+            <h3>{{ header }}</h3>
+
+            <div id="alerts-container">
+                {% for error in errors %}
+                    <div class="alert">{{ error|safe }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form_section">
+                <form method="POST">
+                    {{ form.csrf_token }}
+                    {{ form.id }}
+                    {{ form.user_id }}
+                    <div class="one_row">
+                        <div class="one_column">
+                            <div class="form_group">
+                                <span class="tooltip">Как будет отображаться в перечне</span>
+                                {{ form.title.label }}
+                                {{ form.title }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Группа задачи</span>
+                                {{ form.group.label }}
+                                {{ form.group }}
+                            </div>
+
+                            <div class="form_group h-100">
+                                <span class="tooltip">Как быдет выглядеть описание</span>
+                                {{ form.description.label }}
+                                {{ form.description }}
+                            </div>
+                        </div>
+
+                        <div class="one_column">
+                            <div class="form_group">
+                                <span class="tooltip">На какую дату поставить</span>
+                                {{ form.target_date.label }}
+                                {{ form.target_date }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">На какую дату поставить</span>
+                                {{ form.target_date.label }}
+                                {{ form.target_date }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">На какое время поставить</span>
+                                {{ form.target_time.label }}
+                                {{ form.target_time }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Тип действия</span>
+                                {{ form.persistence.label }}
+                                {{ form.persistence }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Состояние</span>
+                                {{ form.status.label }}
+                                {{ form.status }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Начало действия</span>
+                                {{ form.start_time.label }}
+                                {{ form.start_time }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Конец действия</span>
+                                {{ form.end_time.label }}
+                                {{ form.end_time }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Есть метрика?</span>
+                                <div class="one_row_centered">
+                                    {{ form.has_metric.label }}
+                                    {{ form.has_metric }}
+                                </div>
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Название цели</span>
+                                {{ form.metric_name.label }}
+                                {{ form.metric_name }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Целевая величина</span>
+                                {{ form.metric_objective.label }}
+                                {{ form.metric_objective }}
+                            </div>
+
+                            <div class="form_group">
+                                <span class="tooltip">Делать за раз</span>
+                                {{ form.metric_step.label }}
+                                {{ form.metric_step }}
+                            </div>
+
+                            {% if mode == 'create' %}
+                                <button id="btn_create_goal" type="submit" class="btn">Create</button>
+                            {% else %}
+{#                                <div class="form_group">#}
+{#                                    <span class="tooltip">Когда создана</span>#}
+{#                                    {{ form.created.label }}#}
+{#                                    {{ form.created }}#}
+{#                                </div>#}
+{##}
+{#                                <div class="form_group">#}
+{#                                    <span class="tooltip">Когда правлена</span>#}
+{#                                    {{ form.last_edit.label }}#}
+{#                                    {{ form.last_edit }}#}
+{#                                </div>#}
+
+                                <button id="btn_update_goal" type="submit" class="btn">Update</button>
+                            {% endif %}
+
+                            <a href="{{ url_for('day', date=current_date) }}" class="btn">{{ _('Back to day') }}</a>
+                            <a href="{{ url_for('month', date=current_date) }}" class="btn">{{ _('Back to month') }}</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

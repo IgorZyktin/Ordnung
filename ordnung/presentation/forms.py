@@ -2,9 +2,10 @@
 
 """Application forms.
 """
+from starlette.requests import Request
 from wtforms import (
-    Form, PasswordField, SelectField, StringField, HiddenField,
-    BooleanField, TextAreaField
+    PasswordField, SelectField, StringField, HiddenField,
+    BooleanField, TextAreaField, Form
 )
 from wtforms.csrf.session import SessionCSRF
 from wtforms.fields.html5 import EmailField
@@ -109,7 +110,7 @@ class RegisterForm(OrdnungForm):
     language = SelectField(
         'Language:',
         validators=[DataRequired()],
-        choices=[('RU', 'Russian'), ('EN', 'English')]
+        choices=[('RU', 'Русский'), ('EN', 'English')]
     )
     password = PasswordField(
         'New password:',
@@ -125,14 +126,20 @@ class RegisterForm(OrdnungForm):
 class GoalForm(OrdnungForm):
     """Goal creating and altering form.
     """
-    goal_id = HiddenField()
+    id = HiddenField()
+    user_id = HiddenField()
 
-    goal_title = StringField('Title')
-    goal_description = TextAreaField('Description')
+    title = StringField('Title:')
+    description = TextAreaField('Description:')
+    group = SelectField('Goal group:')
 
     target_date = StringField('Target Date:')
     target_time = SelectField('Target time:')
     persistence = SelectField('Persistence:')
+    status = SelectField('Status:')
+
+    created = StringField('Goal created at:')
+    last_edit = StringField('Goal last edit at:')
 
     start_time = StringField('Start time:')
     end_time = StringField('End time:')
@@ -144,3 +151,8 @@ class GoalForm(OrdnungForm):
                                    render_kw={'disabled': 'disabled'})
     metric_step = StringField('Metric step:',
                               render_kw={'disabled': 'disabled'})
+
+    @classmethod
+    async def from_request(cls, request: Request, instance=None):
+        form = await request.form()
+

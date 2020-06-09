@@ -109,6 +109,7 @@ class GroupMembership(Base):
     # -------------------------------------------------------------------------
     Index('group_membership_idx', 'user_id', 'group_id')
     user = relationship("User", back_populates="groups")
+    group = relationship("Group")
 
 
 class Goal(Base):

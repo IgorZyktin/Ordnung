@@ -80,7 +80,7 @@
     height: 5vh;
 }
 
-.footer div {
+.footer a {
     margin: 5px;
     padding: 5px;
     display: flex;
@@ -90,9 +90,10 @@
     background-color: var(--ordnung-bg-color-1);
     border-radius: 10px;
     border: var(--ordnung-border-1);
+    text-decoration: none;
 }
 
-.footer div:hover {
+.footer a:hover {
     border: var(--ordnung-border-5);
 }
 
@@ -113,17 +114,15 @@
     max-width: 20px;
 }
 
-.task {
+.goal {
     padding: 3px 10px;
     overflow: hidden;
-}
-
-.task:hover {
-    background: linear-gradient(to left, #23ce65 2%, #174742 2%, #174742 98%,#23ce65 98%);
-    color: var(--ordnung-color-1);
-}
-
-.goal {
+    text-decoration: none;
     color: var(--ordnung-color-1);
     white-space: nowrap;
+}
+
+.goal:hover {
+    background: linear-gradient(to left, #23ce65 2%, #174742 2%, #174742 98%,#23ce65 98%);
+    color: var(--ordnung-color-1);
 }

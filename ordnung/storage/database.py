@@ -12,8 +12,7 @@ from ordnung import settings
 from ordnung.core.records import organize_records, sort_nested_records
 from ordnung.storage.sql import MEGA_REQUEST
 
-engine = create_engine(settings.DB_URI, echo=False,
-                       isolation_level='AUTOCOMMIT')
+engine = create_engine(settings.DB_URI, echo=False)
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()

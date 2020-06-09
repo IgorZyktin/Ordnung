@@ -6,38 +6,38 @@
     <div class="form_group">
         <span class="tooltip">Name will be displayed in the menu and also will help other users to recognise you</span>
         {{ form.username.label }}
-        {{ form.username() }}
+        {{ form.username }}
     </div>
 
     <div class="form_group">
         <span class="tooltip">Login will be used only to enter the site</span>
         {{ form.login.label }}
-        {{ form.login() }}
+        {{ form.login }}
     </div>
 
     <div class="form_group">
         <span class="tooltip">E-mail is mainly needed to restore forgotten password</span>
         {{ form.email.label }}
-        {{ form.email() }}
+        {{ form.email }}
     </div>
 
     <div class="form_group">
         {{ form.language.label }}
-        {{ form.language() }}
+        {{ form.language }}
     </div>
 
     <div class="form_group">
         <span class="tooltip">Do not use password from your bank account here! Safety was not of my goals in this app.</span>
         {{ form.password.label }}
-        {{ form.password() }}
+        {{ form.password }}
     </div>
 
     <div class="form_group">
         {{ form.password_repeat.label }}
-        {{ form.password_repeat() }}
+        {{ form.password_repeat }}
     </div>
 
     <input type="submit" class="login_button">
 </form>
-<button class="login_button" id="btn_go_main">{{ retry }}</button>
+<a href="{{ url_for('index') }}" class="login_button">{{ retry }}</a>
 {% endblock %}
