@@ -15,7 +15,7 @@ from ordnung.storage.access import get_persistence_types, get_status_types
 def gettext(lang: str, sentence: str) -> str:
     """Translate message and return it as a string.
 
-    Similar to Django gettext, but without session middleware,
+    Similar to Django gettext, but without magic,
     so we have to pass locale explicitly.
 
     >>> gettext('RU', 'January')
@@ -29,7 +29,8 @@ def gettext(lang: str, sentence: str) -> str:
 
     elif (translation := vocabulary.get(sentence)) is None:
         translation = sentence
-
+    if sentence == translation:
+        print(sentence, '--->', translation)
     return translation
 
 
@@ -56,7 +57,7 @@ def translate(lang: str, key: str) -> str:
     return translation
 
 
-@lru_cache
+@lru_cache(maxsize=1000)
 def get_day_names(lang: str) -> List[Tuple[str, str]]:
     """Get list of weekday names in user lang.
 
@@ -71,7 +72,7 @@ def get_day_names(lang: str) -> List[Tuple[str, str]]:
     return list(zip(long_names, short_names))
 
 
-@lru_cache
+@lru_cache(maxsize=1000)
 def get_persistence_names(lang: str) -> List[Tuple[str, str]]:
     """Get list of persistence types names in user lang.
     """
@@ -84,7 +85,7 @@ def get_persistence_names(lang: str) -> List[Tuple[str, str]]:
     return localized_names
 
 
-@lru_cache
+@lru_cache(maxsize=1000)
 def get_statuses_names(lang: str) -> List[Tuple[str, str]]:
     """Get list of status types names in user lang.
     """

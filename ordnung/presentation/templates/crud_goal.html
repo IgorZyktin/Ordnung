@@ -50,12 +50,6 @@
                             </div>
 
                             <div class="form_group">
-                                <span class="tooltip">На какую дату поставить</span>
-                                {{ form.target_date.label }}
-                                {{ form.target_date }}
-                            </div>
-
-                            <div class="form_group">
                                 <span class="tooltip">На какое время поставить</span>
                                 {{ form.target_time.label }}
                                 {{ form.target_time }}
@@ -93,6 +87,7 @@
                                 </div>
                             </div>
 
+                        <div id="metrics" style="display: none">
                             <div class="form_group">
                                 <span class="tooltip">Название цели</span>
                                 {{ form.metric_name.label }}
@@ -110,9 +105,10 @@
                                 {{ form.metric_step.label }}
                                 {{ form.metric_step }}
                             </div>
+                        </div>
 
                             {% if mode == 'create' %}
-                                <button id="btn_create_goal" type="submit" class="btn">Create</button>
+                                <input id="btn_create_goal" type="submit" class="btn w-100" value="{{ _('Create') }}">
                             {% else %}
 {#                                <div class="form_group">#}
 {#                                    <span class="tooltip">Когда создана</span>#}
@@ -126,11 +122,11 @@
 {#                                    {{ form.last_edit }}#}
 {#                                </div>#}
 
-                                <button id="btn_update_goal" type="submit" class="btn">Update</button>
+                                <input id="btn_update_goal" type="submit" class="btn w-100" value="{{ _('Save changes') }}">
                             {% endif %}
 
-                            <a href="{{ url_for('day', date=current_date) }}" class="btn">{{ _('Back to day') }}</a>
-                            <a href="{{ url_for('month', date=current_date) }}" class="btn">{{ _('Back to month') }}</a>
+                            <a href="{{ url_for('day', date=current_date) }}" class="btn w-100">{{ _('Back to day') }}</a>
+                            <a href="{{ url_for('month') }}" class="btn w-100">{{ _('Back to month') }}</a>
                         </div>
                     </div>
                 </form>

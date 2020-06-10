@@ -24,8 +24,8 @@
         {% endfor %}
 
         <div class="controls">
-            <a href="{{ url_for('create_goal', date=current_date) }}" class="btn">{{ _('New goal') }}</a>
-            <a href="{{ url_for('month', date=current_date) }}" class="btn">{{ _('Back to month') }}</a>
+            <a href="{{ url_for('create_goal', date=current_date) }}" class="btn">{{ _('Create new goal') }}</a>
+            <a href="{{ url_for('month', date=last_date) }}" class="btn">{{ _('Back to month') }}</a>
         </div>
     </div>
 

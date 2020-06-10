@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Views.
+"""Authorisation related views.
 """
 from starlette.authentication import requires
 from starlette.requests import Request

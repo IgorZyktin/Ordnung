@@ -14,7 +14,18 @@ from wtforms.validators import Length, DataRequired, EqualTo
 
 from ordnung import settings
 from ordnung.core.localisation import gettext
-from ordnung.presentation.access import get_gettext
+from ordnung.presentation.access import get_gettext, get_lang
+
+
+async def get_form(request: Request, form_type: type, obj=None):
+    """Shorthand for form creation.
+    """
+    form = await request.form()
+    form = form_type(formdata=form,
+                     obj=obj,
+                     lang=get_lang(request),
+                     meta={'csrf_context': request.session})
+    return form
 
 
 class OrdnungFormTranslator:
@@ -30,6 +41,7 @@ class OrdnungFormTranslator:
     def gettext(self, string):
         """Custom gettext wrapper.
         """
+        print(string)
         return self._gettext(string)
 
     def ngettext(self, singular, plural, n):
@@ -63,7 +75,7 @@ class OrdnungForm(Form):
         self.lang = lang
         super().__init__(*args, **kwargs)
         for field in self._fields.values():
-            field.label.text = gettext(lang, field.label.text)
+            field.label.text = gettext(lang, field.label.text) + ':'
 
 
 class UserContactForm(OrdnungForm):
@@ -78,14 +90,14 @@ class PasswordRestoreForm(OrdnungForm):
     """PasswordRestoreForm.
     """
     password = PasswordField(
-        'New password:',
+        'New password',
         validators=[
             DataRequired(),
             Length(min=4, max=100)
         ]
     )
     password_repeat = PasswordField(
-        'Repeat new password:',
+        'Repeat new password',
         validators=[
             DataRequired(),
             Length(min=4, max=100),
@@ -98,26 +110,26 @@ class RegisterForm(OrdnungForm):
     """Registration form.
     """
     username = StringField(
-        'Displayed name:',
+        'Displayed name',
         validators=[DataRequired(), Length(min=2, max=30)])
     login = StringField(
-        'Login:',
+        'Login',
         validators=[DataRequired(), Length(min=2, max=30)])
     email = EmailField(
-        'E-mail:',
+        'E-mail',
         validators=[DataRequired(), Length(min=3, max=50)]
     )
     language = SelectField(
-        'Language:',
+        'Language',
         validators=[DataRequired()],
         choices=[('RU', 'Русский'), ('EN', 'English')]
     )
     password = PasswordField(
-        'New password:',
+        'New password',
         validators=[DataRequired(), Length(min=4, max=100)]
     )
     password_repeat = PasswordField(
-        'Repeat new password:',
+        'Repeat new password',
         validators=[DataRequired(), Length(min=4, max=100),
                     EqualTo('password')]
     )
@@ -129,30 +141,25 @@ class GoalForm(OrdnungForm):
     id = HiddenField()
     user_id = HiddenField()
 
-    title = StringField('Title:')
-    description = TextAreaField('Description:')
-    group = SelectField('Goal group:')
+    title = StringField('Title')
+    description = TextAreaField('Description')
+    group = SelectField('Goal group')
 
-    target_date = StringField('Target Date:')
-    target_time = SelectField('Target time:')
-    persistence = SelectField('Persistence:')
-    status = SelectField('Status:')
+    target_date = StringField('Target date')
+    target_time = SelectField('Target time')
+    persistence = SelectField('Persistence')
+    status = SelectField('Status')
 
-    created = StringField('Goal created at:')
-    last_edit = StringField('Goal last edit at:')
+    created = StringField('Goal created at')
+    last_edit = StringField('Goal last edit at')
 
-    start_time = StringField('Start time:')
-    end_time = StringField('End time:')
+    start_time = StringField('Start time')
+    end_time = StringField('End time')
 
     has_metric = BooleanField('Has measurable metric?', default='checked')
-    metric_name = StringField('Metric name:',
+    metric_name = StringField('Metric name',
                               render_kw={'disabled': 'disabled'})
-    metric_objective = StringField('Metric objective:',
+    metric_objective = StringField('Metric objective',
                                    render_kw={'disabled': 'disabled'})
-    metric_step = StringField('Metric step:',
+    metric_step = StringField('Metric step',
                               render_kw={'disabled': 'disabled'})
-
-    @classmethod
-    async def from_request(cls, request: Request, instance=None):
-        form = await request.form()
-

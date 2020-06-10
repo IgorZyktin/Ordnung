@@ -2,7 +2,6 @@
 
 """Views.
 """
-from itertools import chain
 
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
@@ -13,7 +12,7 @@ from ordnung.presentation.email_sending import (
     send_verification_email, send_restore_email
 )
 from ordnung.presentation.forms import (
-    RegisterForm, UserContactForm, PasswordRestoreForm
+    RegisterForm, UserContactForm, PasswordRestoreForm, get_form
 )
 from ordnung.presentation.rendering import render_template
 from ordnung.storage.access import (
@@ -29,10 +28,7 @@ async def register(request: Request):
         return RedirectResponse(request.url_for('index'))
 
     _ = get_gettext(get_lang(request))
-    form = await request.form()
-    form = RegisterForm(form,
-                        lang=get_lang(request),
-                        meta={'csrf_context': request.session})
+    form = await get_form(request, RegisterForm)
 
     if request.method == 'POST' and form.validate():
         new_user_id = register_user(form.username, form.login, form.email,
@@ -41,17 +37,17 @@ async def register(request: Request):
         if new_user_id:
             if send_verification_email(request, new_user_id, form.email.data):
                 request.session['email_for_confirm'] = form.email.data
-                return RedirectResponse(request.url_for('register_note'),
-                                        status_code=303)
-            else:
-                errors = [_('You were successfully registered, but for some '
-                            'reasons we could not send you confirmation email.'
-                            ' Please request for this email later.')]
+                return RedirectResponse(
+                    request.url_for('register_note'), status_code=303
+                )
+            errors = [_('You were successfully registered, but for some '
+                        'reasons we could not send you confirmation email,'
+                        ' please request for this email later')]
         else:
             errors = [_('Login "%(login)s" '
                         'is already in use') % dict(login=form.login.data)]
     else:
-        errors = get_errors(get_lang(request), form.errors)
+        errors = await get_errors(_, form.errors)
 
     context = {
         'request': request,
@@ -110,26 +106,60 @@ async def register_confirm(request: Request):
         'request': request,
         'header': header,
         'sig_okay': sig_okay,
-        'retry': _("To the start page"),
+        'retry': _('To the start page'),
         'errors': errors,
     }
     return render_template("login_note.html", context)
 
 
+async def register_resend(request: Request):
+    """Repeat register confirmation email.
+    """
+    _ = get_gettext(get_lang(request))
+
+    form = await get_form(request, UserContactForm)
+
+    if request.method == 'POST' and form.validate():
+        user = get_user_by_email_or_login(form.contact.data)
+
+        if user is None:
+            errors = [_('There is no user with supplied contact information')]
+
+        elif send_verification_email(request, user.id, user.email):
+            request.session['email_for_confirm'] = user.email
+            return RedirectResponse(
+                request.url_for('register_note'), status_code=303
+            )
+
+        else:
+            errors = [_('Credentials are correct, but we could not send you '
+                        'confirmation email, please try again later')]
+    else:
+        errors = await get_errors(_, form.errors)
+
+    context = {
+        'request': request,
+        'header': _('To get new confirmation link, '
+                    'please enter your email or login'),
+        'retry': _('To the start page'),
+        'form': form,
+        'errors': errors,
+    }
+    return render_template('restore.html', context)
+
+
 async def restore(request: Request):
     """Password restore page.
     """
-    errors = []
     _ = get_gettext(get_lang(request))
 
-    form = await request.form()
-    form = UserContactForm(form,
-                           lang=get_lang(request),
-                           meta={'csrf_context': request.session})
+    form = await get_form(request, UserContactForm)
 
-    if request.method == 'POST':
-        if (user := get_user_by_email_or_login(form.contact.data)) is None:
-            errors = [_('There is no user with supplied contact information.')]
+    if request.method == 'POST' and form.validate():
+        user = get_user_by_email_or_login(form.contact.data)
+
+        if user is None:
+            errors = [_('There is no user with supplied contact information')]
 
         elif send_restore_email(request, user.id, user.email):
             request.session['email_for_restore'] = user.email
@@ -137,16 +167,19 @@ async def restore(request: Request):
                                     status_code=303)
         else:
             errors = [_('Credentials are correct, but we could not send you '
-                        'confirmation email. Please try again later.')]
+                        'confirmation email, please try again later')]
+    else:
+        errors = await get_errors(_, form.errors)
 
     context = {
         'request': request,
-        'header': _('Enter your email or login'),
+        'header': _('To restore your password, '
+                    'please enter your email or login'),
         'retry': _('To the start page'),
         'form': form,
         'errors': errors,
     }
-    return render_template("restore.html", context)
+    return render_template('restore.html', context)
 
 
 async def restore_note(request: Request):
@@ -164,9 +197,9 @@ async def restore_note(request: Request):
     context = {
         'request': request,
         'header': header,
-        'retry': _("To the start page"),
+        'retry': _('To the start page'),
     }
-    return render_template("login_note.html", context)
+    return render_template('login_note.html', context)
 
 
 async def restore_confirm(request: Request):
@@ -176,10 +209,7 @@ async def restore_confirm(request: Request):
     token = request.path_params.get('token')
     sig_okay, payload = check_token(token, 'restore_password')
 
-    form = await request.form()
-    form = PasswordRestoreForm(form,
-                               lang=get_lang(request),
-                               meta={'csrf_context': request.session})
+    form = await get_form(request, PasswordRestoreForm)
 
     if not sig_okay:
         header = _('Password restore link is incorrect')
@@ -193,12 +223,13 @@ async def restore_confirm(request: Request):
 
     if sig_okay and request.method == 'POST' and form.validate():
         if change_user_password(payload['user_id'], form.password.data):
-            return RedirectResponse(request.url_for('login'),
-                                    status_code=303)
-        errors = [_('An error happened during password change. '
-                    'Please try again later.')]
+            return RedirectResponse(
+                request.url_for('login'), status_code=303
+            )
+        errors = [_('An error happened during password '
+                    'change, please try again later')]
     else:
-        errors = chain(*form.errors.values())
+        errors = await get_errors(_, form.errors)
 
     context = {
         'request': request,

@@ -35,7 +35,7 @@ async def create_goal(request: Request):
             request.url_for('day', date=current_date), status_code=303
         )
 
-    errors = await get_errors(lang, form.errors)
+    errors = await get_errors(_, form.errors)
 
     context = {
         'request': request,
@@ -52,6 +52,7 @@ async def update_goal(request: Request):
     """Update existing goal.
     """
     current_date = get_date(request)
+    last_date = request.session.get('last_date', current_date)
     lang = get_lang(request)
     _ = get_gettext(lang)
 
@@ -71,7 +72,7 @@ async def update_goal(request: Request):
             request.url_for('day', date=current_date), status_code=303
         )
 
-    errors = await get_errors(lang, form.errors)
+    errors = await get_errors(_, form.errors)
 
     context = {
         'request': request,

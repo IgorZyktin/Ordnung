@@ -30,23 +30,7 @@
     position: relative;
 }
 
-.login_button {
-    display: block;
-    width: 100%;
-    border: 2px solid #3a423b;
-    border-radius: 5px;
-    margin-top: 10px;
-    padding: 5px;
-    background: #4a5457;
-    color: #d9dec5;
-    font-size: 18px;
-}
 
-.login_button:hover {
-    background: burlywood;
-    border: 2px solid #57925d;
-    color: #1a1a17;
-}
 
 select,
 textarea,
@@ -88,10 +72,10 @@ select {
 .tooltip {
     display: none;
     position: absolute;
-    max-width: 400px;
+    /*max-width: 400px;*/
     padding: 10px;
     border: 1px solid #5e431d;
-    border-radius: 10px;
+    border-radius: 5px;
     background: #282727;
     color: #aa9764;
     text-align: center;
@@ -106,22 +90,4 @@ select {
 .form_group:hover .tooltip {
     transform: translateX(-105%);
     display: block;
-}
-
-.small_button {
-    display: block;
-    width: 100%;
-    border: 2px solid #3a423b;
-    border-radius: 5px;
-    margin-top: 10px;
-    padding: 5px;
-    background: #4a5457;
-    color: #d9dec5;
-    font-size: 18px;
-}
-
-.small_button:hover {
-    background: burlywood;
-    border: 2px solid #57925d;
-    color: #1a1a17;
 }

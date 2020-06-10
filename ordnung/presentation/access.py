@@ -60,16 +60,17 @@ def get_date(request: Request) -> date:
     return target_date
 
 
-async def get_errors(lang: str, errors_dict: dict) -> List[str]:
+async def get_errors(gettext_callable: Callable,
+                     errors_dict: dict) -> List[str]:
     """Extract errors from WTForm.
     """
     errors = []
 
     for key, value in errors_dict.items():
-        name = gettext(lang, key).capitalize()
+        name = gettext_callable(key).capitalize()
 
         for each in value:
-            description = gettext(lang, each).capitalize()
+            description = gettext_callable(each).capitalize()
             errors.append(f'<strong>{name}</strong><br>{description}')
 
     return errors

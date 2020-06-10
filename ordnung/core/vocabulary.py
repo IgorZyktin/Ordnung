@@ -9,11 +9,12 @@ STATIC_VOCABULARY = {
         "Step forward": "Шаг вперёд",
         "Leap forward": "Перейти вперёд",
 
-        "Tasks on %s %s (%s-x)": "Задачи на %s %s (%s шт.)",
+        "Goals on %s %s (%s-x)": "Задачи на %s %s (%s шт.)",
         "Nothing planned on %s": "Ничего не запланировано на %s",
 
-        "New record": "Новая запись",
+        "Logout": "Выйти",
         "Back to month": "Назад к месяцу",
+        "Back to day": "Назад к дню",
 
         "You could get access only after login": "Доступ к данным возможен только после входа",
         "Try log in once again": "Ещё раз попробовать войти",
@@ -80,30 +81,53 @@ STATIC_VOCABULARY = {
 
         #     "$confirm_text": "Вы уверены, что хотите удалить эту запись?",
 
-        # },
-        # "status": {
-        #     "1": "Ожидает",
-        #     "2": "Надо бы доделать",
-        #     "3": "В процессе",
-        #     "4": "Выполнено",
-        #     "5": "Провалено",
-        #     "6": "Перенесено",
-        #     "7": "Планы поменялись",
-        #     "8": "Отменено"
-        # },
-        # "persistence": {
-        #     "1": "Единожды",
-        #     "2": "Единождый, пока не выполнено",
-        #     "3": "Каждый день",
-        #     "4": "Каждую неделю",
-        #     "5": "По нечётным неделям",
-        #     "6": "По чётным неделям",
-        #     "7": "Каждый такой же день недели",
-        #     "8": "Каждый месяц",
-        #     "9": "Каждый год"
-        # },
+        # goal
+        "Title": "Заголовок",
+        "Description": "Описание",
+        "Goal group": "Группа задачи",
+        "Target date": "На дату",
+        "Target time": "На время",
+        "Persistence": "Повторяемость",
+        "Status": "Состояние",
+        "Has measurable metric?": "Есть измеримая метрика?",
+        "Metric name": "Название метрики",
+        "Metric objective": "Целевой показатель",
+        "Metric step": "Делать за один раз",
+        "Start time": "Начало действия",
+        "End time": "Конец действия",
 
-        # },
+        "Update goal": "Изменить задачу",
+        "Create new goal": "Создать новую задачу",
+        "Goal created at": "Задача создана",
+        "Goal last edit at": "Задача отредактирована",
+
+        # buttons
+        "Create": "Создать",
+        "Save changes": "Сохранить изменения",
+        "Delete": "Удалить",
+
+        # statuses
+        "Pending": "Ожидает",
+        "Until complete": "Пока не будет сделано",
+        "In progress": "В процессе",
+        "Complete": "Выполнено",
+        "Failed": "Провалено",
+        "Rescheduled": "Перенесено",
+        "Reshaped": "Планы поменялись",
+        "Cancelled": "Отменено",
+
+        # persistence
+        "Once": "Единожды",
+        "Once, until complete": "Единожды, пока не выполнено",
+        "Every day": "Каждый день",
+        "Every week": "Каждую неделю",
+        "Every odd week": "По нечётным неделям",
+        "Every even week": "По чётным неделям",
+        "First day of month": "Первый день месяца",
+        "Last day of month": "Последний день месяца",
+        "Every month": "Каждый месяц",
+        "Every year": "Каждый год"
+
         # "errors": {
         #     "$no_title": "У записи должен быть заголовок.",
         #     "$record_not_found": "Запись с id %s не найдена.",
@@ -266,7 +290,7 @@ DYNAMIC_VOCABULARY = {
         "month_11": "Ноябрь",
         "month_12": "Декабрь",
 
-        # months - special
+        # months_ special
         "month_1_": "января",
         "month_2_": "февраля",
         "month_3_": "марта",

@@ -37,7 +37,8 @@
         {{ form.password_repeat }}
     </div>
 
-    <input type="submit" class="login_button">
+    <input type="submit" class="btn w-100">
 </form>
-<a href="{{ url_for('index') }}" class="login_button">{{ retry }}</a>
+<a href="{{ url_for }}" class="btn">{{ retry }}</a>
+<a href="{{ index_url }}" class="btn">{{ retry }}</a>
 {% endblock %}

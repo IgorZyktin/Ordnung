@@ -67,29 +67,24 @@ hr {
 }
 
 .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     border: 2px solid #3a423b;
-    background-color: rgb(42, 53, 48);
-    color: #848484;
-    border-radius: 10px;
-    cursor: pointer;
-    padding: 5px;
-    text-decoration: none;
+    border-radius: 5px;
     margin-top: 10px;
-    margin-bottom: 10px;
-    box-shadow: 10px 11px 16px -2px rgba(0, 0, 0, 0.6);
+    padding: 5px;
+    background: #4a5457;
+    color: #d9dec5;
+    font-size: 16px;
+    text-decoration: none;
+    text-align: center;
 }
 
 .btn:hover {
-    color: #c3c3c3;
-    background-color: rgb(77, 93, 86);
-}
-
-.btn:active {
-    position: relative;
-    top: 1px;
+    background: burlywood;
+    border: 2px solid #57925d;
+    color: #1a1a17;
 }
 
 .h-100 {

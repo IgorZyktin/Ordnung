@@ -91,10 +91,6 @@ async def make_new_goal_from_form(form: GoalForm) -> Goal:
 
 
 async def apply_update_on_goal(form: GoalForm, goal: Goal):
-    print('apply_update_on_goal', vars(form))
-    print(form.title)
-    print(form.title.data)
-    print('---')
     goal.group_id = int(form.group.data[0])
     goal.persistence_id = int(form.persistence.data[0])
     goal.last_edit = get_now()
@@ -103,5 +99,5 @@ async def apply_update_on_goal(form: GoalForm, goal: Goal):
     goal.target_date = form.target_date.data
 
     if form.start_time.data:
-        goal.start_time = datetime.strptime(form.start_time.data,
-                                            "%Y-%m-%d").astimezone()
+        goal.start_time = datetime.strptime(form.start_time.data[0:19],
+                                            "%Y-%m-%d %H:%M:%S").astimezone()

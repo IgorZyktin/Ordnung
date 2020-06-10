@@ -87,6 +87,7 @@
     width: 100%;
     align-items: center;
     justify-content: center;
+    color: var(--ordnung-color-3);
     background-color: var(--ordnung-bg-color-1);
     border-radius: 10px;
     border: var(--ordnung-border-1);

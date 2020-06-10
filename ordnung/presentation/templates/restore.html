@@ -5,9 +5,9 @@
     {{ form.csrf_token }}
     <div class="form_group">
         {{ form.contact.label }}
-        {{ form.contact() }}
+        {{ form.contact }}
     </div>
-    <input type="submit" class="login_button">
+    <input type="submit" class="btn" style="width: 100%;">
 </form>
-<button class="login_button" id="btn_go_main">{{ retry }}</button>
+<a href="{{ index_url }}" class="btn">{{ retry }}</a>
 {% endblock %}

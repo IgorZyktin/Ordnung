@@ -1,7 +1,7 @@
 {% extends "base_auth.html" %}
 
 {%- block main_form %}
-    <a href="{{ url_for('index') }}" class="login_button">{{ retry }}</a>
-    <a href="{{ url_for('restore') }}" class="login_button">{{ restore }}</a>
-    <a href="{{ url_for('register') }}" class="login_button">{{ register }}</a>
+    <a href="{{ index_url }}" class="btn">{{ retry }}</a>
+    <a href="{{ url_for('restore') }}" class="btn">{{ restore }}</a>
+    <a href="{{ url_for('register') }}" class="btn">{{ register }}</a>
 {% endblock %}

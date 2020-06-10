@@ -1,5 +1,5 @@
 {% extends "base_auth.html" %}
 
 {%- block main_form %}
-    <a href="{{ request.url_for('index') }}" class="login_button">{{ retry }}</a>
+    <a href="{{ index_url }}" class="btn">{{ retry }}</a>
 {% endblock %}

@@ -2,6 +2,7 @@
 
 """Views.
 """
+
 from starlette.authentication import requires
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
@@ -17,7 +18,8 @@ async def month(request: Request) -> HTMLResponse:
     """Main page, navigation starts from here. Shows single month.
     """
     current_date = get_date(request)
-    _ = get_translate(get_lang(request))
+    tr = get_translate(get_lang(request))
+    url_for = request.url_for
 
     (leap_back, step_back,
      step_forward, leap_forward) = get_offset_dates(current_date)
@@ -30,16 +32,16 @@ async def month(request: Request) -> HTMLResponse:
 
     context = {
         'request': request,
-        'header': _(f'month_{current_date.month}') + f' ({current_date})',
+        'header': tr(f'month_{current_date.month}') + f' ({current_date})',
         'month': all_days_in_month,
         'goal_sections': goal_sections,
         'menu_is_visible': 0,  # FIXME
         'current_date': current_date,
         'day_names': get_day_names(get_lang(request)),
-        'leap_back_url': request.url_for('month', date=leap_back),
-        'step_back_url': request.url_for('month', date=step_back),
-        'step_forward_url': request.url_for('month', date=step_forward),
-        'leap_forward_url': request.url_for('month', date=leap_forward),
+        'leap_back_url': url_for('month', date=leap_back),
+        'step_back_url': url_for('month', date=step_back),
+        'step_forward_url': url_for('month', date=step_forward),
+        'leap_forward_url': url_for('month', date=leap_forward),
     }
     return render_template('month.html', context)
 
