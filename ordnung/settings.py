@@ -18,6 +18,7 @@ WEEK_LENGTH = 7
 WEEKS_IN_MONTH = 5
 MONTH_LENGTH = WEEKS_IN_MONTH * WEEK_LENGTH
 TIMEZONE = pytz
+
 # additional days to search in both directions during month rendering
 MONTH_OFFSET = 20
 
@@ -32,7 +33,7 @@ DEFAULT_GROUP_NAME = 'Home'
 
 LOGGER_FILENAME = 'ordnung.log'
 LOGGER_ROTATION = '1 week'
-DB_URI = os.getenv('ORDNUNG_DB_URI')
+DB_URI = os.getenv('ORDNUNG_DB_URI', 'unknown')
 
 #  -------------- PRESENTATION SETTINGS --------------
 
@@ -45,7 +46,7 @@ else:
     RELOAD = False
 
 HOST = '127.0.0.1'
-PORT = 8000
+PORT = 8008
 
 EMAIL_SENDER = 'ordnung.auto@gmail.com'
 EMAIL_LOGIN = 'ordnung.auto'

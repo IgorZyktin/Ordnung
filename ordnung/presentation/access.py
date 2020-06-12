@@ -44,7 +44,7 @@ def get_translate(lang: str) -> Callable:
     return partial(translate, lang)
 
 
-def get_date(request: Request) -> date:
+async def get_date(request: Request) -> date:
     """Extract date from request arguments.
 
     Example output:
@@ -54,6 +54,7 @@ def get_date(request: Request) -> date:
 
     if string is None:
         target_date = get_today()
+
     else:
         target_date = datetime.strptime(string, "%Y-%m-%d").date()
 

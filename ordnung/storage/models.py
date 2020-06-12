@@ -75,10 +75,13 @@ class Parameter(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     # -------------------------------------------------------------------------
-    lang = Column(String, nullable=False)
-    menu = Column(Boolean, nullable=False)
-    hidden_groups = Column(ARRAY(Integer), nullable=False)
-    hidden_persistence = Column(ARRAY(Integer), nullable=False)
+    language = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    menu_is_visible = Column(Boolean, nullable=False)
+    groups_visible = Column(ARRAY(Integer), nullable=False)
+    spans_visible = Column(ARRAY(Integer), nullable=False)
+    theme = Column(String, nullable=False)
+    timezone = Column(String, nullable=False)
 
     user = relationship("User", back_populates="parameters")
 
@@ -92,6 +95,7 @@ class Group(Base):
     # -------------------------------------------------------------------------
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     name = Column(String(255), nullable=False)
+
     Index('group_idx', 'owner_id')
 
 
@@ -107,6 +111,7 @@ class GroupMembership(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     group_id = Column(Integer, ForeignKey('groups.id'))
     # -------------------------------------------------------------------------
+
     Index('group_membership_idx', 'user_id', 'group_id')
     user = relationship("User", back_populates="groups")
     group = relationship("Group")
@@ -122,28 +127,39 @@ class Goal(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     group_id = Column(Integer, ForeignKey('groups.id'))
-    persistence_id = Column(Integer, ForeignKey('persistence.id'))
+    span_id = Column(Integer, ForeignKey('span.id'))
     # -------------------------------------------------------------------------
-    created = Column(DateTime, nullable=False)
-    last_edit = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+    last_edit_at = Column(DateTime, nullable=False)
     title = Column(String(255), nullable=False)
     description = Column(String, nullable=False)
     target_date = Column(Date)
     target_time = Column(Time)
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime)
-    metric_name = Column(String(255), nullable=False)
-    metric_objective = Column(Float(), nullable=False)
-    metric_step = Column(Float(), nullable=False, default=1)
+    actual_from = Column(DateTime, nullable=False)
+    actual_to = Column(DateTime)
 
 
-class Persistence(Base):
-    """Persistence representation.
+class Metrics(Base):
+    """Single measurable goal element.
+    """
+    __tablename__ = 'metrics'
+    # -------------------------------------------------------------------------
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    goal_id = Column(Integer, ForeignKey('goals.id'))
+    name = Column(String(255), nullable=False)
+    increment_name = Column(String(255), nullable=False)
+    increment_size = Column(Float, nullable=False, default=0.0)
+    objective = Column(Float, nullable=False, default=0.0)
+
+
+class Span(Base):
+    """Goal robustness representation.
 
     Decides how long record lives and how we should
     show it to the user - every day, every week, etc.
     """
-    __tablename__ = 'persistence'
+    __tablename__ = 'spans'
     # -------------------------------------------------------------------------
     id = Column(Integer, primary_key=True, autoincrement=True)
     # -------------------------------------------------------------------------
@@ -168,6 +184,7 @@ class Achievement(Base):
     __tablename__ = 'achievements'
     # -------------------------------------------------------------------------
     id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
     goal_id = Column(Integer, ForeignKey('goals.id'))
     status_id = Column(Integer, ForeignKey('statuses.id'))
     # -------------------------------------------------------------------------

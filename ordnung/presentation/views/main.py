@@ -13,11 +13,11 @@ from ordnung.presentation.access import get_date, get_translate, get_lang
 from ordnung.presentation.rendering import render_template
 
 
-@requires('authenticated', redirect='unauthorized')
+# @requires('authenticated', redirect='unauthorized')
 async def month(request: Request) -> HTMLResponse:
     """Main page, navigation starts from here. Shows single month.
     """
-    current_date = get_date(request)
+    current_date = await get_date(request)
     tr = get_translate(get_lang(request))
     url_for = request.url_for
 
@@ -34,7 +34,7 @@ async def month(request: Request) -> HTMLResponse:
         'request': request,
         'header': tr(f'month_{current_date.month}') + f' ({current_date})',
         'month': all_days_in_month,
-        'goal_sections': goal_sections,
+        'goal_sections': [],
         'menu_is_visible': 0,  # FIXME
         'current_date': current_date,
         'day_names': get_day_names(get_lang(request)),
@@ -46,11 +46,11 @@ async def month(request: Request) -> HTMLResponse:
     return render_template('month.html', context)
 
 
-@requires('authenticated', redirect='unauthorized')
+# @requires('authenticated', redirect='unauthorized')
 async def day(request: Request):
     """Single day navigation.
     """
-    current_date = get_date(request)
+    current_date = await get_date(request)
     _ = get_translate(get_lang(request))
 
     curr_day = get_day(current_date, is_today=True)

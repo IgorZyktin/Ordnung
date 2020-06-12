@@ -9,7 +9,7 @@ from ordnung import settings
 from ordnung.core.vocabulary import (
     get_static_vocabulary, get_dynamic_vocabulary
 )
-from ordnung.storage.access import get_persistence_types, get_status_types
+from ordnung.storage.access import get_span_types, get_status_types
 
 
 def gettext(lang: str, sentence: str) -> str:
@@ -78,7 +78,7 @@ def get_persistence_names(lang: str) -> List[Tuple[str, str]]:
     """
     localized_names = []
 
-    for i, kind in enumerate(get_persistence_types(), start=1):
+    for i, kind in enumerate(get_span_types(), start=1):
         localized_name = gettext(lang, kind.name)
         localized_names.append((str(kind.id), f'{i:02d}. {localized_name}'))
 

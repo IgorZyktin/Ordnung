@@ -2,9 +2,10 @@
 
 """Database access tools.
 """
-from typing import Optional, List
+from datetime import date
+from typing import Optional, List, Tuple
 
-from sqlalchemy import or_, func
+from sqlalchemy import or_, func, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
 
@@ -12,7 +13,46 @@ from ordnung import settings
 from ordnung.core.access import get_now
 from ordnung.storage.database import session
 from ordnung.storage.models import User, Group, GroupMembership, Parameter, \
-    Persistence, Status
+    Span, Status
+
+
+def get_holidays(country: str, target_date: date, offset_left: int,
+                 offset_right: int) -> List[Tuple[date, str]]:
+    """Get list of holidays for specified country.
+    WITH dates_list AS (
+	SELECT (generate_series(date('2020-06-10') - 20,
+							date('2020-06-10') + 20,
+							'1 day'::interval)::date) AS event_date
+)
+SELECT * FROM dates_list dl
+LEFT JOIN (
+	SELECT * FROM holidays WHERE country_id = (
+		SELECT id FROM countries
+		WHERE name = 'Russia' LIMIT 1)) h
+ON h.event_date = dl.event_date
+ORDER BY dl.event_date;
+    """
+    stmt = text("""
+    WITH user_country AS (
+        SELECT id 
+        FROM countries 
+        WHERE name = :user_country 
+        LIMIT 1
+    ),
+        dates_list AS (
+        SELECT (generate_series(date(:target_date) - :offset_left,
+                                date(:target_date) + :offset_right, 
+                                '1 day'::interval)::date) AS event_date
+    )
+    SELECT * FROM dates_list dl
+    LEFT JOIN (SELECT * FROM holidays WHERE country_id = user_country.id) h
+    ON h.event_date = dl.event_date
+    ORDER BY dl.event_date;
+    """)
+    return list(session.execute(stmt, params=dict(user_country=country,
+                                             target_date=target_date,
+                                             offset_left=offset_left,
+                                             offset_right=offset_right)))
 
 
 def get_user_by_id(user_id: int) -> Optional[User]:
@@ -42,10 +82,10 @@ def get_user_by_email_or_login(user_contact: str) -> Optional[User]:
     return response
 
 
-def get_persistence_types() -> List[Persistence]:
+def get_span_types() -> List[Span]:
     """Get all available persistence types.
     """
-    return session.query(Persistence).order_by('id').all()
+    return session.query(Span).order_by('id').all()
 
 
 def get_status_types() -> List[Status]:

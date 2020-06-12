@@ -31,3 +31,4 @@ win32-setctime==1.0.1
 
 itsdangerous~=1.1.0
 WTForms~=2.3.1
+pytz~=2020.1
