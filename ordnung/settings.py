@@ -4,10 +4,9 @@
 """
 import os
 import sys
+import pytz
 
 #  ------------------ CORE SETTINGS ------------------
-import pytz as pytz
-
 SECRET_KEY = os.getenv('ORDNUNG_SECRET_KEY')
 
 # date and time
@@ -17,7 +16,8 @@ WEEKENDS = {5, 6}  # weekday indexes, saturday and sunday
 WEEK_LENGTH = 7
 WEEKS_IN_MONTH = 5
 MONTH_LENGTH = WEEKS_IN_MONTH * WEEK_LENGTH
-TIMEZONE = pytz
+DEFAULT_TIMEZONE = 'Europe/Moscow'
+timezone = pytz.timezone(DEFAULT_TIMEZONE)
 
 # additional days to search in both directions during month rendering
 MONTH_OFFSET = 20
@@ -32,8 +32,8 @@ DEFAULT_GROUP_NAME = 'Home'
 #  ----------------- STORAGE SETTINGS ----------------
 
 LOGGER_FILENAME = 'ordnung.log'
-LOGGER_ROTATION = '1 week'
-DB_URI = os.getenv('ORDNUNG_DB_URI', 'unknown')
+LOGGER_ROTATION = '1 month'
+DB_URI = os.getenv('ORDNUNG_DB_URI')
 
 #  -------------- PRESENTATION SETTINGS --------------
 

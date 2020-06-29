@@ -10,7 +10,7 @@ from ordnung.presentation.access import (
     get_date, get_gettext, get_errors, get_lang
 )
 from ordnung.presentation.rendering import render_template
-from ordnung.presentation.views.tools import (
+from ordnung.views import (
     make_goal_creation_form, make_new_goal_from_form,
     make_goal_update_form, apply_update_on_goal
 )

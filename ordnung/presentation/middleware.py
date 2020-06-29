@@ -16,7 +16,7 @@ from ordnung.presentation.access import get_translate, get_gettext
 class UnauthenticatedUser:
     """Class for unauthenticated user representation.
     """
-    id: int = 1
+    id: int = -1
     name: str = 'Anonymous'
     is_authenticated: bool = False
     lang: str = settings.DEFAULT_LANG

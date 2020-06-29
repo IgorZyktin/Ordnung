@@ -30,12 +30,12 @@ class User(Base):
     last_seen = Column(DateTime, nullable=False)
     confirmed = Column(Boolean, nullable=False, default=False)
 
-    groups = relationship("GroupMembership",
+    groups = relationship('GroupMembership',
                           back_populates="user", collection_class=set)
 
-    parameters = relationship("Parameter",
-                              back_populates="user", uselist=False)
-    Index('users_id_uindex', 'user_id')
+    parameters = relationship('Parameter',
+                              back_populates='user', uselist=False)
+    Index('users_idx', 'user_id', 'login', 'email')
 
     def is_authenticated(self) -> bool:
         """Return True if the user is authenticated.
@@ -52,38 +52,49 @@ class User(Base):
         """
         return check_password_hash(self.password, password)
 
-    @property
-    def lang(self) -> str:
-        """Get chosen language for this user.
-        """
-        # FIXME
-        return 'RU'
 
-    @property
-    def menu(self) -> bool:
-        """Get chosen menu visibility for this user.
-        """
-        # FIXME
-        return False
+class Language(Base):
+    """Language representation.
+    """
+    __tablename__ = 'languages'
+    # -------------------------------------------------------------------------
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    # -------------------------------------------------------------------------
+    name = Column(String(255), nullable=False)
+
+    Index('languages_idx', 'id', 'name')
+
+
+class Country(Base):
+    """Country representation.
+    """
+    __tablename__ = 'countries'
+    # -------------------------------------------------------------------------
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    # -------------------------------------------------------------------------
+    name = Column(String(255), nullable=False)
+
+    Index('countries_idx', 'id', 'name')
 
 
 class Parameter(Base):
-    """User defined settings.
+    """User defined parameters.
     """
     __tablename__ = 'parameters'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
     user_id = Column(Integer, ForeignKey('users.id'))
+    language_id = Column(Integer, ForeignKey('languages.id'))
+    country_id = Column(Integer, ForeignKey('countries.id'))
     # -------------------------------------------------------------------------
-    language = Column(String, nullable=False)
-    country = Column(String, nullable=False)
     menu_is_visible = Column(Boolean, nullable=False)
     groups_visible = Column(ARRAY(Integer), nullable=False)
     spans_visible = Column(ARRAY(Integer), nullable=False)
     theme = Column(String, nullable=False)
     timezone = Column(String, nullable=False)
 
-    user = relationship("User", back_populates="parameters")
+    user = relationship('User', back_populates='parameters')
+    Index('parameters_idx', 'id', 'user_id')
 
 
 class Group(Base):
@@ -92,11 +103,11 @@ class Group(Base):
     __tablename__ = 'groups'
     # -------------------------------------------------------------------------
     id = Column(Integer, primary_key=True, autoincrement=True)
-    # -------------------------------------------------------------------------
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    # -------------------------------------------------------------------------
     name = Column(String(255), nullable=False)
 
-    Index('group_idx', 'owner_id')
+    Index('groups_idx', 'id', 'owner_id')
 
 
 class GroupMembership(Base):
@@ -106,15 +117,16 @@ class GroupMembership(Base):
     """
     __tablename__ = 'group_membership'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
     # -------------------------------------------------------------------------
     user_id = Column(Integer, ForeignKey('users.id'))
     group_id = Column(Integer, ForeignKey('groups.id'))
     # -------------------------------------------------------------------------
 
-    Index('group_membership_idx', 'user_id', 'group_id')
     user = relationship("User", back_populates="groups")
     group = relationship("Group")
+
+    Index('group_membership_idx', 'user_id', 'group_id')
 
 
 class Goal(Base):
@@ -138,8 +150,10 @@ class Goal(Base):
     actual_from = Column(DateTime, nullable=False)
     actual_to = Column(DateTime)
 
+    Index('goals_idx', 'id', 'user_id', 'group_id', 'span_id')
 
-class Metrics(Base):
+
+class Metric(Base):
     """Single measurable goal element.
     """
     __tablename__ = 'metrics'
@@ -147,10 +161,13 @@ class Metrics(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     goal_id = Column(Integer, ForeignKey('goals.id'))
+    # -------------------------------------------------------------------------
     name = Column(String(255), nullable=False)
     increment_name = Column(String(255), nullable=False)
     increment_size = Column(Float, nullable=False, default=0.0)
     objective = Column(Float, nullable=False, default=0.0)
+
+    Index('metrics_idx', 'id', 'user_id', 'goal_id')
 
 
 class Span(Base):
@@ -161,9 +178,11 @@ class Span(Base):
     """
     __tablename__ = 'spans'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
     # -------------------------------------------------------------------------
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
+
+    Index('spans_idx', 'id', 'name')
 
 
 class Status(Base):
@@ -171,9 +190,11 @@ class Status(Base):
     """
     __tablename__ = 'statuses'
     # -------------------------------------------------------------------------
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
     # -------------------------------------------------------------------------
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
+
+    Index('statuses_idx', 'id', 'name')
 
 
 class Achievement(Base):
@@ -191,3 +212,6 @@ class Achievement(Base):
     event_date = Column(Date, nullable=False)
     event_time = Column(DateTime, nullable=False)
     value = Column(Integer, nullable=False, default=0)
+
+    Index('achievements_idx', 'id', 'user_id',
+          'goal_id', 'status_id', 'event_date')

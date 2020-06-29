@@ -5,10 +5,10 @@
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 
-from ordnung.presentation.views.auth import index, login, logout, unauthorized
-from ordnung.presentation.views.crud import create_goal, update_goal
-from ordnung.presentation.views.main import month, day
-from ordnung.presentation.views.register import (
+from ordnung.views import index, login, logout, unauthorized
+from ordnung.views import create_goal, update_goal
+from ordnung.views import month, day
+from ordnung.views import (
     restore_confirm, register_confirm, restore_note,
     register_note, restore, register
 )
@@ -48,7 +48,7 @@ routes = [
 
     # static ------------------------------------------------------------------
 
-    Mount('/static',
+    Mount('../static',
           app=StaticFiles(directory='ordnung/presentation/static'),
           name='static'),
 ]
